@@ -38,8 +38,12 @@ class TeAvatar extends StatelessWidget {
           shape: BoxShape.circle,
           color: hasPhoto ? te.accentSoft : te.surfaceTinted,
         ),
-        child: hasPhoto
-            ? Icon(Icons.person, size: size * 0.55, color: te.textPrimary)
+        child: hasPhoto || name.trim().isEmpty
+            ? Icon(
+                hasPhoto ? Icons.person : Icons.person_outline,
+                size: size * 0.55,
+                color: hasPhoto ? te.textPrimary : te.action,
+              )
             : Text(
                 _initials,
                 style: Theme.of(context).textTheme.titleMedium
