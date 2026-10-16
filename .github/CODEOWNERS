@@ -1,0 +1,24 @@
+# Replace @DESIGNER and @ENG_LEAD with real GitHub handles or teams (for example @org/engineers).
+# Last matching pattern wins. Any one listed owner can approve, and the PR author cannot approve
+# their own PR, so a designer PR in design-owned paths always needs an engineer's approval.
+
+# Default
+*                                      @ENG_LEAD
+
+# Design-owned (engineer reviews)
+/lib/core/design_system/               @DESIGNER @ENG_LEAD
+/lib/features/*/presentation/          @DESIGNER @ENG_LEAD
+/lib/features/*/data/mock/             @DESIGNER @ENG_LEAD
+/docs/DESIGN.md                        @DESIGNER @ENG_LEAD
+
+# Engineer-owned
+/lib/features/*/domain/                @ENG_LEAD
+/lib/features/*/data/remote/           @ENG_LEAD
+/lib/features/*/data/local/            @ENG_LEAD
+/lib/core/config/                      @ENG_LEAD
+/lib/core/di/                          @ENG_LEAD
+/lib/core/error/                       @ENG_LEAD
+/docs/ARCHITECTURE.md                  @ENG_LEAD
+/docs/decisions/                       @ENG_LEAD
+/.github/                              @ENG_LEAD
+/tool/                                 @ENG_LEAD

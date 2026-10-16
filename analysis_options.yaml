@@ -1,0 +1,17 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+
+linter:
+  rules:
+    # Screens are self-describing; docs are required on domain/config only.
+    public_member_api_docs: false
+    # Conflicts with the Flutter-generated constructor style.
+    unnecessary_type_name_in_constructor: false
