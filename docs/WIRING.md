@@ -51,9 +51,12 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 
 | Wire ID | Req | Contract (interface) | What the real implementation must do | Server must enforce | Status |
 |---|---|---|---|---|---|
-| `auth.session` | ACC-01..04 | `AuthRepository` | Sign up (individual, with optional org attach, via invite), sign in/out, session persistence | Identity, invite validity | PLANNED |
-| `auth.account-switch` | ACC-07 | `AuthRepository.switchIdentity` | Switch between individual and organization identity; scope all data by active identity | Data isolation between identities | PLANNED |
-| `auth.delete-account` | ACC-08 | `AuthRepository.deleteAccount` | Delete account and associated data per policy | Full deletion | PLANNED |
+| `auth.session` | ACC-01..04, ACC-06 | `AuthRepository` | Sign up (individual, with optional org attach, via invite) and sign in/out with email + password, session persistence | Identity, unique email, password rules, invite validity | MOCKED |
+| `auth.account-switch` | ACC-07 | `AuthRepository.switchIdentity` | Switch between individual and organization identity; scope all data by active identity | Data isolation between identities | MOCKED |
+| `auth.delete-account` | ACC-08 | `AuthRepository.deleteAccount` | Delete account and associated data per policy | Full deletion | MOCKED |
+| `auth.org-invite` | ACC-03..05 | `AuthRepository.resolveInvite` | Resolve an admin-issued invite link or code to its organization; reject invalid or expired | Invite validity, expiry, single organization attach | MOCKED |
+| `auth.password-reset` | ACC-01 (assumed) | `AuthRepository.requestPasswordReset` | Send a reset email; same response whether or not the address exists | Rate limiting, no account enumeration | MOCKED |
+| `device.photo-picker` | ACC-01, PRF-01 | `PhotoPickerService` | Open the OS photo picker with permission handling, return a local path or null on cancel | n/a (client only) | MOCKED |
 | `profile.edit` | PRF-01 | `ProfileRepository` | Read/update name, email, photo, details; photo upload | Validation, ownership | PLANNED |
 | `groups.crud` | GRP-01, 02, 05, 08..11 | `GroupRepository` | Create/read/update groups, subgroups, teams; hierarchy 5/5/5; delete with undo window; archive | Hierarchy depth, member caps, admin-only team deletion | PLANNED |
 | `groups.flights` | GRP-03, 04 | `FlightRepository` | Disposable group type with the relevant parties and progress of specified tasks; auto-hide after a custom-set duration (see PRD open questions) | Auto-hide timing, visibility | PLANNED |

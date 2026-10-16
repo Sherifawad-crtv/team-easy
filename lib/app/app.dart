@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:team_easy/core/design_system/design_preview_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:team_easy/app/router.dart';
 import 'package:team_easy/core/design_system/te_theme.dart';
+import 'package:team_easy/core/design_system/widgets/debug_scenario_overlay.dart';
 
-/// App shell. Routing arrives with the first feature screens; until then the
-/// style guide is the home screen.
-class TeamEasyApp extends StatelessWidget {
+/// App shell: theme, routing and the debug scenario control.
+class TeamEasyApp extends ConsumerWidget {
   const TeamEasyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
       title: 'Team Easy',
       debugShowCheckedModeBanner: false,
       theme: TeTheme.light(),
       themeMode: ThemeMode.light,
-      home: const DesignPreviewScreen(),
+      routerConfig: ref.watch(routerProvider),
+      builder: (context, child) =>
+          DebugScenarioOverlay(child: child ?? const SizedBox.shrink()),
     );
   }
 }

@@ -22,14 +22,14 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 
 | ID | Requirement | Status | Wire ID | PR | Notes |
 |---|---|---|---|---|---|
-| ACC-01 | Custom signup flow | TODO | `auth.session` | | |
-| ACC-02 | Signup path 1: individual | TODO | `auth.session` | | |
-| ACC-03 | Signup path 2: optionally attach to an organization | TODO | `auth.session` | | |
-| ACC-04 | Signup path 3: invited by an organization | TODO | `auth.session` | | |
-| ACC-05 | Joining an organization requires an admin-panel invite | TODO | `members.invite` | | |
-| ACC-06 | Org invite does not block individual use | TODO | `auth.session` | | |
-| ACC-07 | Account switching (org vs individual identity) | TODO | `auth.account-switch` | | |
-| ACC-08 | Account deletion | TODO | `auth.delete-account` | | |
+| ACC-01 | Custom signup flow | UI | `auth.session` | | |
+| ACC-02 | Signup path 1: individual | UI | `auth.session` | | |
+| ACC-03 | Signup path 2: optionally attach to an organization | UI | `auth.session` | | |
+| ACC-04 | Signup path 3: invited by an organization | UI | `auth.session` | | |
+| ACC-05 | Joining an organization requires an admin-panel invite | UI | `members.invite` | | |
+| ACC-06 | Org invite does not block individual use | UI | `auth.session` | | |
+| ACC-07 | Account switching (org vs individual identity) | UI | `auth.account-switch` | | |
+| ACC-08 | Account deletion | UI | `auth.delete-account` | | |
 | GRP-01 | Groups and subgroups | TODO | `groups.crud` | | |
 | GRP-02 | Hierarchy limit 5/5/5 | TODO | `groups.crud` | | PRD open question 5 |
 | GRP-03 | Flights (disposable group type) | TODO | `groups.flights` | | PRD open questions 1, 12 |
@@ -96,6 +96,7 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 
 ## Session log (latest first)
 
+- 2026-10-17: Onboarding and signup (ACC-01..08) on mocks: welcome, sign in, forgot password, sign up (photo, job title, optional invite), invite link and code, signed-in account screen with identity switch, sign out, delete. Debug scenario control on every screen. Blocked on: PRD open question 14 (password reset, email verification), real invite deep links need wiring (`auth.org-invite`). Next: designer picks the next area.
 - 2026-10-16: Bootstrap (KICKOFF step 1). Flutter 3.47.7 project (android, ios, web), Riverpod + go_router provisional, `AppConfig` with PRD limits, `USE_MOCKS` switch and debug scenario switcher. Placeholder bundle id `com.teameasy.team_easy` (to confirm). Design tokens next: palette received, light theme only, no Arabic/RTL for now. Blocked: GitHub Actions to Vercel preview needs the Vercel secrets (PIPELINE Phase 1).
 
 ## Known issues and tech debt

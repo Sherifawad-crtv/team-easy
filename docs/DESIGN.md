@@ -60,8 +60,8 @@ Flows are specified per area in `docs/PRD.md` (IDs). Record design decisions per
 
 | Area | Decisions | Status |
 |---|---|---|
-| Onboarding and signup (ACC-01..04) | **[TO DEFINE]** | |
-| Account switching (ACC-07) | **[TO DEFINE]** | |
+| Onboarding and signup (ACC-01..04) | Welcome screen with three paths: Create account, Sign in, "I have an organization invite". Sign-in is email + password with Forgot password. Signup asks name, email, password, optional photo, optional job title, and an optional invite code (collapsed behind "I have an organization invite"). Invite link `/invite/<token>` shows the organization and who invited the user, then continues to signup with the organization attached. Invalid, expired and offline invites each have their own state. **Assumed:** password rules (8+, letter and number), job title is optional and feeds the title tag (ROL-04), a signed-in user opening an invite link is sent home, existing users cannot accept an invite yet. | Built on mocks, awaiting review |
+| Account switching (ACC-07) | Placeholder on the signed-in screen: "Using Team Easy as" with Myself / organization name. Final placement is open. | Placeholder |
 | Group tree and navigation (GRP-01, 02) | **[TO DEFINE]** | |
 | Delete with undo (GRP-10) | **[TO DEFINE]** | |
 | Leave group options (ROL-05, 06) | **[TO DEFINE]** | |

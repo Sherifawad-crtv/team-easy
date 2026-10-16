@@ -14,17 +14,17 @@ double _contrast(Color a, Color b) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
+Duration? _noRetry(int count, Object error) => null;
+
 void main() {
-  testWidgets('style guide shows and the scenario switcher works', (
-    tester,
-  ) async {
-    await tester.pumpWidget(const ProviderScope(child: TeamEasyApp()));
-    expect(find.text('Team Easy'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.text('empty'),
-      400,
-      scrollable: find.byType(Scrollable).first,
+  testWidgets('debug overlay switches the mock scenario', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(retry: _noRetry, child: TeamEasyApp()),
     );
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.bug_report_outlined));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('empty'));
     await tester.pump();
     final container = ProviderScope.containerOf(

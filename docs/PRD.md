@@ -11,6 +11,7 @@ Everything below the line "Agreed scope" is the PRD as received. Anything the te
 | Date | Change |
 |---|---|
 | 22 Sep 2026 | v1.0 first received. |
+| 17 Oct 2026 (design side) | Open question 13 answered by the designer: sign-in is email + password; org invite is a link that opens the app (GRP-07 store fallback applies). Added open question 14. Agreed scope unchanged. |
 | 17 Oct 2026 | Newer PDF received (same header). Differences from the first copy: **added** GRP-03 Flights and GRP-04 Flight auto-hide; **removed** the Moderators requirement (permission levels) from Roles; **added** ROL-04 User title tags; NTF-01 renamed "Notifications center" → "In-app banner"; admin description no longer mentions moderators. **Group and role IDs renumbered**, see mapping below. |
 
 ### ID mapping, first copy → latest
@@ -194,4 +195,5 @@ Raised by the design/tooling side. None of these change the PRD. Each needs an a
 | 10 | **Moderation / report abuse:** not in scope, but app stores usually expect it for user-generated content. | Store review |
 | 11 | **Vendor name:** PRD writes "Zeego Cloud". Confirm the exact vendor/product name and SDK. | DEP-01, CLL-* |
 | 12 | **Flights vs groups in limits:** do flights count toward the 300-member cap and the 5/5/5 hierarchy? | GRP-03, GRP-05, §16 |
-| 13 | **Sign-in method and verification:** the PRD defines three signup paths but not how users authenticate (email, phone/OTP, social) or whether verification is required. Asked per `docs/KICKOFF.md` before onboarding screens are built. | ACC-01..04 |
+| 13 | **Sign-in method and verification:** the PRD defines three signup paths but not how users authenticate. **Answered by the designer: email + password.** Whether verification is required is still open (see 14). | ACC-01..04 |
+| 14 | **Email + password side effects:** password reset and email verification are not in the PRD but are needed with email + password sign-in. Password reset is built as an assumed flow (`auth.password-reset`); email verification is not built. Confirm both, plus password rules (assumed: 8+ characters, a letter and a number). | ACC-01..04 |
