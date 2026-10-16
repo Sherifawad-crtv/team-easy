@@ -3,14 +3,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:team_easy/app/app.dart';
 import 'package:team_easy/core/config/app_config.dart';
+import 'package:team_easy/core/design_system/tokens/te_colors.dart';
 import 'package:team_easy/core/di/mock_scenario.dart';
 
+double _contrast(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final hi = la > lb ? la : lb;
+  final lo = la > lb ? lb : la;
+  return (hi + 0.05) / (lo + 0.05);
+}
+
 void main() {
-  testWidgets('shell shows scenario switcher and switches scenario', (
+  testWidgets('style guide shows and the scenario switcher works', (
     tester,
   ) async {
     await tester.pumpWidget(const ProviderScope(child: TeamEasyApp()));
     expect(find.text('Team Easy'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('empty'),
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.text('empty'));
     await tester.pump();
     final container = ProviderScope.containerOf(
@@ -24,5 +38,19 @@ void main() {
     expect(c.maxMembersPerMainGroup, 300);
     expect(c.dailyCallLimit, const Duration(hours: 1));
     expect(c.maxCallParticipants, 5);
+  });
+
+  test('text and action colors meet WCAG AA (4.5:1)', () {
+    const c = TeColors.light;
+    expect(_contrast(c.textPrimary, c.background), greaterThanOrEqualTo(4.5));
+    expect(_contrast(c.textSecondary, c.surface), greaterThanOrEqualTo(4.5));
+    expect(_contrast(c.textSecondary, c.background), greaterThanOrEqualTo(4.5));
+    expect(_contrast(c.onAction, c.action), greaterThanOrEqualTo(4.5));
+    expect(_contrast(c.onBubbleSent, c.bubbleSent), greaterThanOrEqualTo(4.5));
+    expect(
+      _contrast(c.onBubbleReceived, c.bubbleReceived),
+      greaterThanOrEqualTo(4.5),
+    );
+    expect(_contrast(c.error, c.surface), greaterThanOrEqualTo(4.5));
   });
 }

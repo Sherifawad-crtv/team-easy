@@ -19,16 +19,20 @@ Sections marked **[TO DEFINE]** are the designer's decisions; Claude Code must n
 
 All tokens are Dart (`ThemeExtension`). Names are semantic (`surfaceDefault`, `textSecondary`), not raw values (`grey200`).
 
+Implemented in `lib/core/design_system/` (`te_theme.dart`, `tokens/`). Light theme only. Status: **PROPOSED, awaiting designer approval.** Live style guide: the app home screen (`design_preview_screen.dart`).
+
 | Group | Contents | Status |
 |---|---|---|
-| Color | Brand, surface, text, border, status (success/warning/error/info), message bubble (sent/received), presence | **[TO DEFINE]** |
-| Light / dark | Both themes from the start? | **[TO DEFINE]** |
-| Typography | Font family, scale (display, title, body, label, caption), weights | **[TO DEFINE]** |
-| Spacing | Scale (4-pt base proposed) | **[TO DEFINE]** |
-| Radius | Small / medium / large / full | **[TO DEFINE]** |
-| Elevation | Levels for cards, sheets, dialogs | **[TO DEFINE]** |
-| Motion | Durations, curves, when to animate | **[TO DEFINE]** |
-| Iconography | Icon set and sizes | **[TO DEFINE]** |
+| Color | Brand `#3E88C8`, action `#1F62A3` (AA on white), accent `#2BACE2` / `#51C2E6`, text `#0D142E`, highlight `#F6F3DD`; surface/border tints derived from the palette; status colors (success, warning, error) proposed outside the palette | Proposed |
+| Light / dark | Light only (decided) | Decided |
+| Typography | Poppins (bundled). Display 40/32/28, headline 26/22/20, title 18/16/14, body 16/14/12, label 14/12/11 | Proposed |
+| Spacing | 4-pt scale: 2, 4, 8, 12, 16, 20, 24, 32, 48. Screen gutter 16 | Proposed |
+| Radius | 8 / 12 / 20 / full | Proposed |
+| Elevation | none / low / mid / high, soft navy shadows | Proposed |
+| Motion | 120 / 200 / 320 ms, ease-out cubic, zero when reduce-motion is on | Proposed |
+| Iconography | Material icons for now | **[TO DEFINE]** |
+
+Brand notes: the T logo is brighter (cyan to azure gradient) than the palette blues. Buttons and links use the darker `action` blue so white text passes contrast; `brand` is for large shapes only.
 
 ## 4. Components to build (checklist)
 
@@ -71,7 +75,7 @@ Flows are specified per area in `docs/PRD.md` (IDs). Record design decisions per
 - Text contrast meets WCAG AA. Support dynamic type and bold text.
 - Every interactive element has a semantic label.
 - Respect reduce-motion.
-- **Localization / RTL:** **[TO DEFINE]**. If Arabic is a target, build with directional widgets (`start`/`end`, `EdgeInsetsDirectional`) from day one.
+- **Localization / RTL:** English only for now (Arabic not a target yet). Still prefer directional widgets (`start`/`end`, `EdgeInsetsDirectional`) so RTL stays cheap later.
 
 ## 8. Avoid the generic AI look
 

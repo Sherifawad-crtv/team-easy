@@ -11,7 +11,7 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 |---|---|---|
 | Engineer sign-off: `ARCHITECTURE.md` + state management / routing / backend decisions | TODO | See `docs/decisions/README.md` |
 | Repo, lint, CI (analyze, format, test) | UI | Project scaffolded, `very_good_analysis` clean, tests pass. CI workflow not yet added. |
-| Design system: tokens, theme, base components | TODO | `docs/DESIGN.md` |
+| Design system: tokens, theme, base components | UI | Tokens + light Material 3 theme + logo + message bubble built, awaiting designer approval. `docs/DESIGN.md` section 3 |
 | Mock infrastructure: `USE_MOCKS` flag, scenario switch, fake data | UI | Flag and runtime scenario switch done; fake data comes with first feature. |
 | Pipeline: web preview (Vercel) | TODO | `docs/PIPELINE.md` Phase 1 |
 | Pipeline: Android (Firebase App Distribution) | TODO | Phase 2 |
