@@ -13,9 +13,9 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 | Repo, lint, CI (analyze, format, test) | UI | Project scaffolded, `very_good_analysis` clean, tests pass. CI workflow not yet added. |
 | Design system: tokens, theme, base components | UI | Tokens + light Material 3 theme + logo + message bubble built, awaiting designer approval. `docs/DESIGN.md` section 3 |
 | Mock infrastructure: `USE_MOCKS` flag, scenario switch, fake data | UI | Flag and runtime scenario switch done; fake data comes with first feature. |
-| Pipeline: web preview (Vercel) | TODO | `docs/PIPELINE.md` Phase 1 |
-| Pipeline: Android (Firebase App Distribution) | TODO | Phase 2 |
-| Pipeline: iOS (Codemagic → TestFlight) | TODO | Phase 3 |
+| Pipeline: web preview (Vercel) | TODO | `docs/PIPELINE.md` Phase 1. Codemagic `web-preview` produces a zip only, no hosted link yet. |
+| Pipeline: Android (Firebase App Distribution) | UI | Codemagic `android-apk` workflow produces an installable APK (debug-signed). Firebase distribution not set up. |
+| Pipeline: iOS (Codemagic → TestFlight) | UI | `codemagic.yaml` added with `ios-simulator` (works now, no Apple account) and `ios-testflight` (manual, needs Apple Developer account, App Store Connect app and API key). First Codemagic build ran green on 2026-10-17 (web, Android, iOS unsigned). |
 | Pipeline: Shorebird (optional) | TODO | Phase 4 |
 
 ## Requirements
