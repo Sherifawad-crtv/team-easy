@@ -10,29 +10,35 @@ Sections marked **[TO DEFINE]** are the designer's decisions; Claude Code must n
 
 ## 2. Where design lives in code
 
-- Tokens, theme and shared widgets: `lib/core/design_system/`.
-- Screens and feature widgets: `lib/features/<feature>/presentation/`.
-- Screens use design-system components and tokens only. No raw colors, sizes, radii or text styles.
-- A new component goes into the design system first, then into screens.
+- Tokens: `src/styles/tokens.css` (CSS variables, light theme only). Components: `src/design/`. Layout and component styles: `src/styles/`.
+- Screens and feature widgets: `src/features/<area>/`.
+- Screens use tokens and design components only. No raw colors, sizes, radii or text styles.
+- A new component goes into `src/design` first, then into screens.
 
 ## 3. Tokens
 
-All tokens are Dart (`ThemeExtension`). Names are semantic (`surfaceDefault`, `textSecondary`), not raw values (`grey200`).
-
-Implemented in `lib/core/design_system/` (`te_theme.dart`, `tokens/`). Light theme only. Status: **PROPOSED, awaiting designer approval.** Live style guide: the app home screen (`design_preview_screen.dart`).
+Names are semantic (`--action`, `--text-2`, `--bubble-sent`), not raw values. Status: **approved by the designer** (palette, logo, Poppins, light only). Derived tints and status colors are proposals.
 
 | Group | Contents | Status |
 |---|---|---|
-| Color | Brand `#3E88C8`, action `#1F62A3` (AA on white), accent `#2BACE2` / `#51C2E6`, text `#0D142E`, highlight `#F6F3DD`; surface/border tints derived from the palette; status colors (success, warning, error) proposed outside the palette | Proposed |
-| Light / dark | Light only (decided) | Decided |
-| Typography | Poppins (bundled). Display 40/32/28, headline 26/22/20, title 18/16/14, body 16/14/12, label 14/12/11 | Proposed |
-| Spacing | 4-pt scale: 2, 4, 8, 12, 16, 20, 24, 32, 48. Screen gutter 16 | Proposed |
-| Radius | 8 / 12 / 20 / full | Proposed |
-| Elevation | none / low / mid / high, soft navy shadows | Proposed |
-| Motion | 120 / 200 / 320 ms, ease-out cubic, zero when reduce-motion is on | Proposed |
-| Iconography | Material icons for now | **[TO DEFINE]** |
+| Color | Brand `#3E88C8`, action `#1F62A3` (AA on white), accent `#2BACE2` / `#51C2E6`, text `#0D142E`, highlight `#F6F3DD`; surface and border tints derived from the palette; status colors (success, warning, error) proposed outside the palette | Approved |
+| Light / dark | Light only | Decided |
+| Typography | Poppins (bundled, `public/fonts`). Display 32, headline 26, title 18/16, body 16/14, caption 12 | Approved |
+| Spacing | 4-pt scale: 2, 4, 8, 12, 16, 20, 24, 32, 48. Screen gutter 16 | Approved |
+| Radius | 8 / 12 / 20 / full | Approved |
+| Elevation | low / mid / high, soft navy shadows | Approved |
+| Motion | 120 / 200 / 320 ms, ease-out; zero when reduce-motion is on | Approved |
+| Iconography | Inline SVG set in `src/design/icons.tsx` (24px, 2px stroke) | Proposed |
 
-Brand notes: the T logo is brighter (cyan to azure gradient) than the palette blues. Buttons and links use the darker `action` blue so white text passes contrast; `brand` is for large shapes only.
+Brand notes: the T logo is brighter (cyan to azure) than the palette blues. Buttons and links use the deeper `action` blue so white text passes contrast; `brand` is for large shapes only.
+
+## 3b. Native-feel standard
+
+- iOS HIG for structure (spacing, margins, hierarchy), dressed in our colors and type.
+- Phones: floating glass pill nav with a sibling round action button (not docked inside the pill). Only screens that exist are listed.
+- Bottom sheets for actions. 48px touch targets (iOS 44pt minimum). Condensing large header. Back chevron on pushed screens.
+- Fluid layout checked at 360 to 440px, no fixed max-width caps on phones. Real layout swap at 1024px: sidebar plus list and conversation side by side.
+- Home screen icon: opaque 180x180 PNG at `/apple-touch-icon.png`. After changing it, clear Safari website data before re-adding.
 
 ## 4. Components to build (checklist)
 
@@ -65,7 +71,7 @@ Flows are specified per area in `docs/PRD.md` (IDs). Record design decisions per
 | Group tree and navigation (GRP-01, 02) | **[TO DEFINE]** | |
 | Delete with undo (GRP-10) | **[TO DEFINE]** | |
 | Leave group options (ROL-05, 06) | **[TO DEFINE]** | |
-| Chat list and conversation | **[TO DEFINE]** | |
+| Chat list and conversation (CHT-01..05) | Two A/B experiments (see `docs/AB_TESTING.md`). **Chat list** A: plain list, newest first, two-line preview. B: filter chips (All, Unread, Groups, Direct) and a pinned announcements card, one-line preview. **Conversation** A: a time under every message. B: consecutive messages grouped, time on tap. Both: day separators, sent and received bubbles, sending and failed states with retry, delete own message in private chats only (long-press or right-click), new chat by searching members. **Assumed:** the announcements chat allows posting; search covers chat names and last message only (SRC-02 message search not built). | Built on mocks, testing |
 | Permission prompts (NFR-04) | **[TO DEFINE]** | |
 | Ads placement (MON-02) | **[TO DEFINE]** | |
 

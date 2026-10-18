@@ -6,8 +6,9 @@ One short record per big technical choice. Engineers own this folder. Write the 
 
 | # | Decision | Proposed default | Status |
 |---|---|---|---|
-| 1 | State management | Riverpod | OPEN |
-| 2 | Routing | go_router (deep links, join links, push taps) | OPEN |
+| 0 | Test harness and client framework | Web PWA for design testing (see `0001-pwa-test-harness.md`). Production client open | PROPOSED |
+| 1 | State management | Riverpod (Flutter proposal, now client-dependent) | OPEN |
+| 2 | Routing | go_router (Flutter proposal) (deep links, join links, push taps) | OPEN |
 | 3 | Backend and realtime transport for chat and presence | None proposed | OPEN |
 | 4 | Admin web app stack | Separate web stack proposed, Flutter web also possible. Affects preview pipeline and code sharing | OPEN |
 | 5 | Push and call handling (APNs/FCM, native call UI, background behavior) | None proposed | OPEN |

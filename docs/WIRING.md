@@ -1,5 +1,7 @@
 # WIRING: placeholders and how to replace them
 
+> **PWA harness:** the contract is `src/data/api.ts`, the placeholder is `src/data/mock/`, and the one-file switch is `src/data/index.ts`. Where this file says `domain/`, `data/mock`, `data/remote` and `core/di`, read those. The Flutter version of these rules is on the `flutter-archive` branch.
+
 The designer builds every screen against **placeholders** (mocks) so the full UI can be previewed without a backend. Engineers replace each placeholder with the real implementation. The UI should not change when they do.
 
 **For engineers and their AI:** find open points with `tool/list_wires.sh`, or in the registry below. In Claude Code run `/wire <wire-id>`.
@@ -56,7 +58,7 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `auth.delete-account` | ACC-08 | `AuthRepository.deleteAccount` | Delete account and associated data per policy | Full deletion | MOCKED |
 | `auth.org-invite` | ACC-03..05 | `AuthRepository.resolveInvite` | Resolve an admin-issued invite link or code to its organization; reject invalid or expired | Invite validity, expiry, single organization attach | MOCKED |
 | `auth.password-reset` | ACC-01 (assumed) | `AuthRepository.requestPasswordReset` | Send a reset email; same response whether or not the address exists | Rate limiting, no account enumeration | MOCKED |
-| `device.photo-picker` | ACC-01, PRF-01 | `PhotoPickerService` | Open the OS photo picker with permission handling, return a local path or null on cancel | n/a (client only) | MOCKED |
+| `device.photo-picker` | ACC-01, PRF-01 | not in the PWA yet | Real photo choice and upload. The PWA only toggles a placeholder photo | n/a (client only) | PLANNED |
 | `profile.edit` | PRF-01 | `ProfileRepository` | Read/update name, email, photo, details; photo upload | Validation, ownership | PLANNED |
 | `groups.crud` | GRP-01, 02, 05, 08..11 | `GroupRepository` | Create/read/update groups, subgroups, teams; hierarchy 5/5/5; delete with undo window; archive | Hierarchy depth, member caps, admin-only team deletion | PLANNED |
 | `groups.flights` | GRP-03, 04 | `FlightRepository` | Disposable group type with the relevant parties and progress of specified tasks; auto-hide after a custom-set duration (see PRD open questions) | Auto-hide timing, visibility | PLANNED |
@@ -64,10 +66,11 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `roles.permissions` | ROL-03, 05, 06 | `RoleRepository` | Block member, leave group (keep-in-list vs delete for the departing member only) | All permission checks | PLANNED |
 | `roles.title-tags` | ROL-04 | `TitleTagRepository` | Assign and display user title tags (rules need confirming, see PRD open questions) | Who may assign | PLANNED |
 | `members.invite` | ACC-05, ROL-01, ROL-02 | `MemberRepository` | Admin adds or links members; members invite non-members; org invites from admin panel | Who may invite | PLANNED |
-| `chat.messages` | CHT-01..04 | `ChatRepository` | Realtime message streams for 1-to-1, group, general, sub-group; history paging | Membership, read access | PLANNED |
-| `chat.send-message` | CHT-01..04 | `ChatRepository.sendMessage` | Send, return server-confirmed message, handle failure and retry | Sender permission | PLANNED |
-| `chat.delete-message` | CHT-05 | `ChatRepository.deleteMessage` | Sender deletes own message in private chats only | Private-chat-only rule | PLANNED |
-| `search.query` | SRC-01..04 | `SearchRepository` | Search members, chat text, document names; filters by date, group, type | Result scoping to user access | PLANNED |
+| `chat.messages` | CHT-01..04, NFR-01 | `ChatApi.listConversations/listMessages/subscribe` | Realtime message streams for 1-to-1, group, general, sub-group; history paging | Membership, read access | MOCKED |
+| `chat.send-message` | CHT-01..04 | `ChatApi.sendMessage` | Send, return server-confirmed message, reject on failure so the UI can retry | Sender permission | MOCKED |
+| `chat.delete-message` | CHT-05 | `ChatApi.deleteMessage` | Sender deletes own message in private chats only | Private-chat-only rule | MOCKED |
+| `search.members` | SRC-01 | `ChatApi.searchMembers` | Search members by name, scoped to what the user can see | Result scoping to user access | MOCKED |
+| `search.query` | SRC-02..04 | `SearchRepository` | Search members, chat text, document names; filters by date, group, type | Result scoping to user access | PLANNED |
 | `media.upload` | MED-01..03 | `MediaRepository.upload` | Upload images to individuals, groups, sub-groups | Size/type limits, access | PLANNED |
 | `media.library` | MED-04 | `MediaRepository.library` | Per-team media listing | Access | PLANNED |
 | `media.download-policy` | MED-05, DAT-03 | `MediaDownloadPolicy` | Auto / Wi-Fi only / manual download; local cache of opened media | n/a (client) | PLANNED |

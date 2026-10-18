@@ -1,5 +1,7 @@
 # ARCHITECTURE
 
+> **Context:** the Flutter structure below was a proposal and now lives on the `flutter-archive` branch. The repo currently holds a React + TypeScript PWA used to test the design with real flows on mocks. It is not the production architecture. Engineers decide that; the typed contract in `src/data/api.ts` and the requirements in `docs/PRD.md` are the inputs.
+
 > **Status: PROPOSED DEFAULTS. NEEDS ENGINEER SIGN-OFF before the first screen is built.**
 > Engineers own this file. Items marked **[DECIDE]** are open decisions tracked in `docs/decisions/`.
 

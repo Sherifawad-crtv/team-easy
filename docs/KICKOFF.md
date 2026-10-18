@@ -1,3 +1,5 @@
+> **Archived.** This build order was for the Flutter attempt (branch `flutter-archive`). The current build spec is `docs/PWA_SPEC.md`.
+
 # KICKOFF: first session and how screens get built
 
 Read `CLAUDE.md` first. This file is the build order: bootstrap the project, set up a minimal design system with the designer, then build screens **in whatever PRD area the designer chooses, in any order**. Onboarding and signup are the likely first area, but nothing here limits the work to it.

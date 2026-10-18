@@ -1,47 +1,47 @@
 # TeamEasy
 
-Team messaging app: native mobile app for users (Flutter) and a web admin app for organizations. Chats, groups and sub-groups, media, audio/video calls (Zeego Cloud), calendar, notifications.
+Team messaging: a mobile-first web app (PWA) for users and a web admin app for organizations. Chats, groups and sub-groups, media, audio and video calls, calendar, notifications.
+
+This repo is the **design-in-code test harness**. It runs the real flows on a typed mock data layer so the design can be tested with real people and A/B variants while the engineers build the production architecture. The earlier Flutter attempt is kept on the `flutter-archive` branch.
 
 - Product spec: [`docs/PRD.md`](docs/PRD.md)
 - Build status: [`docs/PROGRESS.md`](docs/PROGRESS.md)
+- Build spec for Claude Code: [`docs/PWA_SPEC.md`](docs/PWA_SPEC.md)
+- A/B tests: [`docs/AB_TESTING.md`](docs/AB_TESTING.md)
 
 ## Run it
 
 ```bash
-flutter pub get
-flutter run --dart-define=USE_MOCKS=true      # full UI on fake data, no backend needed
+npm install
+npm run dev          # http://localhost:5173, full UI on fake data, no backend
 ```
 
-`USE_MOCKS=true` is how the designer builds and previews everything. Real backends are connected by replacing placeholders (see Wiring).
-
-Quality gate (also enforced by CI):
+Quality gate:
 
 ```bash
-flutter analyze && dart format . && flutter test
+npm run lint && npm run typecheck && npm test && npm run build
 ```
 
-Environment variables: copy `.env.example`, never commit real values. Use `--dart-define` for build-time values.
+Every push is built by Vercel and gets a preview link. Review tools (bug icon, top right): switch the data between `normal`, `empty`, `error`, `slow` and `offline`, and force an A/B variant. A link such as `/chats?v_chat_list=B` forces a variant too.
 
 ## How the code is organized
 
-Feature-first clean architecture. Details in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
-
 ```
-lib/features/<feature>/{presentation, domain, data/{mock, remote, local}}
-lib/core/{config, design_system, di, error, utils}
+src/design/        tokens-based components (Button, TextField, Banner, Avatar, BottomSheet...)
+src/styles/        tokens.css (colors, type, spacing...), base.css, components.css, app.css
+src/data/          api.ts = the contract, mock/ = the placeholder, index.ts = the one-file switch
+src/features/      auth, chat, account, results, shell (screens for each area)
+src/experiments/   A/B assignment, event tracking, summary
+src/state/         session, one shared data-fetching hook, submit hook
 ```
 
-Dependency direction: `presentation → domain ← data`.
-
-## Wiring placeholders to real services
-
-Every backend/SDK/OS dependency is built as an interface plus a mock. Engineers replace the mock with the real implementation, with no UI changes.
+Screens only talk to `src/data/api.ts`. Going live means returning a real implementation from `src/data/index.ts`. See [`docs/WIRING.md`](docs/WIRING.md).
 
 ```bash
-tool/list_wires.sh          # list open placeholders
+tool/list_wires.sh   # list open placeholders
 ```
 
-In Claude Code: `/wire <wire-id>`. Full guide: [`docs/WIRING.md`](docs/WIRING.md).
+In Claude Code: `/wire <wire-id>`.
 
 ## Docs index
 
@@ -50,14 +50,11 @@ In Claude Code: `/wire <wire-id>`. Full guide: [`docs/WIRING.md`](docs/WIRING.md
 | `CLAUDE.md` / `AGENTS.md` | Rules for AI agents working in this repo |
 | `docs/PRD.md` | Requirements with IDs, change log, open questions |
 | `docs/PROGRESS.md` | Status per requirement ID |
-| `docs/ARCHITECTURE.md` | Layers, folders, rules, open technical decisions |
-| `docs/WIRING.md` | Placeholder system and registry |
+| `docs/PWA_SPEC.md` | Kickoff and rules, persona and function spec, UI spec, mock-data contract |
 | `docs/DESIGN.md` | Design system, components, states, UX decisions |
+| `docs/AB_TESTING.md` | Experiments, events, results, database setup |
+| `docs/WIRING.md` | Placeholder system and registry |
+| `docs/ARCHITECTURE.md` | Production architecture notes (engineers) |
 | `docs/decisions/` | Architecture decision records |
-| `docs/PIPELINE.md` | CI/CD and test distribution (web, Android, iOS) |
-| `docs/KICKOFF.md` | Build order: bootstrap, design system, then screens in any PRD area |
+| `docs/PIPELINE.md` | Build and deploy |
 | `CONTRIBUTING.md` | Branches, commits, PRs, ownership |
-
-## Setup note
-
-After unzipping, run `chmod +x tool/list_wires.sh`.

@@ -1,0 +1,76 @@
+/* Design tokens. Light theme only. Names are semantic, never raw values. */
+@font-face { font-family: 'Poppins'; font-weight: 400; font-display: swap; src: url('/fonts/Poppins_400Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Poppins'; font-weight: 500; font-display: swap; src: url('/fonts/Poppins_500Medium.ttf') format('truetype'); }
+@font-face { font-family: 'Poppins'; font-weight: 600; font-display: swap; src: url('/fonts/Poppins_600SemiBold.ttf') format('truetype'); }
+@font-face { font-family: 'Poppins'; font-weight: 700; font-display: swap; src: url('/fonts/Poppins_700Bold.ttf') format('truetype'); }
+
+:root {
+  color-scheme: light;
+
+  /* Brand (palette) */
+  --brand: #3e88c8;
+  --action: #1f62a3; /* interactive; AA with white text */
+  --on-action: #ffffff;
+  --accent: #2bace2;
+  --accent-soft: #51c2e6;
+  --highlight: #f6f3dd;
+
+  /* Surfaces (tints derived from the palette) */
+  --bg: #f5f8fc;
+  --surface: #ffffff;
+  --surface-tint: #e8f1fa;
+  --surface-sunken: #eef3f9;
+
+  /* Text */
+  --text: #0d142e;
+  --text-2: #4b5675;
+  --text-disabled: #98a2b8;
+
+  /* Lines */
+  --border: #dce5f0;
+  --border-strong: #b4c4d8;
+
+  /* Status (proposed, outside the palette) */
+  --success: #1e8e5a;
+  --warning: #b7791f;
+  --error: #c0392b;
+  --info: #1f7fa8;
+
+  /* Messages */
+  --bubble-sent: var(--action);
+  --on-bubble-sent: #ffffff;
+  --bubble-received: var(--surface-tint);
+  --on-bubble-received: var(--text);
+  --presence-online: var(--success);
+  --presence-away: var(--warning);
+
+  /* Spacing, 4-pt scale */
+  --s-1: 2px; --s-2: 4px; --s-3: 8px; --s-4: 12px; --s-5: 16px;
+  --s-6: 20px; --s-7: 24px; --s-8: 32px; --s-9: 48px;
+  --gutter: 16px;
+
+  /* Radius */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 20px; --r-full: 999px;
+
+  /* Elevation, soft navy shadows */
+  --shadow-low: 0 2px 8px rgb(13 20 46 / 0.06);
+  --shadow-mid: 0 6px 20px rgb(13 20 46 / 0.1);
+  --shadow-high: 0 12px 32px rgb(13 20 46 / 0.14);
+
+  /* Motion */
+  --t-fast: 120ms; --t-base: 200ms; --t-slow: 320ms;
+  --ease: cubic-bezier(0.215, 0.61, 0.355, 1);
+
+  /* Type */
+  --font: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Touch target: 44pt iOS / 48dp Android */
+  --touch: 48px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-fast: 0ms; --t-base: 0ms; --t-slow: 0ms; }
+}
