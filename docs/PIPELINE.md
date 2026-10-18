@@ -1,6 +1,6 @@
 # PIPELINE: build and deploy
 
-> **Current setup (PWA):** Claude Code pushes to GitHub, Vercel builds and deploys. Every push to a branch gets a preview link; the production branch gets the main URL. Vercel is connected to this repo and runs `npm run build` (output `dist/`). No secrets are needed for the mock build. For A/B results add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel project settings (see `docs/AB_TESTING.md`).
+> **Current setup (PWA):** Claude Code pushes to GitHub, Vercel builds and deploys. Every push to a branch gets a preview link; the production branch gets the main URL. Vercel is connected to this repo and runs `npm run build` (output `dist/`). Vercel project settings: framework Vite, no custom build, install or output overrides (defaults). No secrets are needed for the mock build. For A/B results add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel project settings (see `docs/AB_TESTING.md`).
 >
 > Install to a phone: open the site in Safari or Chrome, then Share, Add to Home Screen. After changing the icon, clear Safari website data before re-adding.
 >
