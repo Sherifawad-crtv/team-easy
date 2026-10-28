@@ -1,6 +1,6 @@
 # A/B testing
 
-Two experiments run on the chat list and the conversation. Each visitor is assigned a variant once, at random (50/50), and keeps it. Assignment is stored in the browser.
+Three experiments run on the chat list, the conversation and group navigation. Each visitor is assigned a variant once, at random (50/50), and keeps it. Assignment is stored in the browser.
 
 ## Experiments
 
@@ -8,18 +8,19 @@ Two experiments run on the chat list and the conversation. Each visitor is assig
 |---|---|---|---|---|
 | `chat_list` | Chat list | Plain list, newest first | Filter chips (All, Unread, Groups, Direct) and a pinned announcements card | B gets people to their first chat faster when unread counts are high |
 | `conversation` | Conversation | Time and ticks inside every bubble | Consecutive messages with squarer joins, time shown on tap | B feels calmer and more messages are sent per visitor |
+| `group_nav` | Groups | Nested tree you open level by level | One flat list with the path under each name and a find field | B gets people to a group faster; A may feel more orderly for big organizations |
 
-Metrics per variant: visitors, chats opened per visitor, messages sent per visitor, average time from the list appearing to the first chat opened.
+Metrics per variant: visitors, chats opened per visitor, messages sent per visitor, average time from the list appearing to the first chat opened. For `group_nav` the metric is groups opened per visitor and time to the first group opened.
 
 ## Events
 
-`exposure` (first time a visitor sees an experiment in a session), `chat_opened` (with `ms_since_list` and `first`), `message_sent`, `message_failed`, `message_retried`, `message_deleted`, `new_chat_started`, `signup_started`, `signup_completed`, `sign_in_completed`. Every event carries the visitor's variants for all experiments.
+`exposure` (first time a visitor sees an experiment in a session), `chat_opened` (with `ms_since_list` and `first`), `group_opened` (with `level`, `ms_since_list` and `first`), `message_sent`, `message_failed`, `message_retried`, `message_deleted`, `new_chat_started`, `group_created`, `group_deleted`, `group_delete_undone`, `group_archived`, `group_left`, `group_joined`, `members_added`, `invite_link_copied`, `member_blocked`, `title_tag_set`, `signup_started`, `signup_completed`, `sign_in_completed`. Every event carries the visitor's variants for all experiments.
 
 No names, emails or message text are ever sent.
 
 ## Reviewing a variant without polluting results
 
-- Open a link with `?v_chat_list=B` or `?v_conversation=A`, or use the review tools (bug icon, top right).
+- Open a link with `?v_chat_list=B` `?v_conversation=A` or `?v_group_nav=B`, or use the review tools (bug icon, top right).
 - Sessions that force a variant are marked and left out of the results, in the app and in the database.
 
 ## Where results go

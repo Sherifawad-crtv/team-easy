@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { simulatePermission } from '../data/mock/mockApi'
+import { roleStore } from '../data/mock/role'
 import { SCENARIOS, scenarioStore } from '../data/mock/scenario'
 import { settings, useConnection } from '../state/settings'
 import { IconBug, IconClose } from '../design/icons'
 import { EXPERIMENTS, EXPERIMENT_IDS, useVariant, variants, type ExperimentId } from '../experiments/experiments'
+import { useReviewRole } from '../state/useReviewRole'
 import { useScenario } from '../state/useScenario'
 
 function Toggle({ id }: { id: ExperimentId }) {
@@ -26,6 +28,7 @@ export function DebugPanel() {
   const [open, setOpen] = useState(false)
   const scenario = useScenario()
   const connection = useConnection()
+  const role = useReviewRole()
   const [photoAccess, setPhotoAccess] = useState<string>(() => { try { return localStorage.getItem('te.perm.photos') ?? 'ask' } catch { return 'ask' } })
   return (
     <div className="debug">
@@ -47,6 +50,12 @@ export function DebugPanel() {
           <div className="seg" role="group" aria-label="Photo access">
             {([['ask', 'Ask first', null], ['denied', 'Denied', 'denied']] as const).map(([id, label, value]) => (
               <button key={id} type="button" aria-pressed={photoAccess === id || (id === 'ask' && photoAccess === 'granted')} onClick={() => { simulatePermission('photos', value); setPhotoAccess(id) }}>{label}</button>
+            ))}
+          </div>
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>View groups as</p>
+          <div className="seg" role="group" aria-label="View groups as">
+            {(['admin', 'member'] as const).map((r) => (
+              <button key={r} type="button" aria-pressed={role === r} onClick={() => roleStore.set(r)}>{r === 'admin' ? 'Admin' : 'Member'}</button>
             ))}
           </div>
           <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Force a variant</p>

@@ -4,7 +4,7 @@ import { summarize, type TrackedEvent } from './summary'
 let n = 0
 const ev = (visitor: string, event: string, variant: 'A' | 'B', props: Record<string, unknown> = {}, forced = false): TrackedEvent => ({
   id: String(n++), at: n, visitor_id: visitor, session_id: 's', event, forced, props,
-  variants: { chat_list: variant, conversation: 'A' },
+  variants: { chat_list: variant, conversation: 'A', group_nav: variant },
 })
 
 describe('summarize', () => {
@@ -33,5 +33,14 @@ describe('summarize', () => {
   it('reports no time when nobody opened a chat', () => {
     const rows = summarize([ev('v1', 'exposure', 'A')])
     expect(rows.find((r) => r.experiment === 'chat_list' && r.variant === 'A')!.avgMsToFirstOpen).toBeNull()
+  })
+
+  it('counts groups opened for the group navigation experiment, not chats', () => {
+    const rows = summarize([
+      ev('v1', 'group_opened', 'B', { first: true, ms_since_list: 1500 }),
+      ev('v1', 'chat_opened', 'B', { first: true, ms_since_list: 100 }),
+    ])
+    expect(rows.find((r) => r.experiment === 'group_nav' && r.variant === 'B')).toMatchObject({ opens: 1, avgMsToFirstOpen: 1500 })
+    expect(rows.find((r) => r.experiment === 'chat_list' && r.variant === 'B')).toMatchObject({ opens: 1, avgMsToFirstOpen: 100 })
   })
 })

@@ -63,6 +63,31 @@
 // Real: ask the OS for the permission after the app's own rationale; report granted or denied
 // Server must enforce: n/a (OS permission)
 //
+// WIRE: groups.crud
+// Req: GRP-01, 02, 05, 08..11 | Contract: GroupApi.list/get/create/archive/remove/undoDelete/openChat | Mock: mockApi.groups
+// Real: group, sub-group and sub-sub-group tree per organization with a chat each; admin-only create, archive and delete; delete is a soft delete with an undo window read from a database value; archived chats leave the chat list
+// Server must enforce: admin-only writes; 5/5/5 hierarchy (assumed per parent, open question 5); unique names per parent; 300 members across a main group and its sub-groups, paid expansion beyond; per-user group limit (open question 4); undo window and permanent removal after it; visibility by membership
+//
+// WIRE: groups.join-link
+// Req: GRP-06, GRP-07 | Contract: GroupApi.createLink/resolveLink/join | Mock: mockApi.groups
+// Real: shareable join link per team; resolve shows the group and who invited; join adds the member and the parents above. GRP-07 (app-store fallback) is platform work, not in the PWA: when the app is not installed the link opens the store page and the token survives install (universal links, deferred deep link)
+// Server must enforce: link validity and revocation, the caps above, whether the sender may invite (open question 7)
+//
+// WIRE: members.invite
+// Req: ROL-01, ROL-02 | Contract: GroupApi.addMembers/candidates/createLink | Mock: mockApi.groups
+// Real: admins add people directly or share a link; members share the link (assumed no approval, open question 7)
+// Server must enforce: who may invite whom, approval if required, the member cap
+//
+// WIRE: roles.permissions
+// Req: ROL-03, ROL-05, ROL-06 | Contract: GroupApi.setBlocked/leave, Group.myRole | Mock: mockApi.groups
+// Real: admin and member roles only (open question 3). Block: the person stays listed but cannot post or receive new messages (assumed meaning). Leave: keep the group read-only in the list, or leave and delete it for this member only
+// Server must enforce: admin-only block, blocked and departed members get no new messages and cannot send, deletion affects only the leaver
+//
+// WIRE: roles.title-tags
+// Req: ROL-04 | Contract: GroupApi.setTitleTag, Member.titleTag, Message.senderTitle | Mock: mockApi.groups
+// Real: an admin gives a person a short free-text tag shown in member lists and next to their name in group chats (assumed, open question 2)
+// Server must enforce: admin-only, length limit, no permissions attached to a tag
+//
 // Demo data: any email with a password of 8+ characters signs in, except the
 // password "wrongpass1". Emails starting "taken@" are already registered.
 // Invites: ORG-ACME valid, ORG-OLD expired, anything else invalid. A message
@@ -84,6 +109,7 @@ import type {
   SearchFilters,
   SearchResults,
 } from '../types'
+import { createGroups } from './groupsMock'
 import { scenarioStore } from './scenario'
 import { CONVERSATIONS, MEMBERS, ME, seedMessages, withFiles } from './seed'
 
@@ -146,9 +172,13 @@ const messagesFor = (id: string): Message[] => {
 
 const emit = (e: ChatEvent) => listeners.forEach((l) => l(e))
 
+const groupsMock = createGroups({ conversations, history, emit, gate })
+
 function receive(conv: Conversation, text: string, senderName: string, senderId: string) {
+  if (conv.left || groupsMock.muted(conv.id, senderId)) return
   const message: Message = {
     id: `live-${nextId++}`, conversationId: conv.id, senderId, senderName,
+    senderTitle: conv.kind === 'direct' ? undefined : groupsMock.titleFor(senderId),
     text, at: Date.now(), status: 'sent',
   }
   messagesFor(conv.id).push(message)
@@ -288,12 +318,12 @@ export const mockApi: Api = {
     async listConversations() {
       await gate()
       if (scenarioStore.get() === 'empty') return []
-      return conversations.map((c) => ({ ...c })).sort((a, b) => b.lastAt - a.lastAt)
+      return conversations.filter((c) => !groupsMock.hiddenConvs.has(c.id)).map((c) => ({ ...c })).sort((a, b) => b.lastAt - a.lastAt)
     },
     async listMessages(id) {
       await gate(350)
       if (scenarioStore.get() === 'empty') return []
-      return messagesFor(id).map((m) => ({ ...m }))
+      return messagesFor(id).map((m) => ({ ...m, senderTitle: m.senderId === ME.id || conversations.find((c) => c.id === id)?.kind === 'direct' ? undefined : groupsMock.titleFor(m.senderId) }))
     },
     async sendMessage(id, draft) {
       await gate(550)
@@ -301,6 +331,7 @@ export const mockApi: Api = {
       if (text.includes('#fail')) throw new ApiError('unknown')
       const conv = conversations.find((c) => c.id === id)
       if (!conv) throw new ApiError('unknown')
+      if (conv.left) throw new ApiError('not_allowed')
       const attachment = draft.file ? toAttachment(draft.file) : undefined
       const message: Message = {
         id: `live-${nextId++}`, conversationId: id, senderId: ME.id,
@@ -390,6 +421,8 @@ export const mockApi: Api = {
       return current
     },
   },
+
+  groups: groupsMock.api,
 
   permissions: {
     async status(kind: PermissionKind): Promise<PermissionStatus> {

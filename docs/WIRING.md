@@ -60,12 +60,12 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `auth.password-reset` | ACC-01 (assumed) | `AuthRepository.requestPasswordReset` | Send a reset email; same response whether or not the address exists | Rate limiting, no account enumeration | MOCKED |
 | `device.photo-picker` | ACC-01, PRF-01 | not in the PWA yet | Native photo/camera access. The PWA uses the browser file chooser behind the app's own permission prompt | n/a (client only) | PLANNED |
 | `profile.edit` | PRF-01 | `ProfileRepository` | Read/update name, email, photo, details; photo upload | Validation, ownership | MOCKED |
-| `groups.crud` | GRP-01, 02, 05, 08..11 | `GroupRepository` | Create/read/update groups, subgroups, teams; hierarchy 5/5/5; delete with undo window; archive | Hierarchy depth, member caps, admin-only team deletion | PLANNED |
+| `groups.crud` | GRP-01, 02, 05, 08..11 | `GroupRepository` | Create/read/update groups, subgroups, teams; hierarchy 5/5/5; delete with undo window; archive | Hierarchy depth, member caps, admin-only team deletion | MOCKED |
 | `groups.flights` | GRP-03, 04 | `FlightRepository` | Disposable group type with the relevant parties and progress of specified tasks; auto-hide after a custom-set duration (see PRD open questions) | Auto-hide timing, visibility | PLANNED |
-| `groups.join-link` | GRP-06, 07 | `InviteLinkService` | Create/resolve join links; deep link opens app or store fallback | Link validity and expiry | PLANNED |
-| `roles.permissions` | ROL-03, 05, 06 | `RoleRepository` | Block member, leave group (keep-in-list vs delete for the departing member only) | All permission checks | PLANNED |
-| `roles.title-tags` | ROL-04 | `TitleTagRepository` | Assign and display user title tags (rules need confirming, see PRD open questions) | Who may assign | PLANNED |
-| `members.invite` | ACC-05, ROL-01, ROL-02 | `MemberRepository` | Admin adds or links members; members invite non-members; org invites from admin panel | Who may invite | PLANNED |
+| `groups.join-link` | GRP-06, 07 | `InviteLinkService` | Create/resolve join links; deep link opens app or store fallback | Link validity and expiry | MOCKED |
+| `roles.permissions` | ROL-03, 05, 06 | `RoleRepository` | Block member, leave group (keep-in-list vs delete for the departing member only) | All permission checks | MOCKED |
+| `roles.title-tags` | ROL-04 | `TitleTagRepository` | Assign and display user title tags (rules need confirming, see PRD open questions) | Who may assign | MOCKED |
+| `members.invite` | ACC-05, ROL-01, ROL-02 | `MemberRepository` | Admin adds or links members; members invite non-members; org invites from admin panel | Who may invite | MOCKED |
 | `chat.messages` | CHT-01..04, NFR-01 | `ChatApi.listConversations/listMessages/subscribe` | Realtime message streams for 1-to-1, group, general, sub-group; history paging | Membership, read access | MOCKED |
 | `chat.send-message` | CHT-01..04 | `ChatApi.sendMessage` | Send, return server-confirmed message, reject on failure so the UI can retry | Sender permission | MOCKED |
 | `chat.delete-message` | CHT-05 | `ChatApi.deleteMessage` | Sender deletes own message in private chats only | Private-chat-only rule | MOCKED |

@@ -1,6 +1,6 @@
 import { NavLink, Outlet, matchPath, useLocation } from 'react-router-dom'
 import { Avatar, Logo } from '../../design/ui'
-import { IconChart, IconChat, IconUser } from '../../design/icons'
+import { IconChart, IconChat, IconPeople, IconUser } from '../../design/icons'
 import { useSession } from '../../state/session'
 
 // Phones: floating glass pill with the tabs. Desktop (1024+): navigation rail.
@@ -8,6 +8,7 @@ import { useSession } from '../../state/session'
 
 const NAV = [
   { to: '/chats', label: 'Chats', icon: IconChat },
+  { to: '/groups', label: 'Groups', icon: IconPeople },
   { to: '/account', label: 'Account', icon: IconUser },
 ]
 const RAIL = [...NAV, { to: '/results', label: 'A/B', icon: IconChart }]
@@ -15,7 +16,7 @@ const RAIL = [...NAV, { to: '/results', label: 'A/B', icon: IconChart }]
 export function AppShell() {
   const { pathname } = useLocation()
   const { account } = useSession()
-  const inConversation = Boolean(matchPath('/chats/:id', pathname))
+  const inConversation = Boolean(matchPath('/chats/:id', pathname) || matchPath('/groups/:id', pathname))
 
   return (
     <div className={`shell${inConversation ? ' shell--convo' : ''}`}>

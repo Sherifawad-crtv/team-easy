@@ -2,6 +2,13 @@ import type {
   Account,
   ChatEvent,
   Conversation,
+  DeletedGroup,
+  Group,
+  GroupLinkInfo,
+  GroupMember,
+  GroupTree,
+  LeaveMode,
+  NewGroup,
   IdentityKind,
   Member,
   Message,
@@ -56,9 +63,40 @@ export interface PermissionsApi {
   reset(kind: PermissionKind): Promise<void>
 }
 
+export interface GroupApi {
+  /** Every group the user can see, flat. The client builds the tree. */
+  list(): Promise<GroupTree>
+  get(id: string): Promise<Group>
+  /** GRP-01, 02, 08: admin only. Rejects past the 5/5/5 hierarchy or the per-user limit. */
+  create(data: NewGroup): Promise<Group>
+  /** GRP-11 */
+  archive(id: string, archived: boolean): Promise<Group>
+  /** GRP-09, 10: admin only. The group can be brought back with `undoDelete` for a short window. */
+  remove(id: string): Promise<DeletedGroup>
+  undoDelete(undoToken: string): Promise<Group>
+  /** Opens (creating if needed) the group's chat. */
+  openChat(id: string): Promise<Conversation>
+  members(id: string): Promise<GroupMember[]>
+  /** ROL-01: admin adds people directly. Rejects past the member cap. */
+  addMembers(id: string, memberIds: string[]): Promise<void>
+  /** Members not in the group yet, for the add sheet. */
+  candidates(id: string, query: string): Promise<Member[]>
+  /** ROL-03: admin only. */
+  setBlocked(id: string, memberId: string, blocked: boolean): Promise<void>
+  /** ROL-04: admin only. An empty tag clears it. */
+  setTitleTag(memberId: string, tag: string): Promise<void>
+  /** ROL-05, 06 */
+  leave(id: string, mode: LeaveMode): Promise<void>
+  /** GRP-06, ROL-01, ROL-02: admins and members can both create a link. */
+  createLink(id: string): Promise<{ url: string; token: string }>
+  resolveLink(token: string): Promise<GroupLinkInfo>
+  join(token: string): Promise<Group>
+}
+
 export interface Api {
   auth: AuthApi
   chat: ChatApi
   profile: ProfileApi
+  groups: GroupApi
   permissions: PermissionsApi
 }

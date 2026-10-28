@@ -29,23 +29,23 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 | ACC-06 | Org invite does not block individual use | UI | `auth.session` | | |
 | ACC-07 | Account switching (org vs individual identity) | UI | `auth.account-switch` | | |
 | ACC-08 | Account deletion | UI | `auth.delete-account` | | |
-| GRP-01 | Groups and subgroups | TODO | `groups.crud` | | |
-| GRP-02 | Hierarchy limit 5/5/5 | TODO | `groups.crud` | | PRD open question 5 |
+| GRP-01 | Groups and subgroups | UI | `groups.crud` | | |
+| GRP-02 | Hierarchy limit 5/5/5 | UI | `groups.crud` | | PRD open question 5 |
 | GRP-03 | Flights (disposable group type) | TODO | `groups.flights` | | PRD open questions 1, 12 |
 | GRP-04 | Flight auto-hide | TODO | `groups.flights` | | PRD open question 1 |
-| GRP-05 | Member and per-user group limits | TODO | `groups.crud`, `config.limits` | | PRD open question 4 |
-| GRP-06 | Join-by-link (teams) | TODO | `groups.join-link` | | |
-| GRP-07 | App-store fallback | TODO | `groups.join-link` | | |
-| GRP-08 | Teams created manually | TODO | `groups.crud` | | |
-| GRP-09 | Only admin can delete a team | TODO | `groups.crud` | | |
-| GRP-10 | Delete group with instant undo (configurable window) | TODO | `groups.crud`, `config.limits` | | |
-| GRP-11 | Archive groups or chats | TODO | `groups.crud` | | |
-| ROL-01 | Admin adds members or sends join link | TODO | `members.invite` | | PRD open question 7 |
-| ROL-02 | Members can invite non-members | TODO | `members.invite` | | PRD open question 7 |
-| ROL-03 | Members can be blocked | TODO | `roles.permissions` | | |
-| ROL-04 | User title tags | TODO | `roles.title-tags` | | PRD open question 2 |
-| ROL-05 | Leave group, option 1 (keep, stop messages) | TODO | `roles.permissions` | | |
-| ROL-06 | Leave group, option 2 (leave and delete for self) | TODO | `roles.permissions` | | |
+| GRP-05 | Member and per-user group limits | UI | `groups.crud`, `config.limits` | | PRD open question 4 |
+| GRP-06 | Join-by-link (teams) | UI | `groups.join-link` | | |
+| GRP-07 | App-store fallback | TODO | `groups.join-link` | | Native app work only; the PWA cannot show it. Marked in WIRING |
+| GRP-08 | Teams created manually | UI | `groups.crud` | | |
+| GRP-09 | Only admin can delete a team | UI | `groups.crud` | | |
+| GRP-10 | Delete group with instant undo (configurable window) | UI | `groups.crud`, `config.limits` | | |
+| GRP-11 | Archive groups or chats | UI | `groups.crud` | | Groups only; archiving a single chat not built |
+| ROL-01 | Admin adds members or sends join link | UI | `members.invite` | | PRD open question 7 |
+| ROL-02 | Members can invite non-members | UI | `members.invite` | | PRD open question 7 |
+| ROL-03 | Members can be blocked | UI | `roles.permissions` | | |
+| ROL-04 | User title tags | UI | `roles.title-tags` | | PRD open question 2 |
+| ROL-05 | Leave group, option 1 (keep, stop messages) | UI | `roles.permissions` | | |
+| ROL-06 | Leave group, option 2 (leave and delete for self) | UI | `roles.permissions` | | |
 | CHT-01 | 1-to-1 chat | UI | `chat.messages`, `chat.send-message` | | |
 | CHT-02 | Group chat | UI | `chat.messages`, `chat.send-message` | | |
 | CHT-03 | General chat (public announcements) | UI | `chat.messages`, `chat.send-message` | | |
@@ -110,3 +110,4 @@ _None yet._
 
 See `docs/decisions/README.md` and the PRD "Open questions".
 - 2026-10-28: Phase 1 built on mocks. Send images and documents (MED-01..03) with caption, sending/failed states and a full-screen image viewer. Download setting and cache (MED-05, DAT-03): Always / Wi-Fi only / Never, tap-to-download on mobile data. Search (SRC-02..04): message text and document names with date, chat and type filters, jump to the message. Profile edit with photo (PRF-01). Photo permission prompt with rationale and denied state (NFR-04). Not built: read receipts and typing indicators (scope unconfirmed), retention notices (DAT-02, Phase 3), media library (MED-04, Phase 2). Next: Phase 2, groups and roles.
+- 2026-10-28: Phase 2 built on mocks. Groups tab with the 5/5/5 tree (A/B `group_nav`: tree vs flat list), group page with chat, invite link, sub-groups, members, member limit counter (admin), per-user group limit, create, archive, delete with undo, leave (keep or delete for me), add people, block, title tags, join-by-link screen. Review tools can view as Admin or Member. Not built: Flights (GRP-03, 04) wait for product answers; GRP-07 store fallback is native; archiving a single chat (GRP-11) is groups only. Next: Phase 3 or review.

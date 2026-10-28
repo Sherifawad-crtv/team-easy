@@ -52,6 +52,10 @@ export interface Conversation {
   lastAt: number
   unread: number
   presence?: Presence
+  /** ROL-05: the user left but kept the group in the list. Read only. */
+  left?: boolean
+  /** The group this chat belongs to, for group chats. */
+  groupId?: string
 }
 
 export type MessageStatus = 'sent' | 'sending' | 'failed'
@@ -77,6 +81,8 @@ export interface Message {
   /** Text, or the caption when there is an attachment. May be empty. */
   text: string
   attachment?: Attachment
+  /** Title tag of the sender, in group chats. */
+  senderTitle?: string
   at: number
   status: MessageStatus
 }
@@ -85,6 +91,8 @@ export interface Member {
   id: string
   name: string
   jobTitle?: string
+  /** ROL-04: a short tag an admin gives the person, shown next to their name. */
+  titleTag?: string
   presence: Presence
 }
 
@@ -128,4 +136,68 @@ export interface ProfilePatch {
   jobTitle?: string
   /** `null` removes the photo. */
   photoUrl?: string | null
+}
+
+// ---- Groups (GRP-*, ROL-*) ----
+
+export type Role = 'admin' | 'member'
+/** 1 = group, 2 = sub-group, 3 = sub-sub-group. */
+export type GroupLevel = 1 | 2 | 3
+
+export interface Group {
+  id: string
+  name: string
+  parentId: string | null
+  level: GroupLevel
+  memberCount: number
+  /** Members of the main group above this one, counting all its sub-groups (PRD §16).
+   *  This is what the 300 cap applies to. Equals `memberCount` for a main group. */
+  rootMemberCount: number
+  myRole: Role
+  archived: boolean
+  /** ROL-05: the user left but kept the group in the list. */
+  left: boolean
+  unread: number
+}
+
+export interface GroupMember {
+  id: string
+  name: string
+  jobTitle?: string
+  titleTag?: string
+  role: Role
+  /** ROL-03: a blocked member stays listed but cannot post or receive new messages. */
+  blocked: boolean
+  presence: Presence
+  isMe: boolean
+}
+
+export interface GroupTree {
+  groups: Group[]
+  /** How many groups the signed-in user belongs to, against the per-user limit. */
+  myGroupCount: number
+}
+
+export interface NewGroup {
+  name: string
+  parentId: string | null
+}
+
+export interface DeletedGroup {
+  /** Pass to `undoDelete` within the undo window. */
+  undoToken: string
+  name: string
+}
+
+export type LeaveMode = 'keep' | 'delete'
+
+export interface GroupLinkInfo {
+  token: string
+  groupId: string
+  groupName: string
+  /** Path of parent groups, outermost first. */
+  path: string[]
+  memberCount: number
+  invitedBy: string
+  alreadyMember: boolean
 }

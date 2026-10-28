@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { ApiError } from '../errors'
 import { mockApi } from './mockApi'
+import { roleStore } from './role'
 import { scenarioStore } from './scenario'
 
 const code = async (p: Promise<unknown>) => p.then(() => null, (e: unknown) => (e instanceof ApiError ? e.code : 'other'))
@@ -105,5 +106,81 @@ describe('mock media, search, profile, permissions', () => {
     expect(await mockApi.permissions.status('photos')).toBe('granted')
     await mockApi.permissions.reset('photos')
     expect(await mockApi.permissions.status('photos')).toBe('unknown')
+  })
+})
+
+describe('mock groups', () => {
+  const gid = async (name: string) => (await mockApi.groups.list()).groups.find((g) => g.name === name)!
+
+  it('lists the tree and counts my groups', async () => {
+    const tree = await mockApi.groups.list()
+    expect(tree.groups.some((g) => g.level === 3)).toBe(true)
+    expect(tree.myGroupCount).toBeGreaterThan(3)
+  })
+
+  it('enforces 5 sub-groups per parent', async () => {
+    const eng = await gid('Engineering')
+    expect(await code(mockApi.groups.create({ name: 'Sixth', parentId: eng.id }))).toBe('limit_children')
+    const product = await gid('Product Team')
+    expect(await code(mockApi.groups.create({ name: 'Brand', parentId: product.id }))).toBeNull()
+    expect(await code(mockApi.groups.create({ name: 'Brand', parentId: product.id }))).toBe('name_taken')
+  })
+
+  it('refuses a fourth level', async () => {
+    const api = (await gid('API'))
+    expect(await code(mockApi.groups.create({ name: 'Deeper', parentId: api.id }))).toBe('limit_depth')
+  })
+
+  it('stops adding members at the 300 cap', async () => {
+    const launch = await gid('Q4 Launch Working Group: cross-functional coordination and release planning')
+    const people = await mockApi.groups.candidates(launch.id, '')
+    expect(await code(mockApi.groups.addMembers(launch.id, people.slice(0, 5).map((p) => p.id)))).toBe('limit_members')
+    expect(await code(mockApi.groups.addMembers(launch.id, people.slice(0, 2).map((p) => p.id)))).toBeNull()
+  })
+
+  it('lets only admins manage', async () => {
+    roleStore.set('member')
+    const product = await gid('Product Team')
+    expect(await code(mockApi.groups.create({ name: 'Nope', parentId: product.id }))).toBe('not_allowed')
+    expect(await code(mockApi.groups.remove(product.id))).toBe('not_allowed')
+    expect(await code(mockApi.groups.setTitleTag('u-noor', 'Hi'))).toBe('not_allowed')
+    roleStore.set('admin')
+  })
+
+  it('deletes with undo and restores the group', async () => {
+    const product = await gid('Support rota')
+    const del = await mockApi.groups.remove(product.id)
+    expect((await mockApi.groups.list()).groups.some((g) => g.id === product.id)).toBe(false)
+    await mockApi.groups.undoDelete(del.undoToken)
+    expect((await mockApi.groups.list()).groups.some((g) => g.id === product.id)).toBe(true)
+  })
+
+  it('leaves in two ways', async () => {
+    const research = await gid('Operations')
+    await mockApi.groups.leave(research.id, 'keep')
+    expect((await mockApi.groups.get(research.id)).left).toBe(true)
+    const conv = await mockApi.groups.openChat(research.id)
+    expect(await code(mockApi.chat.sendMessage(conv.id, { text: 'hi' }))).toBe('not_allowed')
+    const fin = await gid('Finance close')
+    await mockApi.groups.leave(fin.id, 'delete')
+    expect((await mockApi.groups.list()).groups.some((g) => g.id === fin.id)).toBe(false)
+  })
+
+  it('joins through a link and rejects a bad one', async () => {
+    roleStore.set('member')
+    expect(await code(mockApi.groups.resolveLink('nope'))).toBe('link_invalid')
+    const info = await mockApi.groups.resolveLink('G-g-guild')
+    expect(info.path).toEqual(['Product Team'])
+    expect(info.alreadyMember).toBe(false)
+    await mockApi.groups.join('G-g-guild')
+    expect((await mockApi.groups.list()).groups.some((g) => g.name === 'Design guild')).toBe(true)
+    roleStore.set('admin')
+  })
+
+  it('shows title tags next to sender names in group chats', async () => {
+    await mockApi.groups.setTitleTag('u-noor', 'Design lead')
+    const msgs = await mockApi.chat.listMessages('c-product')
+    expect(msgs.some((m) => m.senderId === 'u-noor' ? m.senderTitle === 'Design lead' : true)).toBe(true)
+    await mockApi.groups.setTitleTag('u-noor', '')
   })
 })

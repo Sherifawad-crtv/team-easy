@@ -75,6 +75,8 @@ Exit: a tester can send an image, find a message, and edit their profile on mock
 
 Exit: build the whole group tree on mocks, test navigation with A/B (tree vs flat).
 
+**Status (2026-10-28): built on mocks**, except Flights (GRP-03, 04, waiting for product answers 1 and 12) and the store fallback (GRP-07, native only). Assumptions are in PRD open question 16.
+
 ### Phase 3: calendar, notifications, data settings (size M)
 
 | IDs | What gets built | Needs from product |

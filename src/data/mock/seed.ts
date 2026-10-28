@@ -54,7 +54,7 @@ export const CONVERSATIONS: Conversation[] = [
   {
     id: 'c-launch', kind: 'group',
     title: 'Q4 Launch Working Group: cross-functional coordination and release planning',
-    memberCount: 41, lastMessage: 'Sam: QA sign-off is blocked on the push notification test',
+    memberCount: 296, lastMessage: 'Sam: QA sign-off is blocked on the push notification test',
     lastSender: 'Sam', lastAt: ago(260), unread: 128,
   },
   {

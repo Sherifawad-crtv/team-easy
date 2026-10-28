@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../../data'
 import type { Conversation as Conv, Message, MessageDraft } from '../../data/types'
 import { Avatar, BackButton, Banner, BottomSheet, Button, Skeleton, toneFor } from '../../design/ui'
@@ -35,6 +36,7 @@ function buildItems(messages: Message[], grouped: boolean): Item[] {
 }
 
 function subtitle(c: Conv): string {
+  if (c.left) return 'You left · read only'
   if (c.kind === 'direct') return c.presence === 'online' ? 'Online' : c.presence === 'away' ? 'Away' : 'Offline'
   if (c.kind === 'general') return `${c.memberCount ?? ''} members · Announcements`
   if (c.kind === 'subgroup') return `Sub-group of ${c.parent} · ${c.memberCount} members`
@@ -43,6 +45,7 @@ function subtitle(c: Conv): string {
 
 export function ConversationView({ conversation, onBack, highlightId }: { conversation: Conv; onBack: () => void; highlightId?: string }) {
   const id = conversation.id
+  const navigate = useNavigate()
   const variant = useVariant('conversation')
   const grouped = variant === 'B'
   const isDirect = conversation.kind === 'direct'
@@ -152,10 +155,17 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
       <header className="convo__bar">
         <span className="convo__back"><BackButton onClick={onBack} label="Back to chats" /></span>
         <Avatar name={conversation.title} size={40} group={conversation.kind !== 'direct'} presence={isDirect ? conversation.presence : undefined} icon={conversation.kind === 'general' ? <IconMegaphone size={20} /> : undefined} tone={conversation.kind === 'general' ? 0 : undefined} />
-        <div className="convo__who">
-          <h2 className="convo__title">{conversation.title}</h2>
-          <p className="convo__sub">{subtitle(conversation)}</p>
-        </div>
+        {conversation.groupId ? (
+          <button type="button" className="convo__who convo__who--link" onClick={() => navigate(`/groups/${conversation.groupId}`)} aria-label={`${conversation.title}, group info`}>
+            <h2 className="convo__title">{conversation.title}</h2>
+            <p className="convo__sub">{subtitle(conversation)}</p>
+          </button>
+        ) : (
+          <div className="convo__who">
+            <h2 className="convo__title">{conversation.title}</h2>
+            <p className="convo__sub">{subtitle(conversation)}</p>
+          </div>
+        )}
       </header>
 
       <div className="convo__scroll" ref={scrollRef} role="log" aria-live="polite" aria-label={`Messages with ${conversation.title}`}>
@@ -203,6 +213,9 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
         )}
       </div>
 
+      {conversation.left ? (
+        <p className="composer composer--left" role="status">You left this group. You can read the chat, but you can't send or get new messages.</p>
+      ) : (
       <form className="composer" onSubmit={(e) => { e.preventDefault(); submit() }}>
         <button type="button" className="composer__attach" aria-label="Attach a photo or document" onClick={() => setAttaching(true)}><IconAttach size={22} /></button>
         <textarea
@@ -220,6 +233,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
         />
         <button type="submit" className="composer__send" disabled={!draft.trim()} aria-label="Send message"><IconSend size={20} /></button>
       </form>
+      )}
 
       {attaching && <AttachSheet onClose={() => setAttaching(false)} onSend={(d) => void send(d)} />}
 
@@ -283,7 +297,7 @@ function MessageRow({ m, hit, first, last, tail, grouped, showName, timeShown, o
         onPointerCancel={onPressEnd}
         onContextMenu={(e) => { e.preventDefault(); onMenu() }}
       >
-        {showName && <span className="bubble__name" style={{ color: `var(--sender-${toneFor(m.senderName)})` }}>{m.senderName}</span>}
+        {showName && <span className="bubble__name" style={{ color: `var(--sender-${toneFor(m.senderName)})` }}>{m.senderName}{m.senderTitle && <span className="bubble__tag">{m.senderTitle}</span>}</span>}
         {a && <MessageAttachment message={m} mine={mine} />}
         {m.text && <span className="bubble__text">{m.text}</span>}
         {showFoot && (

@@ -187,3 +187,20 @@ export function useOnline(): boolean {
   }, [])
   return online
 }
+
+/* ---------- Snackbar ---------- */
+
+/** A short-lived message with one action, e.g. Undo. The bar shows how long is left. */
+export function Snackbar({ message, actionLabel, onAction, durationMs, onDone }: { message: string; actionLabel: string; onAction: () => void; durationMs: number; onDone: () => void }) {
+  useEffect(() => {
+    const t = window.setTimeout(onDone, durationMs)
+    return () => window.clearTimeout(t)
+  }, [durationMs, onDone])
+  return (
+    <div className="snackbar" role="status" aria-live="polite">
+      <span className="snackbar__text">{message}</span>
+      <button type="button" className="snackbar__action" onClick={onAction}>{actionLabel}</button>
+      <span className="snackbar__timer" style={{ animationDuration: `${durationMs}ms` }} aria-hidden="true" />
+    </div>
+  )
+}

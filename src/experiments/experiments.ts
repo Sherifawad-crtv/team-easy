@@ -15,6 +15,11 @@ export const EXPERIMENTS = {
     A: 'A time inside every message',
     B: 'Messages grouped, time on tap',
   },
+  group_nav: {
+    label: 'Group navigation',
+    A: 'Nested tree you open and close',
+    B: 'One flat list with the path under each name',
+  },
 } as const
 
 export type ExperimentId = keyof typeof EXPERIMENTS

@@ -20,6 +20,13 @@ export interface SummaryRow {
   avgMsToFirstOpen: number | null
 }
 
+/** The event that counts as "opened something" for each experiment. */
+export const OPEN_EVENT: Record<ExperimentId, 'chat_opened' | 'group_opened'> = {
+  chat_list: 'chat_opened',
+  conversation: 'chat_opened',
+  group_nav: 'group_opened',
+}
+
 /**
  * Rolls events up per experiment and variant. Same rules as the database
  * function `ab_summary`: forced (review) sessions are ignored, visitors are
@@ -31,15 +38,16 @@ export function summarize(events: TrackedEvent[]): SummaryRow[] {
     for (const variant of ['A', 'B'] as const) {
       const bucket = events.filter((e) => !e.forced && e.variants[experiment] === variant)
       const visitors = new Set(bucket.map((e) => e.visitor_id)).size
+      const openEvent = OPEN_EVENT[experiment]
       const first = bucket
-        .filter((e) => e.event === 'chat_opened' && e.props.first === true)
+        .filter((e) => e.event === openEvent && e.props.first === true)
         .map((e) => e.props.ms_since_list)
         .filter((n): n is number => typeof n === 'number')
       rows.push({
         experiment,
         variant,
         visitors,
-        opens: bucket.filter((e) => e.event === 'chat_opened').length,
+        opens: bucket.filter((e) => e.event === openEvent).length,
         messages: bucket.filter((e) => e.event === 'message_sent').length,
         avgMsToFirstOpen: first.length ? Math.round(first.reduce((a, b) => a + b, 0) / first.length) : null,
       })

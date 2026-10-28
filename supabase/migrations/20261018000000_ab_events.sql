@@ -42,10 +42,14 @@ security definer
 set search_path = public
 as $$
   with exp as (
-    select unnest(array['chat_list', 'conversation']) as experiment
+    select * from (values
+      ('chat_list', 'chat_opened'),
+      ('conversation', 'chat_opened'),
+      ('group_nav', 'group_opened')
+    ) as t(experiment, open_event)
   ),
   ev as (
-    select e.experiment, a.variants ->> e.experiment as variant, a.visitor_id, a.event, a.props
+    select e.experiment, e.open_event, a.variants ->> e.experiment as variant, a.visitor_id, a.event, a.props
     from public.ab_events a
     cross join exp e
     where a.variants ? e.experiment
@@ -54,10 +58,10 @@ as $$
     experiment,
     variant,
     count(distinct visitor_id) as visitors,
-    count(*) filter (where event = 'chat_opened') as opens,
+    count(*) filter (where event = open_event) as opens,
     count(*) filter (where event = 'message_sent') as messages,
     round(avg((props ->> 'ms_since_list')::numeric)
-      filter (where event = 'chat_opened' and props ->> 'first' = 'true'
+      filter (where event = open_event and props ->> 'first' = 'true'
               and props ->> 'ms_since_list' is not null)) as avg_ms_to_first_open
   from ev
   group by experiment, variant

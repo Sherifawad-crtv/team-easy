@@ -8,6 +8,8 @@ import { InviteScreen } from './features/auth/InviteScreen'
 import { SignInScreen } from './features/auth/SignInScreen'
 import { SignUpScreen } from './features/auth/SignUpScreen'
 import { WelcomeScreen } from './features/auth/WelcomeScreen'
+import { GroupsScreen } from './features/groups/GroupsScreen'
+import { JoinScreen, pendingJoin } from './features/groups/JoinScreen'
 import { ChatsScreen } from './features/chat/ChatsScreen'
 import { ResultsScreen } from './features/results/ResultsScreen'
 import { AppShell } from './features/shell/AppShell'
@@ -21,7 +23,8 @@ function Splash() {
 function PublicOnly() {
   const { account } = useSession()
   if (account === undefined) return <Splash />
-  return account ? <Navigate to="/chats" replace /> : <Outlet />
+  const pending = pendingJoin.get()
+  return account ? <Navigate to={pending ? `/join/${encodeURIComponent(pending)}` : '/chats'} replace /> : <Outlet />
 }
 
 function Private() {
@@ -44,8 +47,10 @@ export function App() {
           {/* Invite links work whether or not you're signed in. */}
           <Route path="/invite" element={<InviteScreen />} />
           <Route path="/invite/:token" element={<InviteScreen />} />
+          <Route path="/join/:token" element={<JoinScreen />} />
           <Route element={<Private />}>
             <Route path="/chats/:id?" element={<ChatsScreen />} />
+            <Route path="/groups/:id?" element={<GroupsScreen />} />
             <Route path="/account" element={<AccountScreen />} />
             <Route path="/account/edit" element={<EditProfileScreen />} />
             <Route path="/results" element={<ResultsScreen />} />

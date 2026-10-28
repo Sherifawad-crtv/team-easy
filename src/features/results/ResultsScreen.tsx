@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Banner, Button, Skeleton } from '../../design/ui'
-import { EXPERIMENTS, EXPERIMENT_IDS } from '../../experiments/experiments'
+import { EXPERIMENTS, EXPERIMENT_IDS, type ExperimentId } from '../../experiments/experiments'
+import { OPEN_EVENT } from '../../experiments/summary'
 import { clearLocalEvents, loadSummary } from '../../experiments/analytics'
 import type { SummaryRow } from '../../experiments/summary'
 import { useAsync } from '../../state/useAsync'
@@ -10,14 +11,16 @@ const seconds = (ms: number | null) => (ms === null ? 'n/a' : `${(ms / 1000).toF
 const per = (n: number, v: number) => (v ? (n / v).toFixed(1) : 'n/a')
 
 function Card({ row }: { row: SummaryRow }) {
+  const groups = OPEN_EVENT[row.experiment as ExperimentId] === 'group_opened'
+  const noun = groups ? 'group' : 'chat'
   return (
     <div className="card result">
       <p className="t-title result__variant">Variant {row.variant}</p>
       <dl>
         <div><dt>Visitors</dt><dd>{row.visitors}</dd></div>
-        <div><dt>Chats opened per visitor</dt><dd>{per(row.opens, row.visitors)}</dd></div>
-        <div><dt>Messages sent per visitor</dt><dd>{per(row.messages, row.visitors)}</dd></div>
-        <div><dt>Time to first chat</dt><dd>{seconds(row.avgMsToFirstOpen)}</dd></div>
+        <div><dt>{groups ? 'Groups' : 'Chats'} opened per visitor</dt><dd>{per(row.opens, row.visitors)}</dd></div>
+        {!groups && <div><dt>Messages sent per visitor</dt><dd>{per(row.messages, row.visitors)}</dd></div>}
+        <div><dt>Time to first {noun}</dt><dd>{seconds(row.avgMsToFirstOpen)}</dd></div>
       </dl>
     </div>
   )
