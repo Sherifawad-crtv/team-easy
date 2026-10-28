@@ -41,7 +41,7 @@ Order is by value to the daily loop, then dependencies (groups come before group
 | Item | Why |
 |---|---|
 | Decide: make the preview public, or keep it private | Testers cannot open it behind the Vercel login |
-| Create the A/B Supabase project (about a free-plan limit, likely paid) | Without it, results stay on one device |
+| Create the A/B Supabase project (a third project on your free plan will likely cost money) | Without it, results stay on one device |
 | Create `main` and `dev` branches, point Vercel production at `main` | Right now production is the working branch |
 | Engineers acknowledge the client framework decision | Engineers should not build against an unconfirmed contract |
 
@@ -63,7 +63,7 @@ Exit: a tester can send an image, find a message, and edit their profile on mock
 | IDs | What gets built | Needs from product |
 |---|---|---|
 | GRP-01, 02, 08 | Group tree up to 5 / 5 / 5, create team manually | Q5: is 5/5/5 per parent? |
-| GRP-05, 11, 16 (limits) | Member counter against 300 for admins, per-user group limit, archive groups and chats | Q4: per-user group limit value |
+| GRP-05, GRP-11 (limits in §16) | Member counter against 300 for admins, per-user group limit, archive groups and chats | Q4: per-user group limit value |
 | GRP-06, 07 | Join by link, store fallback page | none |
 | GRP-09, 10 | Admin-only team delete, delete with instant undo (configurable window) | undo window value |
 | ROL-01, 02 | Admin adds members or sends links, members invite non-members | Q7: who may invite whom, approval needed? |
@@ -81,7 +81,7 @@ Exit: build the whole group tree on mocks, test navigation with A/B (tree vs fla
 | NTF-01 | In-app banner (update logs, what's new) | Content source |
 | NTF-02, 03 | Notification settings, push banner tap opens a release or offers page | Which events notify, grouping and mute |
 | DAT-02, 04 | Retention notices in the UI (6 / 15 day unopened attachments, archived chat deletion) | Archived retention period value |
-| ACC-08 follow-up | Download or transfer my chats (DAT-01) entry in settings | What "chat transfer" means to users |
+| DAT-01 | Settings entry for backing up and transferring chats | What "chat transfer" means to users |
 
 ### Phase 4: calls (size M for the UI, much more to make real)
 
