@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom
 import { Logo } from './design/ui'
 import { DebugPanel } from './debug/DebugPanel'
 import { AccountScreen } from './features/account/AccountScreen'
+import { EditProfileScreen } from './features/account/EditProfileScreen'
 import { ForgotPasswordScreen } from './features/auth/ForgotPasswordScreen'
 import { InviteScreen } from './features/auth/InviteScreen'
 import { SignInScreen } from './features/auth/SignInScreen'
@@ -46,6 +47,7 @@ export function App() {
           <Route element={<Private />}>
             <Route path="/chats/:id?" element={<ChatsScreen />} />
             <Route path="/account" element={<AccountScreen />} />
+            <Route path="/account/edit" element={<EditProfileScreen />} />
             <Route path="/results" element={<ResultsScreen />} />
           </Route>
           <Route path="*" element={<Navigate to="/chats" replace />} />

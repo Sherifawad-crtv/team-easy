@@ -43,6 +43,26 @@
 // Real: search members by name, scoped to what the user can see
 // Server must enforce: result scoping to user access
 //
+// WIRE: media.upload
+// Req: MED-01..03 | Contract: ChatApi.sendMessage (draft.file) | Mock: mockApi.chat
+// Real: upload the image or document, return the stored attachment (url, size, type); enforce size and type limits
+// Server must enforce: size and type limits, membership, retention (DAT-02)
+//
+// WIRE: search.query
+// Req: SRC-02..04 | Contract: ChatApi.search | Mock: mockApi.chat
+// Real: search chats, message text and document names with date, group and type filters, scoped to what the user can read
+// Server must enforce: result scoping to user access
+//
+// WIRE: profile.edit
+// Req: PRF-01 | Contract: ProfileApi.updateProfile | Mock: mockApi.profile
+// Real: update name, email, job title, photo; photo upload; email change may need verification (PRD open question 14)
+// Server must enforce: validation, ownership, unique email
+//
+// WIRE: permissions.runtime
+// Req: NFR-04 | Contract: PermissionsApi | Mock: mockApi.permissions
+// Real: ask the OS for the permission after the app's own rationale; report granted or denied
+// Server must enforce: n/a (OS permission)
+//
 // Demo data: any email with a password of 8+ characters signs in, except the
 // password "wrongpass1". Emails starting "taken@" are already registered.
 // Invites: ORG-ACME valid, ORG-OLD expired, anything else invalid. A message
@@ -52,14 +72,20 @@ import type { Api } from '../api'
 import { ApiError } from '../errors'
 import type {
   Account,
+  Attachment,
   ChatEvent,
   Conversation,
   IdentityKind,
   Message,
+  MessageHit,
   OrgInvite,
+  PermissionKind,
+  PermissionStatus,
+  SearchFilters,
+  SearchResults,
 } from '../types'
 import { scenarioStore } from './scenario'
-import { CONVERSATIONS, MEMBERS, ME, seedMessages } from './seed'
+import { CONVERSATIONS, MEMBERS, ME, seedMessages, withFiles } from './seed'
 
 const ACME = { id: 'org-acme', name: 'Acme Studio' }
 const SESSION_KEY = 'te.session'
@@ -112,7 +138,7 @@ const messagesFor = (id: string): Message[] => {
   let list = history.get(id)
   if (!list) {
     const conv = conversations.find((c) => c.id === id)
-    list = conv ? seedMessages(conv) : []
+    list = conv ? withFiles(id, seedMessages(conv)) : []
     history.set(id, list)
   }
   return list
@@ -146,6 +172,64 @@ function startTicker() {
   }, 25_000)
 }
 
+function toAttachment(file: File): Attachment {
+  const isImage = file.type.startsWith('image/')
+  return {
+    kind: isImage ? 'image' : 'document',
+    name: file.name,
+    size: file.size,
+    mime: file.type || 'application/octet-stream',
+    url: URL.createObjectURL(file),
+  }
+}
+
+const DAY_MS = 86_400_000
+const WINDOW: Record<string, number> = { today: 1, week: 7, month: 30 }
+
+function search(query: string, filters: SearchFilters): SearchResults {
+  const q = query.trim().toLowerCase()
+  const since = filters.date === 'any' ? 0 : Date.now() - WINDOW[filters.date] * DAY_MS
+  const chats =
+    filters.type === 'all' && !filters.conversationId && filters.date === 'any'
+      ? conversations.filter((c) => c.title.toLowerCase().includes(q)).sort((a, b) => b.lastAt - a.lastAt).slice(0, 5)
+      : []
+  const messages: MessageHit[] = []
+  const documents: MessageHit[] = []
+  for (const conv of conversations) {
+    if (filters.conversationId && conv.id !== filters.conversationId) continue
+    for (const m of messagesFor(conv.id)) {
+      if (m.at < since) continue
+      const a = m.attachment
+      if (a) {
+        const hit = a.name.toLowerCase().includes(q) || m.text.toLowerCase().includes(q)
+        if (!hit) continue
+        if (a.kind === 'document' && filters.type !== 'images') documents.push({ message: m, conversation: conv })
+        else if (a.kind === 'image' && filters.type !== 'documents') messages.push({ message: m, conversation: conv })
+        continue
+      }
+      if (filters.type === 'all' && m.text.toLowerCase().includes(q)) messages.push({ message: m, conversation: conv })
+    }
+  }
+  const newest = (x: MessageHit, y: MessageHit) => y.message.at - x.message.at
+  return {
+    chats: chats.map((c) => ({ ...c })),
+    messages: messages.sort(newest).slice(0, 40),
+    documents: documents.sort(newest).slice(0, 40),
+  }
+}
+
+const PERM_KEY = 'te.perm.'
+
+/** Review tool: pretend the OS answer is "denied" (or forget it with null). */
+export function simulatePermission(kind: PermissionKind, status: PermissionStatus | null) {
+  try {
+    if (status) localStorage.setItem(PERM_KEY + kind, status)
+    else localStorage.removeItem(PERM_KEY + kind)
+  } catch {
+    // ignore
+  }
+}
+
 export const mockApi: Api = {
   auth: {
     async restoreSession() {
@@ -158,7 +242,7 @@ export const mockApi: Api = {
       const org = data.inviteToken ? resolveInviteToken(data.inviteToken).organization : undefined
       current = {
         id: `user-${data.email}`, name: data.name, email: data.email,
-        jobTitle: data.jobTitle, hasPhoto: data.hasPhoto, organization: org,
+        jobTitle: data.jobTitle, hasPhoto: data.hasPhoto, photoUrl: data.photoUrl, organization: org,
         activeIdentity: org ? 'organization' : 'individual',
       }
       saveSession(current)
@@ -211,17 +295,19 @@ export const mockApi: Api = {
       if (scenarioStore.get() === 'empty') return []
       return messagesFor(id).map((m) => ({ ...m }))
     },
-    async sendMessage(id, text) {
+    async sendMessage(id, draft) {
       await gate(550)
+      const text = draft.text.trim()
       if (text.includes('#fail')) throw new ApiError('unknown')
       const conv = conversations.find((c) => c.id === id)
       if (!conv) throw new ApiError('unknown')
+      const attachment = draft.file ? toAttachment(draft.file) : undefined
       const message: Message = {
         id: `live-${nextId++}`, conversationId: id, senderId: ME.id,
-        senderName: ME.name, text, at: Date.now(), status: 'sent',
+        senderName: ME.name, text, attachment, at: Date.now(), status: 'sent',
       }
       messagesFor(id).push(message)
-      conv.lastMessage = text
+      conv.lastMessage = text || (attachment?.kind === 'image' ? '📷 Photo' : `📄 ${attachment?.name ?? ''}`)
       conv.lastSender = 'You'
       conv.lastAt = message.at
       emit({ type: 'conversation', conversation: { ...conv } })
@@ -255,6 +341,11 @@ export const mockApi: Api = {
       const list = q ? MEMBERS.filter((m) => m.name.toLowerCase().includes(q)) : MEMBERS.slice(0, 8)
       return list.slice(0, 20).map((m) => ({ ...m }))
     },
+    async search(query, filters) {
+      await gate(300)
+      if (scenarioStore.get() === 'empty') return { chats: [], messages: [], documents: [] }
+      return search(query, filters)
+    },
     async openDirect(memberId) {
       await gate(300)
       const member = MEMBERS.find((m) => m.id === memberId)
@@ -280,6 +371,50 @@ export const mockApi: Api = {
           clearInterval(ticker)
           ticker = undefined
         }
+      }
+    },
+  },
+
+  profile: {
+    async updateProfile(patch) {
+      await gate(500)
+      if (!current) throw new ApiError('unknown')
+      if (patch.email && patch.email.toLowerCase().startsWith('taken@')) throw new ApiError('email_taken')
+      const { photoUrl, ...rest } = patch
+      current = {
+        ...current,
+        ...rest,
+        ...(photoUrl === undefined ? {} : { photoUrl: photoUrl ?? undefined, hasPhoto: photoUrl !== null }),
+      }
+      saveSession(current)
+      return current
+    },
+  },
+
+  permissions: {
+    async status(kind: PermissionKind): Promise<PermissionStatus> {
+      try {
+        return (localStorage.getItem(PERM_KEY + kind) as PermissionStatus | null) ?? 'unknown'
+      } catch {
+        return 'unknown'
+      }
+    },
+    async request(kind: PermissionKind): Promise<PermissionStatus> {
+      await delay(250)
+      // The mock grants the permission unless a reviewer set it to denied.
+      try {
+        if (localStorage.getItem(PERM_KEY + kind) === 'denied') return 'denied'
+        localStorage.setItem(PERM_KEY + kind, 'granted')
+      } catch {
+        // storage blocked: the answer lasts for this page only
+      }
+      return 'granted'
+    },
+    async reset(kind: PermissionKind) {
+      try {
+        localStorage.removeItem(PERM_KEY + kind)
+      } catch {
+        // ignore
       }
     },
   },

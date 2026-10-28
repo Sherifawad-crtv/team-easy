@@ -44,10 +44,10 @@ export function ChatsScreen() {
   )
 
   const open = useCallback(
-    (convId: string) => {
+    (convId: string, messageId?: string) => {
       const conv = list.status === 'ready' ? list.data.find((c) => c.id === convId) : undefined
-      track('chat_opened', { conversation_id: convId, kind: conv?.kind, ...listTiming.opened() })
-      navigate(`/chats/${convId}`)
+      track('chat_opened', { conversation_id: convId, kind: conv?.kind, from_search: Boolean(messageId), ...listTiming.opened() })
+      navigate(messageId ? `/chats/${convId}?m=${encodeURIComponent(messageId)}` : `/chats/${convId}`)
     },
     [list, navigate],
   )
@@ -76,7 +76,7 @@ export function ChatsScreen() {
 
       <section className="chats__pane" aria-label="Conversation">
         {current ? (
-          <ConversationView key={current.id} conversation={current} onBack={() => navigate('/chats')} />
+          <ConversationView key={current.id} conversation={current} highlightId={params.get('m') ?? undefined} onBack={() => navigate('/chats')} />
         ) : id && list.status === 'ready' ? (
           <div className="empty"><h2 className="t-title">That conversation isn't available</h2><p className="t-body-sm muted">It may have been removed.</p></div>
         ) : id ? (

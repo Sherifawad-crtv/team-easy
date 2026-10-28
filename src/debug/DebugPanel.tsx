@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { simulatePermission } from '../data/mock/mockApi'
 import { SCENARIOS, scenarioStore } from '../data/mock/scenario'
+import { settings, useConnection } from '../state/settings'
 import { IconBug, IconClose } from '../design/icons'
 import { EXPERIMENTS, EXPERIMENT_IDS, useVariant, variants, type ExperimentId } from '../experiments/experiments'
 import { useScenario } from '../state/useScenario'
@@ -23,6 +25,8 @@ function Toggle({ id }: { id: ExperimentId }) {
 export function DebugPanel() {
   const [open, setOpen] = useState(false)
   const scenario = useScenario()
+  const connection = useConnection()
+  const [photoAccess, setPhotoAccess] = useState<string>(() => { try { return localStorage.getItem('te.perm.photos') ?? 'ask' } catch { return 'ask' } })
   return (
     <div className="debug">
       {open && (
@@ -31,6 +35,18 @@ export function DebugPanel() {
           <div className="seg seg--wrap" role="group" aria-label="Data state">
             {SCENARIOS.map((s) => (
               <button key={s} type="button" aria-pressed={scenario === s} onClick={() => scenarioStore.set(s)}>{s}</button>
+            ))}
+          </div>
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Connection (for media downloads)</p>
+          <div className="seg" role="group" aria-label="Connection">
+            {(['wifi', 'cellular'] as const).map((c) => (
+              <button key={c} type="button" aria-pressed={connection === c} onClick={() => settings.setConnection(c)}>{c === 'wifi' ? 'Wi-Fi' : 'Mobile data'}</button>
+            ))}
+          </div>
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Photo access</p>
+          <div className="seg" role="group" aria-label="Photo access">
+            {([['ask', 'Ask first', null], ['denied', 'Denied', 'denied']] as const).map(([id, label, value]) => (
+              <button key={id} type="button" aria-pressed={photoAccess === id || (id === 'ask' && photoAccess === 'granted')} onClick={() => { simulatePermission('photos', value); setPhotoAccess(id) }}>{label}</button>
             ))}
           </div>
           <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Force a variant</p>

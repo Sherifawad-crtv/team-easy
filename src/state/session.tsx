@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { api } from '../data'
-import type { Account, IdentityKind, SignUpData } from '../data/types'
+import type { Account, IdentityKind, ProfilePatch, SignUpData } from '../data/types'
 import { track } from '../experiments/analytics'
 
 interface SessionValue {
@@ -11,6 +11,7 @@ interface SessionValue {
   signOut(): Promise<void>
   switchIdentity(kind: IdentityKind): Promise<void>
   deleteAccount(): Promise<void>
+  updateProfile(patch: ProfilePatch): Promise<void>
 }
 
 const Ctx = createContext<SessionValue | null>(null)
@@ -49,9 +50,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setAccount(null)
   }, [])
 
+  const updateProfile = useCallback(async (patch: ProfilePatch) => {
+    setAccount(await api.profile.updateProfile(patch))
+    track('profile_saved', { photo: patch.photoUrl !== undefined })
+  }, [])
+
   const value = useMemo(
-    () => ({ account, signIn, signUp, signOut, switchIdentity, deleteAccount }),
-    [account, signIn, signUp, signOut, switchIdentity, deleteAccount],
+    () => ({ account, signIn, signUp, signOut, switchIdentity, deleteAccount, updateProfile }),
+    [account, signIn, signUp, signOut, switchIdentity, deleteAccount, updateProfile],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

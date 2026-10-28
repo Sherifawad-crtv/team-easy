@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { api } from '../../data'
-import type { Conversation as Conv, Message } from '../../data/types'
+import type { Conversation as Conv, Message, MessageDraft } from '../../data/types'
 import { Avatar, BackButton, Banner, BottomSheet, Button, Skeleton, toneFor } from '../../design/ui'
-import { IconClock, IconDoubleTick, IconMegaphone, IconRetry, IconSend, IconTrash } from '../../design/icons'
+import { IconAttach, IconClock, IconDoubleTick, IconMegaphone, IconRetry, IconSend, IconTrash } from '../../design/icons'
 import { track, trackExposure } from '../../experiments/analytics'
 import { useVariant } from '../../experiments/experiments'
 import { useAsync } from '../../state/useAsync'
 import { ErrorBanner } from '../auth/AuthFrame'
+import { AttachSheet } from '../media/AttachSheet'
+import { MessageAttachment } from '../media/MessageAttachment'
 import { dayLabel, messageTime, sameDay } from './format'
 
 const ME = 'me'
@@ -39,7 +41,7 @@ function subtitle(c: Conv): string {
   return `${c.memberCount} members`
 }
 
-export function ConversationView({ conversation, onBack }: { conversation: Conv; onBack: () => void }) {
+export function ConversationView({ conversation, onBack, highlightId }: { conversation: Conv; onBack: () => void; highlightId?: string }) {
   const id = conversation.id
   const variant = useVariant('conversation')
   const grouped = variant === 'B'
@@ -50,6 +52,8 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
   const [draft, setDraft] = useState('')
   const [actionFor, setActionFor] = useState<Message | null>(null)
   const [shownTimes, setShownTimes] = useState<Set<string>>(new Set())
+  const [attaching, setAttaching] = useState(false)
+  const drafts = useRef(new Map<string, MessageDraft>())
   const scrollRef = useRef<HTMLDivElement>(null)
   const pressTimer = useRef<number>(0)
 
@@ -76,18 +80,29 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
   useEffect(() => {
     // Scroll only the message list, never the page around it.
     const el = scrollRef.current
-    if (el) el.scrollTop = el.scrollHeight
-  }, [count, history.status])
+    if (!el) return
+    const target = highlightId ? el.querySelector<HTMLElement>(`[data-mid="${CSS.escape(highlightId)}"]`) : null
+    if (target) target.scrollIntoView({ block: 'center' })
+    else el.scrollTop = el.scrollHeight
+  }, [count, history.status, highlightId])
 
   const send = useCallback(
-    async (text: string, retryId?: string) => {
+    async (draft: MessageDraft, retryId?: string) => {
       const tmpId = retryId ?? `tmp-${++tmpSeq}`
-      const pending: Message = { id: tmpId, conversationId: id, senderId: ME, senderName: 'You', text, at: Date.now(), status: 'sending' }
+      drafts.current.set(tmpId, draft)
+      const file = draft.file
+      const pending: Message = {
+        id: tmpId, conversationId: id, senderId: ME, senderName: 'You', text: draft.text, at: Date.now(), status: 'sending',
+        attachment: file
+          ? { kind: file.type.startsWith('image/') ? 'image' : 'document', name: file.name, size: file.size, mime: file.type, url: URL.createObjectURL(file) }
+          : undefined,
+      }
       patch((prev) => (retryId ? prev.map((m) => (m.id === retryId ? pending : m)) : [...prev, pending]))
       try {
-        const saved = await api.chat.sendMessage(id, text)
+        const saved = await api.chat.sendMessage(id, draft)
         patch((prev) => prev.map((m) => (m.id === tmpId ? saved : m)))
-        track('message_sent', { conversation_id: id, kind: conversation.kind, retry: Boolean(retryId) })
+        drafts.current.delete(tmpId)
+        track('message_sent', { conversation_id: id, kind: conversation.kind, retry: Boolean(retryId), attachment: file ? (file.type.startsWith('image/') ? 'image' : 'document') : null })
       } catch {
         patch((prev) => prev.map((m) => (m.id === tmpId ? { ...m, status: 'failed' as const } : m)))
         track('message_failed', { conversation_id: id })
@@ -100,7 +115,7 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
     const text = draft.trim()
     if (!text) return
     setDraft('')
-    void send(text)
+    void send({ text })
   }
 
   const onKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -169,6 +184,7 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
             <MessageRow
               key={it.m.id}
               m={it.m}
+              hit={it.m.id === highlightId}
               first={it.first}
               last={it.last}
               tail={it.tail}
@@ -188,6 +204,7 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
       </div>
 
       <form className="composer" onSubmit={(e) => { e.preventDefault(); submit() }}>
+        <button type="button" className="composer__attach" aria-label="Attach a photo or document" onClick={() => setAttaching(true)}><IconAttach size={22} /></button>
         <textarea
           rows={1}
           value={draft}
@@ -204,13 +221,15 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
         <button type="submit" className="composer__send" disabled={!draft.trim()} aria-label="Send message"><IconSend size={20} /></button>
       </form>
 
+      {attaching && <AttachSheet onClose={() => setAttaching(false)} onSend={(d) => void send(d)} />}
+
       {actionFor && (
         <BottomSheet title={actionFor.status === 'failed' ? 'Message not sent' : 'Message'} onClose={() => setActionFor(null)}>
           <div className="stack">
             {actionFor.status === 'failed' ? (
               <>
                 <Banner kind="error">This message didn't send. Nothing was delivered.</Banner>
-                <Button onClick={() => { const m = actionFor; setActionFor(null); track('message_retried', { conversation_id: id }); void send(m.text, m.id) }}>
+                <Button onClick={() => { const m = actionFor; setActionFor(null); track('message_retried', { conversation_id: id }); void send(drafts.current.get(m.id) ?? { text: m.text }, m.id) }}>
                   <IconRetry size={18} /> Try sending again
                 </Button>
                 <Button variant="tertiary" onClick={() => void remove(actionFor)}>Discard message</Button>
@@ -227,6 +246,7 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
 
 interface RowProps {
   m: Message
+  hit: boolean
   first: boolean
   last: boolean
   tail: boolean
@@ -239,20 +259,22 @@ interface RowProps {
   onMenu: () => void
 }
 
-function MessageRow({ m, first, last, tail, grouped, showName, timeShown, onTap, onPressStart, onPressEnd, onMenu }: RowProps) {
+function MessageRow({ m, hit, first, last, tail, grouped, showName, timeShown, onTap, onPressStart, onPressEnd, onMenu }: RowProps) {
   const mine = m.senderId === ME
   const failed = m.status === 'failed'
   const time = messageTime(m.at)
-  const showFoot = !failed && (timeShown || m.status === 'sending')
+  const a = m.attachment
+  const bareImage = a?.kind === 'image' && !m.text
+  const showFoot = !failed && (timeShown || m.status === 'sending' || (bareImage && !a?.expired))
   const label = failed ? 'Not sent. Tap to retry' : m.status === 'sending' ? 'Sending' : time
-  const cls = ['msg', mine && 'msg--mine', tail && 'msg--tail', grouped && !first && 'msg--joined', grouped && !last && 'msg--open'].filter(Boolean).join(' ')
+  const cls = ['msg', hit && 'msg--hit', mine && 'msg--mine', tail && 'msg--tail', grouped && !first && 'msg--joined', grouped && !last && 'msg--open'].filter(Boolean).join(' ')
   return (
-    <div className={cls}>
+    <div className={cls} data-mid={m.id}>
       <div
-        className={`bubble${failed ? ' bubble--failed' : ''}${m.status === 'sending' ? ' bubble--sending' : ''}${showFoot ? ' bubble--timed' : ''}${mine ? ' bubble--mine' : ''}`}
-        role="button"
-        tabIndex={0}
-        aria-label={`${mine ? 'You' : m.senderName}: ${m.text}. ${label}`}
+        className={`bubble${bareImage ? ' bubble--media' : ''}${a ? ' bubble--file' : ''}${failed ? ' bubble--failed' : ''}${m.status === 'sending' ? ' bubble--sending' : ''}${showFoot ? ' bubble--timed' : ''}${mine ? ' bubble--mine' : ''}`}
+        role={a ? 'group' : 'button'}
+        tabIndex={a ? undefined : 0}
+        aria-label={`${mine ? 'You' : m.senderName}: ${m.text || a?.name || ''}. ${label}`}
         onClick={onTap}
         onKeyDown={(e) => { if (e.key === 'Enter') onTap(); if (e.key === 'ContextMenu') onMenu() }}
         onPointerDown={onPressStart}
@@ -262,7 +284,8 @@ function MessageRow({ m, first, last, tail, grouped, showName, timeShown, onTap,
         onContextMenu={(e) => { e.preventDefault(); onMenu() }}
       >
         {showName && <span className="bubble__name" style={{ color: `var(--sender-${toneFor(m.senderName)})` }}>{m.senderName}</span>}
-        <span className="bubble__text">{m.text}</span>
+        {a && <MessageAttachment message={m} mine={mine} />}
+        {m.text && <span className="bubble__text">{m.text}</span>}
         {showFoot && (
           <span className="bubble__foot">
             {time}

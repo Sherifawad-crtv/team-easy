@@ -5,6 +5,7 @@ import { ErrorBanner } from '../auth/AuthFrame'
 import { Banner } from '../../design/ui'
 import type { Conversation } from '../../data/types'
 import { useVariant } from '../../experiments/experiments'
+import { SearchPanel } from '../search/SearchPanel'
 import { listTime } from './format'
 
 type Filter = 'all' | 'unread' | 'groups' | 'direct'
@@ -24,7 +25,7 @@ function preview(c: Conversation): string {
   return c.lastSender === 'You' ? c.lastMessage.replace(/^You: /, '') : c.lastMessage
 }
 
-function Row({ c, active, onOpen, lines }: { c: Conversation; active: boolean; onOpen: (id: string) => void; lines: 1 | 2 }) {
+function Row({ c, active, onOpen, lines }: { c: Conversation; active: boolean; onOpen: (id: string, messageId?: string) => void; lines: 1 | 2 }) {
   return (
     <button type="button" className={`chat-row${active ? ' chat-row--active' : ''}`} onClick={() => onOpen(c.id)} aria-current={active ? 'page' : undefined}>
       <Avatar
@@ -55,7 +56,7 @@ function Row({ c, active, onOpen, lines }: { c: Conversation; active: boolean; o
 export interface ChatListProps {
   state: { status: 'loading' | 'ready' | 'error'; data?: Conversation[]; error?: unknown }
   activeId?: string
-  onOpen: (id: string) => void
+  onOpen: (id: string, messageId?: string) => void
   onRetry: () => void
   onNewChat: () => void
   /** Rendered beside the search field (the new chat button). */
@@ -82,6 +83,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action }
     })
   }, [all, query, filter, variant])
 
+  const searching = query.trim().length >= 2 && state.status === 'ready'
   const pinned = variant === 'B' && !query && filter === 'all' ? shown.find((c) => c.kind === 'general') : undefined
   const rest = pinned ? shown.filter((c) => c.id !== pinned.id) : shown
   const lines = variant === 'B' ? 1 : 2
@@ -98,7 +100,9 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action }
         {action}
       </div>
 
-      {variant === 'B' && state.status === 'ready' && all.length > 0 && (
+      {searching && <SearchPanel query={query} conversations={all} onOpen={onOpen} />}
+
+      {!searching && variant === 'B' && state.status === 'ready' && all.length > 0 && (
         <div className="chips" role="group" aria-label="Filter chats">
           {FILTERS.map((f) => (
             <button key={f.id} type="button" className="chip" aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}>
@@ -138,7 +142,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action }
         </div>
       )}
 
-      {state.status === 'ready' && all.length > 0 && shown.length === 0 && (
+      {!searching && state.status === 'ready' && all.length > 0 && shown.length === 0 && (
         <div className="empty">
           <h2 className="t-title">{query ? `No chats match “${query.trim()}”` : filter === 'unread' ? "You're all caught up" : 'Nothing here'}</h2>
           {(query || filter !== 'all') && (
@@ -147,7 +151,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action }
         </div>
       )}
 
-      {state.status === 'ready' && shown.length > 0 && (
+      {!searching && state.status === 'ready' && shown.length > 0 && (
         <>
           {pinned && (
             <button type="button" className="pinned" onClick={() => onOpen(pinned.id)}>

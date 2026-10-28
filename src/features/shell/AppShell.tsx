@@ -29,7 +29,7 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
-        {account && <span className="rail__who"><Avatar name={account.name} size={40} /></span>}
+        {account && <span className="rail__who"><Avatar name={account.name} src={account.photoUrl} size={40} /></span>}
       </aside>
 
       <div className="shell__main"><Outlet /></div>

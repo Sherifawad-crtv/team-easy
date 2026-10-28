@@ -58,8 +58,8 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `auth.delete-account` | ACC-08 | `AuthRepository.deleteAccount` | Delete account and associated data per policy | Full deletion | MOCKED |
 | `auth.org-invite` | ACC-03..05 | `AuthRepository.resolveInvite` | Resolve an admin-issued invite link or code to its organization; reject invalid or expired | Invite validity, expiry, single organization attach | MOCKED |
 | `auth.password-reset` | ACC-01 (assumed) | `AuthRepository.requestPasswordReset` | Send a reset email; same response whether or not the address exists | Rate limiting, no account enumeration | MOCKED |
-| `device.photo-picker` | ACC-01, PRF-01 | not in the PWA yet | Real photo choice and upload. The PWA only toggles a placeholder photo | n/a (client only) | PLANNED |
-| `profile.edit` | PRF-01 | `ProfileRepository` | Read/update name, email, photo, details; photo upload | Validation, ownership | PLANNED |
+| `device.photo-picker` | ACC-01, PRF-01 | not in the PWA yet | Native photo/camera access. The PWA uses the browser file chooser behind the app's own permission prompt | n/a (client only) | PLANNED |
+| `profile.edit` | PRF-01 | `ProfileRepository` | Read/update name, email, photo, details; photo upload | Validation, ownership | MOCKED |
 | `groups.crud` | GRP-01, 02, 05, 08..11 | `GroupRepository` | Create/read/update groups, subgroups, teams; hierarchy 5/5/5; delete with undo window; archive | Hierarchy depth, member caps, admin-only team deletion | PLANNED |
 | `groups.flights` | GRP-03, 04 | `FlightRepository` | Disposable group type with the relevant parties and progress of specified tasks; auto-hide after a custom-set duration (see PRD open questions) | Auto-hide timing, visibility | PLANNED |
 | `groups.join-link` | GRP-06, 07 | `InviteLinkService` | Create/resolve join links; deep link opens app or store fallback | Link validity and expiry | PLANNED |
@@ -70,17 +70,17 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `chat.send-message` | CHT-01..04 | `ChatApi.sendMessage` | Send, return server-confirmed message, reject on failure so the UI can retry | Sender permission | MOCKED |
 | `chat.delete-message` | CHT-05 | `ChatApi.deleteMessage` | Sender deletes own message in private chats only | Private-chat-only rule | MOCKED |
 | `search.members` | SRC-01 | `ChatApi.searchMembers` | Search members by name, scoped to what the user can see | Result scoping to user access | MOCKED |
-| `search.query` | SRC-02..04 | `SearchRepository` | Search members, chat text, document names; filters by date, group, type | Result scoping to user access | PLANNED |
-| `media.upload` | MED-01..03 | `MediaRepository.upload` | Upload images to individuals, groups, sub-groups | Size/type limits, access | PLANNED |
+| `search.query` | SRC-02..04 | `SearchRepository` | Search members, chat text, document names; filters by date, group, type | Result scoping to user access | MOCKED |
+| `media.upload` | MED-01..03 | `MediaRepository.upload` | Upload images to individuals, groups, sub-groups | Size/type limits, access | MOCKED |
 | `media.library` | MED-04 | `MediaRepository.library` | Per-team media listing | Access | PLANNED |
-| `media.download-policy` | MED-05, DAT-03 | `MediaDownloadPolicy` | Auto / Wi-Fi only / manual download; local cache of opened media | n/a (client) | PLANNED |
+| `media.download-policy` | MED-05, DAT-03 | `MediaDownloadPolicy` | Auto / Wi-Fi only / manual download; local cache of opened media | n/a (client) | MOCKED |
 | `calls.service` | CLL-01..05 | `CallService` | Zeego Cloud audio/video: 1-to-1 and group (max 5), call state stream, native call UI | 5-participant cap, 1h/day cap | PLANNED |
 | `calendar.events` | CAL-01, CAL-02 | `CalendarRepository` | Built-in calendar; admin assigns calendars to users | Assignment rights | PLANNED |
 | `notifications.push` | NTF-02, NTF-03, NFR-03 | `PushService` | APNs/FCM registration, chat/group pushes, banner deep link | Delivery rules | PLANNED |
 | `notifications.in-app-banner` | NTF-01 | `InAppBannerRepository` | App-to-user in-app notifications: update logs, what's new | n/a | PLANNED |
 | `device.contacts` | DEV-01, DEV-02 | `DeviceContactsService` | Read device contacts with permission; suggested contact entry | n/a (OS permission) | PLANNED |
 | `device.share-mail` | DEV-03, DEV-04 | `DeviceActionsService` | Open native mail app, appear in native share sheet | n/a | PLANNED |
-| `permissions.runtime` | NFR-04 | `PermissionService` | Request/check OS permissions per feature with rationale | n/a | PLANNED |
+| `permissions.runtime` | NFR-04 | `PermissionService` | Request/check OS permissions per feature with rationale | n/a | MOCKED |
 | `data.backup` | DAT-01 | `BackupService` | Backups for chat transfers | Storage, access | PLANNED |
 | `data.retention` | DAT-02, DAT-04 | server job + `RetentionConfig` | Delete unopened attachments after 6d (standard) / 15d (business); delete archived chats after configured period | All deletion (server job) | PLANNED |
 | `monetization.ads` | MON-01, MON-02 | `AdService` | Serve ads to free users per placement rules | Eligibility | PLANNED |

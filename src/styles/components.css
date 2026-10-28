@@ -143,3 +143,40 @@
 .radio-dot { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--outline); display: grid; place-items: center; }
 .radio-row[aria-checked='true'] .radio-dot { border-color: var(--primary); }
 .radio-row[aria-checked='true'] .radio-dot::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+
+/* ---------- Attachments ---------- */
+.avatar__img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.attach-icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 50%; }
+.attach-icon--photo { background: var(--primary-container); color: var(--on-primary-container); }
+.attach-icon--doc { background: var(--tertiary-container); color: var(--on-tertiary-container); }
+.attach-preview { width: 100%; max-height: 46dvh; object-fit: contain; border-radius: var(--shape-lg); background: var(--surface-container); }
+.perm { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); text-align: center; padding: var(--s-3) var(--s-3) 0; }
+
+.doc-icon { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--shape-md); font-size: 11px; font-weight: 700; letter-spacing: 0.3px; background: var(--tone-4-bg); color: var(--tone-4-fg); }
+.doc-icon--pdf { background: var(--error-container); color: var(--on-error-container); }
+.doc-icon--doc { background: var(--primary-container); color: var(--on-primary-container); }
+.doc-icon--xls { background: var(--success-container); color: var(--on-success-container); }
+.doc-icon--ppt { background: var(--warning-container); color: var(--on-warning-container); }
+.doc-icon--img { background: var(--tertiary-container); color: var(--on-tertiary-container); }
+.doc-row { display: flex; align-items: center; gap: var(--s-3); min-width: min(240px, 60vw); padding: var(--s-2) 0; }
+.doc-row--static { padding: var(--s-3); background: var(--surface-container-low); border-radius: var(--shape-lg); }
+.doc-row__text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.doc-row__name { font-size: 15px; line-height: 20px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-row__meta { font-size: 12px; line-height: 16px; color: var(--on-surface-variant); }
+.doc-row__open { flex: none; min-height: 36px; padding: 0 var(--s-4); border: 0; border-radius: var(--shape-full); background: color-mix(in srgb, var(--primary) 12%, transparent); color: var(--primary); font-size: 13px; font-weight: 600; }
+.doc-row__act { width: 40px; height: 40px; color: var(--primary); }
+
+.img-thumb { display: block; align-self: stretch; min-width: min(240px, 60vw); padding: 0; border: 0; background: none; border-radius: calc(var(--bubble-radius) - 3px); overflow: hidden; }
+.img-thumb img { display: block; width: 100%; height: auto; max-height: 320px; object-fit: cover; }
+.img-wait { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s-2); align-self: stretch; min-width: min(240px, 60vw); height: 150px; border: 0; border-radius: calc(var(--bubble-radius) - 3px); background: color-mix(in srgb, var(--on-surface) 8%, transparent); color: var(--on-surface-variant); font-size: 13px; font-weight: 500; }
+.file-gone { display: flex; align-items: flex-start; gap: var(--s-3); max-width: 240px; padding: var(--s-2) 0; font-size: 13px; line-height: 18px; color: var(--on-surface-variant); }
+.file-gone svg { flex: none; margin-top: 1px; }
+
+/* Image viewer */
+.viewer { position: fixed; inset: 0; z-index: 70; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgb(8 12 28 / 0.94); animation: fade-bg var(--spring-effects-dur) var(--spring-effects); }
+.viewer__bar { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: var(--s-3); padding: calc(var(--safe-top) + var(--s-3)) var(--s-3) var(--s-3); color: #fff; }
+.viewer__close { color: #fff; }
+.viewer__name { font-weight: 600; font-size: 15px; line-height: 20px; }
+.viewer__sub { font-size: 12px; line-height: 16px; opacity: 0.75; }
+.viewer__img { max-width: 100vw; max-height: 78dvh; object-fit: contain; border-radius: 4px; animation: pop var(--spring-spatial-dur) var(--spring-spatial); }
+.viewer__caption { max-width: min(560px, 92vw); margin-top: var(--s-4); color: #fff; font-size: 15px; line-height: 21px; text-align: center; }

@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api } from '../../data'
 import { Avatar, Banner, Button, TextField } from '../../design/ui'
 import { IconCamera, IconClose } from '../../design/icons'
+import { toAvatarDataUrl } from '../media/image'
+import { usePhotoChooser } from '../media/PhotoAccess'
 import { track } from '../../experiments/analytics'
 import { useAsync } from '../../state/useAsync'
 import { useSession } from '../../state/session'
@@ -29,7 +31,9 @@ export function SignUpScreen() {
   const [jobTitle, setJobTitle] = useState('')
   const [invite, setInvite] = useState('')
   const [showInvite, setShowInvite] = useState(false)
-  const [hasPhoto, setHasPhoto] = useState(false)
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>()
+  const hasPhoto = Boolean(photoUrl)
+  const chooser = usePhotoChooser((file) => { toAvatarDataUrl(file).then(setPhotoUrl, () => undefined) })
   const [touched, setTouched] = useState(false)
 
   useEffect(() => track('signup_started', { via_invite_link: Boolean(linkToken) }), [linkToken])
@@ -52,6 +56,7 @@ export function SignUpScreen() {
         password,
         jobTitle: jobTitle.trim() || undefined,
         hasPhoto,
+        photoUrl,
         inviteToken: linkToken ?? (invite.trim() || undefined),
       }),
     )
@@ -77,10 +82,10 @@ export function SignUpScreen() {
             className="icon-btn"
             style={{ width: 'auto', height: 'auto', position: 'relative' }}
             aria-label={hasPhoto ? 'Remove profile photo' : 'Add a profile photo, optional'}
-            onClick={() => setHasPhoto((h) => !h)}
+            onClick={() => (hasPhoto ? setPhotoUrl(undefined) : chooser.open())}
             disabled={busy}
           >
-            <Avatar name={name} size={88} icon={hasPhoto ? <IconCamera size={36} /> : undefined} />
+            <Avatar name={name} src={photoUrl} size={88} />
             <span style={{ position: 'absolute', right: 0, bottom: 0, width: 28, height: 28, borderRadius: '50%', background: 'var(--action)', color: 'var(--on-action)', display: 'grid', placeItems: 'center', border: '2px solid var(--bg)' }}>
               {hasPhoto ? <IconClose size={16} /> : <IconCamera size={16} />}
             </span>
@@ -88,6 +93,7 @@ export function SignUpScreen() {
           <p className="t-caption muted" style={{ marginTop: 'var(--s-3)' }}>{hasPhoto ? 'Tap to remove' : 'Add a photo (optional)'}</p>
         </div>
 
+        {chooser.node}
         <TextField label="Full name" autoComplete="name" autoCapitalize="words" value={name} onChange={setName} error={touched ? errors.name : undefined} disabled={busy} />
         <TextField
           label="Email" type="email" autoComplete="email" inputMode="email" value={email} onChange={setEmail}

@@ -58,6 +58,8 @@ Order is by value to the daily loop, then dependencies (groups come before group
 
 Exit: a tester can send an image, find a message, and edit their profile on mocks.
 
+**Status (2026-10-28): built on mocks**, except chat extras (read receipts, typing), which wait for scope confirmation.
+
 ### Phase 2: groups, teams and roles (size L, the biggest block)
 
 | IDs | What gets built | Needs from product |

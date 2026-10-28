@@ -120,10 +120,10 @@ export function toneFor(name: string): number {
   return n % 5
 }
 
-export function Avatar({ name, size = 48, group = false, presence, icon, tone }: { name: string; size?: number; group?: boolean; presence?: 'online' | 'away' | 'offline'; icon?: ReactNode; tone?: number }) {
+export function Avatar({ name, size = 48, group = false, presence, icon, tone, src }: { name: string; size?: number; group?: boolean; presence?: 'online' | 'away' | 'offline'; icon?: ReactNode; tone?: number; src?: string }) {
   return (
     <span className={`avatar avatar--t${tone ?? toneFor(name)}${group ? ' avatar--group' : ''}`} style={{ ['--size' as string]: `${size}px` }} role="img" aria-label={name || 'Profile photo'}>
-      {icon ?? (name.trim() ? initials(name) : <IconUser size={Math.round(size * 0.5)} />)}
+      {src ? <img className="avatar__img" src={src} alt="" /> : (icon ?? (name.trim() ? initials(name) : <IconUser size={Math.round(size * 0.5)} />))}
       {presence && presence !== 'offline' && <span className={`avatar__dot${presence === 'away' ? ' avatar__dot--away' : ''}`} />}
     </span>
   )

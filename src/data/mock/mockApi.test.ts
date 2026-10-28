@@ -43,15 +43,15 @@ describe('mock chat', () => {
   })
 
   it('sends a message and fails when asked to', async () => {
-    const m = await mockApi.chat.sendMessage('c-sam', 'hello')
+    const m = await mockApi.chat.sendMessage('c-sam', { text: 'hello' })
     expect(m.status).toBe('sent')
-    expect(await code(mockApi.chat.sendMessage('c-sam', 'nope #fail'))).toBe('unknown')
+    expect(await code(mockApi.chat.sendMessage('c-sam', { text: 'nope #fail' }))).toBe('unknown')
   })
 
   it('allows deleting own messages in private chats only (CHT-05)', async () => {
-    const direct = await mockApi.chat.sendMessage('c-sam', 'delete me')
+    const direct = await mockApi.chat.sendMessage('c-sam', { text: 'delete me' })
     await expect(mockApi.chat.deleteMessage('c-sam', direct.id)).resolves.toBeUndefined()
-    const group = await mockApi.chat.sendMessage('c-product', 'stays')
+    const group = await mockApi.chat.sendMessage('c-product', { text: 'stays' })
     expect(await code(mockApi.chat.deleteMessage('c-product', group.id))).toBe('unknown')
   })
 
@@ -60,5 +60,50 @@ describe('mock chat', () => {
     expect(found.map((m) => m.name)).toContain('Omar Al-Fayed')
     const conv = await mockApi.chat.openDirect('u-omar')
     expect(conv.id).toBe('c-omar')
+  })
+})
+
+describe('mock media, search, profile, permissions', () => {
+  it('sends an image and a document as attachments (MED-01..03)', async () => {
+    const img = await mockApi.chat.sendMessage('c-sam', { text: 'look', file: new File(['x'], 'cat.png', { type: 'image/png' }) })
+    expect(img.attachment).toMatchObject({ kind: 'image', name: 'cat.png' })
+    const doc = await mockApi.chat.sendMessage('c-product', { text: '', file: new File(['x'], 'plan.pdf', { type: 'application/pdf' }) })
+    expect(doc.attachment?.kind).toBe('document')
+  })
+
+  it('finds documents by name and messages by text (SRC-02, SRC-03)', async () => {
+    const r = await mockApi.chat.search('roadmap', { date: 'any', type: 'all' })
+    expect(r.documents.map((h) => h.message.attachment?.name)).toContain('Q4-roadmap.pdf')
+    expect(r.messages.length).toBeGreaterThan(0)
+  })
+
+  it('filters by type, chat and date (SRC-04)', async () => {
+    const docsOnly = await mockApi.chat.search('roadmap', { date: 'any', type: 'documents' })
+    expect(docsOnly.messages).toHaveLength(0)
+    expect(docsOnly.documents.length).toBeGreaterThan(0)
+    const imagesOnly = await mockApi.chat.search('roadmap', { date: 'any', type: 'images' })
+    expect(imagesOnly.documents).toHaveLength(0)
+    const elsewhere = await mockApi.chat.search('roadmap', { date: 'any', type: 'all', conversationId: 'c-omar' })
+    expect(elsewhere.documents).toHaveLength(0)
+    // c-sam's last message is days old, so nothing in it counts as "today"
+    const old = await mockApi.chat.search('invite flow notes', { date: 'any', type: 'all', conversationId: 'c-sam' })
+    expect(old.messages.length).toBeGreaterThan(0)
+    const today = await mockApi.chat.search('invite flow notes', { date: 'today', type: 'all', conversationId: 'c-sam' })
+    expect(today.messages).toHaveLength(0)
+  })
+
+  it('updates the profile and rejects a taken email (PRF-01)', async () => {
+    await mockApi.auth.signIn('a@b.co', 'longpass1')
+    const updated = await mockApi.profile.updateProfile({ name: 'New Name', jobTitle: 'Lead' })
+    expect(updated).toMatchObject({ name: 'New Name', jobTitle: 'Lead' })
+    expect(await code(mockApi.profile.updateProfile({ email: 'taken@x.co' }))).toBe('email_taken')
+  })
+
+  it('remembers the photo permission answer (NFR-04)', async () => {
+    expect(await mockApi.permissions.status('photos')).toBe('unknown')
+    expect(await mockApi.permissions.request('photos')).toBe('granted')
+    expect(await mockApi.permissions.status('photos')).toBe('granted')
+    await mockApi.permissions.reset('photos')
+    expect(await mockApi.permissions.status('photos')).toBe('unknown')
   })
 })

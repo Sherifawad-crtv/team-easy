@@ -52,14 +52,14 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 | CHT-04 | Sub-group chat | UI | `chat.messages`, `chat.send-message` | | |
 | CHT-05 | Delete own messages, private chats only | UI | `chat.delete-message` | | |
 | SRC-01 | Search members by name | UI | `search.members` | | |
-| SRC-02 | Search chats for a word | TODO | `search.query` | | |
-| SRC-03 | Search document names | TODO | `search.query` | | |
-| SRC-04 | Filters: date, group, document type | TODO | `search.query` | | |
-| MED-01 | Images to individuals | TODO | `media.upload` | | |
-| MED-02 | Images to groups | TODO | `media.upload` | | |
-| MED-03 | Images to sub-groups | TODO | `media.upload` | | |
+| SRC-02 | Search chats for a word | UI | `search.query` | | |
+| SRC-03 | Search document names | UI | `search.query` | | |
+| SRC-04 | Filters: date, group, document type | UI | `search.query` | | |
+| MED-01 | Images to individuals | UI | `media.upload` | | |
+| MED-02 | Images to groups | UI | `media.upload` | | |
+| MED-03 | Images to sub-groups | UI | `media.upload` | | |
 | MED-04 | Library tab (media per team) | TODO | `media.library` | | |
-| MED-05 | Media download setting | TODO | `media.download-policy` | | |
+| MED-05 | Media download setting | UI | `media.download-policy` | | |
 | CLL-01 | 1-to-1 audio calls | TODO | `calls.service` | | |
 | CLL-02 | Group and sub-group audio calls (max 5) | TODO | `calls.service` | | |
 | CLL-03 | 1-to-1 video calls | TODO | `calls.service` | | |
@@ -74,10 +74,10 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 | DEV-02 | See people from device contacts | TODO | `device.contacts` | | |
 | DEV-03 | Email icon opens native mail app | TODO | `device.share-mail` | | |
 | DEV-04 | App in native share sheet | TODO | `device.share-mail` | | |
-| PRF-01 | Profile editing | TODO | `profile.edit` | | |
+| PRF-01 | Profile editing | UI | `profile.edit` | | |
 | DAT-01 | Backups for chat transfers | TODO | `data.backup` | | |
 | DAT-02 | Attachment retention (6 d / 15 d) | TODO | `data.retention` | | |
-| DAT-03 | Opened media cached locally | TODO | `media.download-policy` | | |
+| DAT-03 | Opened media cached locally | UI | `media.download-policy` | | |
 | DAT-04 | Archived chat retention (configurable) | TODO | `data.retention` | | |
 | MON-01 | Ads for free users | TODO | `monetization.ads` | | |
 | MON-02 | Ads in private chats outside the organization | TODO | `monetization.ads` | | PRD open question 6 |
@@ -86,7 +86,7 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 | NFR-01 | Realtime by default | UI | `chat.messages` | | |
 | NFR-02 | Load tolerance | TODO | | | PRD open question 8 (no numbers) |
 | NFR-03 | Notifications live at launch | TODO | `notifications.push` | | |
-| NFR-04 | Permission handling for all features | TODO | `permissions.runtime` | | |
+| NFR-04 | Permission handling for all features | UI | `permissions.runtime` | | |
 | DEP-01 | Zeego Cloud (calls) | TODO | `calls.service` | | Already owned |
 | DEP-02 | Hostinger | TODO | | | Already owned |
 | DEP-03 | Apple developer account | TODO | | | New account needed |
@@ -109,3 +109,4 @@ _None yet._
 ## Blocked on decisions
 
 See `docs/decisions/README.md` and the PRD "Open questions".
+- 2026-10-28: Phase 1 built on mocks. Send images and documents (MED-01..03) with caption, sending/failed states and a full-screen image viewer. Download setting and cache (MED-05, DAT-03): Always / Wi-Fi only / Never, tap-to-download on mobile data. Search (SRC-02..04): message text and document names with date, chat and type filters, jump to the message. Profile edit with photo (PRF-01). Photo permission prompt with rationale and denied state (NFR-04). Not built: read receipts and typing indicators (scope unconfirmed), retention notices (DAT-02, Phase 3), media library (MED-04, Phase 2). Next: Phase 2, groups and roles.

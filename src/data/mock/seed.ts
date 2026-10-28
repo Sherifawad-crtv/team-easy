@@ -1,4 +1,4 @@
-import type { Conversation, Member, Message } from '../types'
+import type { Attachment, Conversation, Member, Message } from '../types'
 
 // Seed data is part of the design: long names, emoji, links, big unread
 // counts, a 300-member announcement channel and a nested sub-group.
@@ -149,3 +149,73 @@ export function seedMessages(c: Conversation): Message[] {
   }
   return out
 }
+
+/** A deterministic placeholder picture, so image messages look real without any files. */
+export function mockImage(seed: string, w = 720, h = 480): string {
+  let n = 0
+  for (const ch of seed) n = (n * 33 + ch.charCodeAt(0)) >>> 0
+  const palette = [
+    ['#1f62a3', '#51c2e6'], ['#3e88c8', '#d3e4f7'], ['#2bace2', '#f6f3dd'], ['#0d142e', '#3e88c8'], ['#51c2e6', '#1f62a3'],
+  ]
+  const [a, b] = palette[n % palette.length]
+  const cx = 120 + (n % 380)
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` +
+    `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>` +
+    `<rect width="${w}" height="${h}" fill="url(#g)"/>` +
+    `<circle cx="${cx}" cy="${120 + (n % 90)}" r="${60 + (n % 40)}" fill="#fff" fill-opacity=".35"/>` +
+    `<rect x="${40 + (n % 60)}" y="${h - 190}" width="${w - 140}" height="120" rx="24" fill="#fff" fill-opacity=".22"/>` +
+    `<rect x="${80 + (n % 50)}" y="${h - 150}" width="${(w - 260) * 0.6}" height="18" rx="9" fill="#fff" fill-opacity=".6"/>` +
+    `<rect x="${80 + (n % 50)}" y="${h - 118}" width="${(w - 260) * 0.4}" height="14" rx="7" fill="#fff" fill-opacity=".4"/></svg>`
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+}
+
+const DOC_MIME: Record<string, string> = {
+  pdf: 'application/pdf',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  zip: 'application/zip',
+}
+
+const image = (name: string, size: number, expired = false): Attachment => ({
+  kind: 'image', name, size, mime: 'image/svg+xml', url: expired ? undefined : mockImage(name), expired,
+})
+const doc = (name: string, size: number): Attachment => ({
+  kind: 'document', name, size, mime: DOC_MIME[name.split('.').pop() ?? 'pdf'] ?? 'application/octet-stream',
+})
+
+/** Which seeded messages carry files: [conversation, index from the end, attachment, caption]. */
+const FILES: [string, number, Attachment, string][] = [
+  ['c-product', 9, image('group-tree-mockups.png', 1_480_000), 'Mockups for the group tree'],
+  ['c-product', 6, doc('Q4-roadmap.pdf', 1_240_000), ''],
+  ['c-omar', 10, image('build-214-screenshot.png', 860_000), ''],
+  ['c-omar', 5, doc('build-notes.docx', 94_000), 'Release notes draft'],
+  ['c-design-mobile', 8, image('onboarding-motion-test.png', 2_100_000), ''],
+  ['c-design-mobile', 5, doc('motion-spec.pdf', 3_400_000), ''],
+  ['c-design-mobile', 12, image('old-render.png', 4_800_000, true), ''],
+  ['c-launch', 7, doc('Release-checklist.xlsx', 212_000), ''],
+  ['c-launch', 4, doc('qa-signoff.pdf', 540_000), 'QA sign-off for review'],
+  ['c-amelia', 6, doc('customer-interview-notes.pdf', 780_000), ''],
+  ['c-priya', 5, doc('groups-v2-spec.pdf', 1_900_000), 'The spec we talked about'],
+  ['c-general', 8, image('offsite-venue.jpg', 1_100_000), 'Venue for Friday'],
+  ['c-general', 3, doc('offsite-schedule.pdf', 330_000), ''],
+]
+
+/** Adds the demo files to a seeded history. Files come from other people, except where noted. */
+export function withFiles(conversationId: string, list: Message[]): Message[] {
+  const conv = CONVERSATIONS.find((c) => c.id === conversationId)
+  if (!conv) return list
+  FILES.forEach(([id, fromEnd, attachment, caption], n) => {
+    if (id !== conversationId) return
+    const i = list.length - 1 - fromEnd
+    if (i < 0 || i >= list.length) return
+    const mine = MINE.has(attachment.name)
+    const other = conv.kind === 'direct' ? { id: `u-${conv.id}`, name: conv.title } : MEMBERS[n % 5]
+    const who = mine ? ME : other
+    list[i] = { ...list[i], senderId: who.id, senderName: who.name, attachment, text: caption }
+  })
+  return list
+}
+
+/** A couple of files that I sent myself, so both sides show. */
+const MINE = new Set(['build-notes.docx', 'qa-signoff.pdf'])
