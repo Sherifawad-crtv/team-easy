@@ -23,7 +23,7 @@ Decided 2026-10-28 by the designer. The layout and behavior of a messaging app p
 |---|---|
 | Chat list | Flat, full-width rows with no cards or dividers. 56px circle avatars (groups are circles too), name, one-line preview, time at the right (brand blue when unread), unread count badge. Delivery ticks before the preview when my message was last. Sub-group rows show "in <parent>" |
 | Top of the chat list | No app name. One row: search as a pill and a round new-chat button. Filter chips as pills below it (variant B) |
-| Phone navigation | A native-style tab bar docked to the bottom edge: full width, frosted glass, hairline on top, icon over label with a tonal indicator on the active tab, 60 px high plus the device safe area. Lists scroll under it. No floating action button. Only screens that exist are listed |
+| Phone navigation | The iOS-style floating glass pill with the tabs, centered and set low, close to the bottom edge; lists scroll under it. No floating action button. Only screens that exist are listed |
 | Desktop (1024+) | Like WhatsApp Web: narrow rail, chat list column (same search and new-chat row), conversation filling the rest. Hairlines, no floating containers |
 | Conversation | Patterned wallpaper in a brand tint. White header with avatar, name and status. Day pills in capitals |
 | Bubbles | Incoming white, outgoing light brand blue. Small tail on the first bubble of a run. Time and double-tick inside the bubble, bottom right. Group sender names in a color per person. A failed message shows a red outline and "Not sent. Tap to retry" |

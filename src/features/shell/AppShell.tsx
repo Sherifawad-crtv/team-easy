@@ -3,7 +3,7 @@ import { Avatar, Logo } from '../../design/ui'
 import { IconChart, IconChat, IconPeople, IconUser } from '../../design/icons'
 import { useSession } from '../../state/session'
 
-// Phones: tab bar docked to the bottom edge. Desktop (1024+): navigation rail.
+// Phones: floating glass pill with the tabs. Desktop (1024+): navigation rail.
 // Only screens that exist are listed. New chat lives at the top of the chat list.
 
 const NAV = [
@@ -39,7 +39,7 @@ export function AppShell() {
         <nav className="pill" aria-label="Main">
           {NAV.map(({ to, label, icon: Icon }) => (
             <NavLink key={to} to={to} className={({ isActive }) => `pill__link${isActive ? ' is-active' : ''}`}>
-              <span className="navbar__ind"><Icon size={22} /></span><span>{label}</span>
+              <Icon size={22} /><span>{label}</span>
             </NavLink>
           ))}
         </nav>
