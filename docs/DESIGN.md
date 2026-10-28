@@ -41,6 +41,7 @@ Limits: written from familiarity with WhatsApp's public UI. Exact WhatsApp pixel
 - Touch targets 48px (iOS 44pt minimum). Large flexible app bar that condenses on scroll. Back chevron on pushed screens. Bottom sheets for actions.
 - Fluid layout checked at 360 to 440px, real layout swap at 1024px: navigation rail, list and conversation in two containers.
 - Only screens that exist appear in navigation.
+- Icons: only the Solar icon set (480 Design, CC BY 4.0, `@solar-icons/react`, Linear style). Every icon is exported from `src/design/icons.tsx` under an `Icon…` name; to change one, change it there. Do not draw icons by hand. Credit: icons by 480 Design (Solar), CC BY 4.0.
 - Home screen icon: opaque 180x180 PNG at `/apple-touch-icon.png`. After changing it, clear Safari website data before re-adding.
 
 ## 4. Components to build (checklist)
