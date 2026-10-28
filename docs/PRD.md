@@ -191,7 +191,7 @@ Raised by the design/tooling side. None of these change the PRD. Each needs an a
 | 6 | **MON-02:** wording is hard to read. Where exactly do ads appear (which chats, which users)? | MON-01, MON-02 |
 | 7 | **ROL-01 vs ROL-02:** admin invites and member invites overlap with ACC-05. Confirm who can invite whom and whether member invites need approval. | ACC-05, ROL-01, ROL-02 |
 | 8 | **NFR-02:** no numbers. Needed: concurrent users, messages per second, launch scale. | NFR-02 |
-| 9 | **Languages / RTL:** is Arabic (RTL) a target? Affects the design system from day one. | All UI |
+| 9 | **Languages / RTL:** is Arabic (RTL) a target? **Answered by the designer (2026-10): no Arabic for now.** English only; revisit before localization. | All UI |
 | 10 | **Moderation / report abuse:** not in scope, but app stores usually expect it for user-generated content. | Store review |
 | 11 | **Vendor name:** PRD writes "Zeego Cloud". Confirm the exact vendor/product name and SDK. | DEP-01, CLL-* |
 | 12 | **Flights vs groups in limits:** do flights count toward the 300-member cap and the 5/5/5 hierarchy? | GRP-03, GRP-05, §16 |

@@ -50,6 +50,7 @@ In Claude Code: `/wire <wire-id>`.
 | `CLAUDE.md` / `AGENTS.md` | Rules for AI agents working in this repo |
 | `docs/PRD.md` | Requirements with IDs, change log, open questions |
 | `docs/PROGRESS.md` | Status per requirement ID |
+| `docs/EXECUTION_PLAN.md` | Order of work by phase, what each needs, who does what |
 | `docs/PWA_SPEC.md` | Kickoff and rules, persona and function spec, UI spec, mock-data contract |
 | `docs/DESIGN.md` | Design system, components, states, UX decisions |
 | `docs/AB_TESTING.md` | Experiments, events, results, database setup |
