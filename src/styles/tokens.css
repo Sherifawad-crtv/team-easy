@@ -99,6 +99,7 @@
 
   /* Touch target: 44pt iOS / 48dp Android */
   --touch: 48px;
+  --nav-h: 60px;   /* docked bottom bar, above the safe area */
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);

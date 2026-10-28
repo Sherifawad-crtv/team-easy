@@ -1,21 +1,22 @@
 /* ---------- Shell: content sits in rounded containers on a tinted app background ---------- */
 .shell { min-height: 100dvh; background: var(--surface-container); }
 .rail { display: none; }
-.shell__main { min-height: 100dvh; padding-bottom: calc(80px + var(--safe-bottom)); }
+.shell__main { min-height: 100dvh; padding-bottom: calc(var(--nav-h) + var(--safe-bottom)); }
 .shell--convo .shell__main { padding-bottom: 0; }
 
 /* Phones: docked navigation bar with a pill indicator, extended action button above it */
 .navbar {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex;
-  padding: var(--s-4) var(--s-3) calc(var(--safe-bottom) + var(--s-5)); background: var(--surface-container);
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex; align-items: flex-start;
+  height: calc(var(--nav-h) + var(--safe-bottom)); padding: var(--s-3) var(--s-3) var(--safe-bottom);
+  background: var(--surface-container);
 }
 .shell--convo .navbar, .shell--convo .efab { display: none; }
 .navbar__item, .rail__item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: var(--s-2); min-height: var(--touch);
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
   color: var(--on-surface-variant); text-decoration: none; font-size: 12px; line-height: 16px; font-weight: 500;
 }
 .navbar__ind {
-  display: grid; place-items: center; width: 64px; height: 32px; border-radius: var(--shape-full);
+  display: grid; place-items: center; width: 56px; height: 28px; border-radius: var(--shape-full);
   transition: background-color var(--spring-fast-effects-dur) var(--spring-fast-effects), width var(--spring-fast-spatial-dur) var(--spring-fast-spatial);
 }
 .navbar__item:active .navbar__ind { background: color-mix(in srgb, var(--on-surface) 10%, transparent); }
@@ -23,7 +24,7 @@
 .navbar__item.is-active .navbar__ind, .rail__item.is-active .navbar__ind { background: var(--secondary-container); color: var(--on-secondary-container); }
 
 .efab {
-  position: fixed; right: var(--gutter); bottom: calc(var(--safe-bottom) + 96px); z-index: 31;
+  position: fixed; right: var(--gutter); bottom: calc(var(--safe-bottom) + var(--nav-h) + var(--s-5)); z-index: 31;
   display: inline-flex; align-items: center; gap: var(--s-4); height: 56px; padding: 0 var(--s-6) 0 var(--s-5);
   border: 0; border-radius: var(--shape-lg); background: var(--primary-container); color: var(--on-primary-container);
   font-size: 14px; font-weight: 600; letter-spacing: 0.1px; box-shadow: var(--shadow-3);
@@ -42,14 +43,14 @@
 
 /* Containers */
 .surface { background: var(--surface-container-lowest); border-radius: var(--shape-xl); overflow: hidden; }
-.page { margin: var(--s-3); min-height: calc(100dvh - 2 * var(--s-3) - 80px - var(--safe-bottom)); }
+.page { margin: var(--s-3); min-height: calc(100dvh - 2 * var(--s-3) - var(--nav-h) - var(--safe-bottom)); }
 .page__body { padding: var(--s-4) var(--s-6) var(--s-8); max-width: 720px; margin: 0 auto; }
 .page .bar { max-width: 720px; margin: 0 auto; padding-top: calc(var(--s-6) + var(--safe-top) * 0); }
 
 /* ---------- Chats ---------- */
 .chats { padding: calc(var(--safe-top) + var(--s-3)) var(--s-3) 0; }
-.chats__list { display: flex; flex-direction: column; height: calc(100dvh - var(--safe-top) - var(--s-3) - 80px - var(--safe-bottom) - var(--s-3)); background: var(--surface-container-lowest); border-radius: var(--shape-xl); overflow: hidden; }
-.chats__scroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 96px; }
+.chats__list { display: flex; flex-direction: column; height: calc(100dvh - var(--safe-top) - var(--s-3) - var(--nav-h) - var(--safe-bottom) - var(--s-3)); background: var(--surface-container-lowest); border-radius: var(--shape-xl); overflow: hidden; }
+.chats__scroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 88px; }
 .chats__pane { display: none; }
 .chats[data-open='true'] { padding: 0; }
 .chats[data-open='true'] .chats__list { display: none; }
@@ -175,7 +176,8 @@
   .rail__fab:active { border-radius: 28px; }
   .rail__nav { display: flex; flex-direction: column; gap: var(--s-4); width: 100%; }
   .rail__item { flex: none; }
-  .rail__item .navbar__ind { width: 56px; }
+  .rail__item .navbar__ind { width: 56px; height: 32px; }
+  .rail__item { gap: var(--s-2); }
   .rail__who { margin-top: auto; }
   .shell__main { padding: var(--s-4) var(--s-4) var(--s-4) 0; min-height: 100dvh; }
   .bar__action { display: block; }

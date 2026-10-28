@@ -28,7 +28,7 @@ What we adopt, and where it lives (`src/styles/tokens.css`, `components.css`, `a
 | Bigger, varied shapes | Shape scale 4 / 8 / 12 / 16 / 28 / full. Buttons are pills and morph to a squarer shape while pressed. People are circles, groups are squircles. FAB is a rounded square |
 | Emphasized type | Poppins (brand font). Weight 600 for emphasis, no extra size. Scale: 32, 28, 22, 16 titles; 16, 14, 12 body |
 | Spring motion | Spatial springs (move, can overshoot) and effects springs (fade, recolor, no overshoot) as CSS `linear()` curves, stiffness and damping from the Material 3 Expressive tokens. Reduced motion turns them off |
-| Navigation | Phones: docked navigation bar with a pill indicator, plus an extended "New chat" button. Desktop 1024+: navigation rail with a round-square action button |
+| Navigation | Phones: compact docked navigation bar (60px plus the safe area) with a pill indicator, plus an extended "New chat" button. Desktop 1024+: navigation rail with a round-square action button |
 | Components | Tonal and filled buttons, outlined fields, search as a pill, filter chips with a check, tonal banners, bottom sheets with 28px corners, a morphing shape loading indicator |
 
 Color source: brand palette primary `#1F62A3`, accent `#2BACE2`, navy text `#0D142E`, highlight `#F6F3DD`. Containers, surfaces and status colors are derived or proposed. Light theme only.
