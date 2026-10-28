@@ -25,7 +25,7 @@ Requirement IDs: ACC-01..08, CHT-01..05, SRC-01, NFR-01 (simulated realtime). Se
 
 ## C. UI and HIG spec
 
-Defined in `docs/DESIGN.md` sections 3 and 3b: Material 3 Expressive tokens and components, platform standard, states. Every screen: loading skeleton, empty, error with retry, offline, success; messaging adds sending and failed.
+Defined in `docs/DESIGN.md` sections 3 and 3b: tokens and components (Material 3 Expressive on our palette), the WhatsApp-style messaging layout, platform standard, states. Every screen: loading skeleton, empty, error with retry, offline, success; messaging adds sending and failed.
 
 ## D. Mock-data contract
 

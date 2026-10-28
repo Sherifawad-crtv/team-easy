@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Avatar, Badge, Button, Skeleton, useOnline } from '../../design/ui'
-import { IconCheck, IconMegaphone, IconPeople, IconSearch } from '../../design/icons'
+import { IconDoubleTick, IconMegaphone, IconPeople, IconSearch } from '../../design/icons'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { Banner } from '../../design/ui'
 import type { Conversation } from '../../data/types'
@@ -20,7 +20,8 @@ const isGroupish = (c: Conversation) => c.kind !== 'direct'
 
 function preview(c: Conversation): string {
   if (!c.lastMessage) return 'No messages yet'
-  return c.lastMessage
+  // My own last message shows delivery ticks instead of a name.
+  return c.lastSender === 'You' ? c.lastMessage.replace(/^You: /, '') : c.lastMessage
 }
 
 function Row({ c, active, onOpen, lines }: { c: Conversation; active: boolean; onOpen: (id: string) => void; lines: 1 | 2 }) {
@@ -28,8 +29,8 @@ function Row({ c, active, onOpen, lines }: { c: Conversation; active: boolean; o
     <button type="button" className={`chat-row${active ? ' chat-row--active' : ''}`} onClick={() => onOpen(c.id)} aria-current={active ? 'page' : undefined}>
       <Avatar
         name={c.title}
-        group={isGroupish(c)}
-        presence={c.kind === 'direct' ? c.presence : undefined}
+        size={56}
+                presence={c.kind === 'direct' ? c.presence : undefined}
         icon={c.kind === 'general' ? <IconMegaphone size={22} /> : undefined}
         tone={c.kind === "general" ? 0 : undefined}
       />
@@ -40,7 +41,10 @@ function Row({ c, active, onOpen, lines }: { c: Conversation; active: boolean; o
         </span>
         {c.parent && <span className="chat-row__parent">in {c.parent}</span>}
         <span className="chat-row__bottom">
-          <span className={`chat-row__preview chat-row__preview--${lines}${c.unread ? ' is-unread' : ''}`}>{preview(c)}</span>
+          <span className={`chat-row__preview chat-row__preview--${lines}${c.unread ? ' is-unread' : ''}`}>
+            {c.lastSender === 'You' && c.lastMessage && <span className="ticks" aria-label="Delivered"><IconDoubleTick size={18} /></span>}
+            {preview(c)}
+          </span>
           <Badge count={c.unread} muted={c.kind === 'general'} />
         </span>
       </span>
@@ -93,7 +97,6 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat }: ChatLi
         <div className="chips" role="group" aria-label="Filter chats">
           {FILTERS.map((f) => (
             <button key={f.id} type="button" className="chip" aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}>
-              {filter === f.id && <IconCheck />}
               {f.label}
               {f.id === 'unread' && all.some((c) => c.unread) && <span className="chip__count">{all.filter((c) => c.unread).length}</span>}
             </button>
@@ -143,7 +146,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat }: ChatLi
         <>
           {pinned && (
             <button type="button" className="pinned" onClick={() => onOpen(pinned.id)}>
-              <Avatar name={pinned.title} group tone={0} icon={<IconMegaphone size={22} />} />
+              <Avatar name={pinned.title} tone={0} icon={<IconMegaphone size={22} />} />
               <span className="chat-row__main">
                 <span className="chat-row__top">
                   <span className="chat-row__title is-unread">{pinned.title}</span>

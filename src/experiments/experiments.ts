@@ -12,7 +12,7 @@ export const EXPERIMENTS = {
   },
   conversation: {
     label: 'Conversation layout',
-    A: 'A time under every message',
+    A: 'A time inside every message',
     B: 'Messages grouped, time on tap',
   },
 } as const

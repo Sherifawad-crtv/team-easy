@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../../data'
 import type { Conversation } from '../../data/types'
@@ -19,7 +19,6 @@ export function ChatsScreen() {
   const [params, setParams] = useSearchParams()
   const sheet = params.get('new') === '1'
   const setSheet = (on: boolean) => setParams(on ? { new: '1' } : {}, { replace: true })
-  const [condensed, setCondensed] = useState(false)
   const scroller = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -58,10 +57,10 @@ export function ChatsScreen() {
   return (
     <div className="chats" data-open={id ? 'true' : 'false'}>
       <section className="chats__list" aria-label="Chats">
-        <header className={`bar${condensed ? ' bar--condensed' : ''}`}>
-          <h1 className="bar__title">Chats</h1>
+        <header className="bar">
+          <h1 className="bar__title">Team Easy</h1>
         </header>
-        <div className="chats__scroll" ref={scroller} onScroll={(e) => setCondensed(e.currentTarget.scrollTop > 24)}>
+        <div className="chats__scroll" ref={scroller}>
           <ChatList state={list} activeId={id} onOpen={open} onRetry={list.reload} onNewChat={() => setSheet(true)} />
         </div>
       </section>

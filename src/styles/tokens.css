@@ -56,12 +56,18 @@
   --scrim: rgb(13 20 46 / 0.4);
 
   /* Message bubbles */
-  --bubble-sent: var(--primary-container);
+  --bubble-sent: #cfe3f8;
   --on-bubble-sent: var(--on-primary-container);
-  --bubble-received: var(--surface-container-low);
+  --bubble-received: #ffffff;
   --on-bubble-received: var(--on-surface);
   --presence-online: var(--success);
   --presence-away: var(--warning);
+
+  /* Conversation: WhatsApp-style wallpaper and sender name colors */
+  --wallpaper: #e6edf5;
+  --wallpaper-ink: #0d142e;
+  --bubble-radius: 12px;
+  --sender-0: #1f62a3; --sender-1: #00758f; --sender-2: #17744a; --sender-3: #8a6a00; --sender-4: #6b4fa3;
 
   /* Avatar tones: tonal pairs so people and groups are easy to tell apart */
   --tone-0-bg: var(--primary-container);   --tone-0-fg: var(--on-primary-container);

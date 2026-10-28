@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { api } from '../../data'
 import type { Conversation as Conv, Message } from '../../data/types'
-import { Avatar, BackButton, Banner, BottomSheet, Button, Skeleton } from '../../design/ui'
-import { IconMegaphone, IconRetry, IconSend, IconTrash } from '../../design/icons'
+import { Avatar, BackButton, Banner, BottomSheet, Button, Skeleton, toneFor } from '../../design/ui'
+import { IconClock, IconDoubleTick, IconMegaphone, IconRetry, IconSend, IconTrash } from '../../design/icons'
 import { track, trackExposure } from '../../experiments/analytics'
 import { useVariant } from '../../experiments/experiments'
 import { useAsync } from '../../state/useAsync'
@@ -15,7 +15,7 @@ let tmpSeq = 0
 
 type Item =
   | { kind: 'day'; key: string; label: string }
-  | { kind: 'msg'; m: Message; first: boolean; last: boolean }
+  | { kind: 'msg'; m: Message; first: boolean; last: boolean; tail: boolean }
 
 function buildItems(messages: Message[], grouped: boolean): Item[] {
   const items: Item[] = []
@@ -25,7 +25,9 @@ function buildItems(messages: Message[], grouped: boolean): Item[] {
     if (!prev || !sameDay(prev.at, m.at)) items.push({ kind: 'day', key: `d-${m.id}`, label: dayLabel(m.at) })
     const joinsPrev = grouped && prev && sameDay(prev.at, m.at) && prev.senderId === m.senderId && m.at - prev.at < GROUP_GAP
     const joinsNext = grouped && next && sameDay(next.at, m.at) && next.senderId === m.senderId && next.at - m.at < GROUP_GAP
-    items.push({ kind: 'msg', m, first: !joinsPrev, last: !joinsNext })
+    // The bubble tail marks the start of a run from one person, in both variants.
+    const startsRun = !(prev && sameDay(prev.at, m.at) && prev.senderId === m.senderId && m.at - prev.at < GROUP_GAP)
+    items.push({ kind: 'msg', m, first: !joinsPrev, last: !joinsNext, tail: startsRun })
   })
   return items
 }
@@ -48,7 +50,7 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
   const [draft, setDraft] = useState('')
   const [actionFor, setActionFor] = useState<Message | null>(null)
   const [shownTimes, setShownTimes] = useState<Set<string>>(new Set())
-  const endRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const pressTimer = useRef<number>(0)
 
   useEffect(() => {
@@ -72,7 +74,9 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
 
   const count = history.status === 'ready' ? history.data.length : 0
   useEffect(() => {
-    endRef.current?.scrollIntoView({ block: 'end' })
+    // Scroll only the message list, never the page around it.
+    const el = scrollRef.current
+    if (el) el.scrollTop = el.scrollHeight
   }, [count, history.status])
 
   const send = useCallback(
@@ -139,7 +143,7 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
         </div>
       </header>
 
-      <div className="convo__scroll" role="log" aria-live="polite" aria-label={`Messages with ${conversation.title}`}>
+      <div className="convo__scroll" ref={scrollRef} role="log" aria-live="polite" aria-label={`Messages with ${conversation.title}`}>
         {history.status === 'loading' && (
           <div className="convo__skeleton" aria-busy="true" aria-label="Loading messages">
             {[62, 40, 70, 34, 56].map((w, i) => (
@@ -167,8 +171,9 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
               m={it.m}
               first={it.first}
               last={it.last}
+              tail={it.tail}
               grouped={grouped}
-              showName={conversation.kind !== 'direct' && it.m.senderId !== ME && (!grouped || it.first)}
+              showName={conversation.kind !== 'direct' && it.m.senderId !== ME && it.tail}
               timeShown={!grouped || shownTimes.has(it.m.id)}
               onTap={() => {
                 if (it.m.status === 'failed') setActionFor(it.m)
@@ -180,7 +185,6 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
             />
           ),
         )}
-        <div ref={endRef} />
       </div>
 
       <form className="composer" onSubmit={(e) => { e.preventDefault(); submit() }}>
@@ -225,6 +229,7 @@ interface RowProps {
   m: Message
   first: boolean
   last: boolean
+  tail: boolean
   grouped: boolean
   showName: boolean
   timeShown: boolean
@@ -234,19 +239,20 @@ interface RowProps {
   onMenu: () => void
 }
 
-function MessageRow({ m, first, last, grouped, showName, timeShown, onTap, onPressStart, onPressEnd, onMenu }: RowProps) {
+function MessageRow({ m, first, last, tail, grouped, showName, timeShown, onTap, onPressStart, onPressEnd, onMenu }: RowProps) {
   const mine = m.senderId === ME
   const failed = m.status === 'failed'
-  const meta = m.status === 'sending' ? 'Sending…' : failed ? 'Not sent. Tap to retry' : messageTime(m.at)
-  const showMeta = m.status !== 'sent' || timeShown
-  const cls = ['msg', mine && 'msg--mine', grouped && !first && 'msg--joined', grouped && !last && 'msg--open'].filter(Boolean).join(' ')
+  const time = messageTime(m.at)
+  const showFoot = !failed && (timeShown || m.status === 'sending')
+  const label = failed ? 'Not sent. Tap to retry' : m.status === 'sending' ? 'Sending' : time
+  const cls = ['msg', mine && 'msg--mine', tail && 'msg--tail', grouped && !first && 'msg--joined', grouped && !last && 'msg--open'].filter(Boolean).join(' ')
   return (
     <div className={cls}>
       <div
-        className={`bubble${failed ? ' bubble--failed' : ''}${m.status === 'sending' ? ' bubble--sending' : ''}`}
+        className={`bubble${failed ? ' bubble--failed' : ''}${m.status === 'sending' ? ' bubble--sending' : ''}${showFoot ? ' bubble--timed' : ''}${mine ? ' bubble--mine' : ''}`}
         role="button"
         tabIndex={0}
-        aria-label={`${mine ? 'You' : m.senderName}: ${m.text}. ${meta}`}
+        aria-label={`${mine ? 'You' : m.senderName}: ${m.text}. ${label}`}
         onClick={onTap}
         onKeyDown={(e) => { if (e.key === 'Enter') onTap(); if (e.key === 'ContextMenu') onMenu() }}
         onPointerDown={onPressStart}
@@ -255,10 +261,16 @@ function MessageRow({ m, first, last, grouped, showName, timeShown, onTap, onPre
         onPointerCancel={onPressEnd}
         onContextMenu={(e) => { e.preventDefault(); onMenu() }}
       >
-        {showName && <span className="bubble__name">{m.senderName}</span>}
+        {showName && <span className="bubble__name" style={{ color: `var(--sender-${toneFor(m.senderName)})` }}>{m.senderName}</span>}
         <span className="bubble__text">{m.text}</span>
+        {showFoot && (
+          <span className="bubble__foot">
+            {time}
+            {mine && (m.status === 'sending' ? <IconClock size={14} /> : <span className="ticks"><IconDoubleTick size={16} /></span>)}
+          </span>
+        )}
       </div>
-      {showMeta && <span className={`msg__meta${failed ? ' msg__meta--failed' : ''}`}>{meta}</span>}
+      {failed && <span className="msg__meta msg__meta--failed">{label}</span>}
     </div>
   )
 }

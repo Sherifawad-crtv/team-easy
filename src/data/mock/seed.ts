@@ -79,7 +79,7 @@ export const CONVERSATIONS: Conversation[] = [
   },
   {
     id: 'c-sam', kind: 'direct', title: 'Sam Okafor', presence: 'online',
-    lastMessage: 'Found two edge cases on the invite flow', lastAt: ago(60 * 80), unread: 0,
+    lastMessage: 'Thanks Sam, sending the invite flow notes now', lastSender: 'You', lastAt: ago(60 * 80), unread: 0,
   },
 ]
 
@@ -129,7 +129,7 @@ export function seedMessages(c: Conversation): Message[] {
     const isLast = i === count - 1
     // People often send several messages in a row, which makes grouping visible.
     if (isLast || rand() > 0.55) {
-      const mine = !isLast && rand() < 0.45
+      const mine = isLast ? c.lastSender === 'You' : rand() < 0.45
       sender = mine ? ME : others[Math.floor(rand() * others.length)]
     }
     let line = Math.floor(rand() * LINES.length)

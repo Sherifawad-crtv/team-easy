@@ -39,9 +39,8 @@ export function AppShell() {
       <div className="shell__main"><Outlet /></div>
 
       {pathname === '/chats' && (
-        <button type="button" className="efab" onClick={newChat}>
+        <button type="button" className="efab" aria-label="New chat" onClick={newChat}>
           <IconEdit size={24} />
-          New chat
         </button>
       )}
       <nav className="navbar" aria-label="Main">

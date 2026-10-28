@@ -6,8 +6,8 @@ Two experiments run on the chat list and the conversation. Each visitor is assig
 
 | Id | Screen | A | B | What we expect |
 |---|---|---|---|---|
-| `chat_list` | Chat list | Plain list, newest first, two-line preview | Filter chips (All, Unread, Groups, Direct) and a pinned announcements card, one-line preview | B gets people to their first chat faster when unread counts are high |
-| `conversation` | Conversation | A time under every message | Consecutive messages grouped, time shown on tap | B feels calmer and more messages are sent per visitor |
+| `chat_list` | Chat list | Plain list, newest first | Filter chips (All, Unread, Groups, Direct) and a pinned announcements card | B gets people to their first chat faster when unread counts are high |
+| `conversation` | Conversation | Time and ticks inside every bubble | Consecutive messages with squarer joins, time shown on tap | B feels calmer and more messages are sent per visitor |
 
 Metrics per variant: visitors, chats opened per visitor, messages sent per visitor, average time from the list appearing to the first chat opened.
 

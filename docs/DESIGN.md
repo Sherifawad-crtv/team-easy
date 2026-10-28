@@ -15,27 +15,26 @@ Sections marked **[TO DEFINE]** are the designer's decisions; Claude Code must n
 - Screens use tokens and design components only. No raw colors, sizes, radii or text styles.
 - A new component goes into `src/design` first, then into screens.
 
-## 3. Design language: Material 3 Expressive
+## 3. Design language: WhatsApp layout on our design system
 
-Google's current design language (the one Google Chat, Meet and Gmail are moving to), dressed in our brand. Decided 2026-10-28 by the designer, replacing the earlier iOS-style floating pill nav. The Flutter attempt used the older Material 3 default look, and the first PWA build used a custom iOS-style look; neither was Material 3 Expressive.
+Decided 2026-10-28 by the designer. The layout and behavior of a messaging app people already know (WhatsApp), built from our own tokens and components (Material 3 Expressive tonal colors, shapes and spring motion, brand palette, Poppins, T logo). Brand blue stands where WhatsApp uses green, so it reads as ours. Light theme only.
 
-What we adopt, and where it lives (`src/styles/tokens.css`, `components.css`, `app.css`; components in `src/design/`):
-
-| Principle | In this app |
+| Area | What we do |
 |---|---|
-| Tonal color roles | `primary`, `primary-container`, `secondary-container`, `tertiary-container`, status containers, five surface tiers. Hierarchy comes from tone, not outlines or shadows |
-| Containers on a tinted background | App background `surface-container`; lists and conversations sit in white rounded containers (28px) |
-| Bigger, varied shapes | Shape scale 4 / 8 / 12 / 16 / 28 / full. Buttons are pills and morph to a squarer shape while pressed. People are circles, groups are squircles. FAB is a rounded square |
-| Emphasized type | Poppins (brand font). Weight 600 for emphasis, no extra size. Scale: 32, 28, 22, 16 titles; 16, 14, 12 body |
-| Spring motion | Spatial springs (move, can overshoot) and effects springs (fade, recolor, no overshoot) as CSS `linear()` curves, stiffness and damping from the Material 3 Expressive tokens. Reduced motion turns them off |
-| Navigation | Phones: compact docked navigation bar (60px plus the safe area) with a pill indicator, plus an extended "New chat" button. Desktop 1024+: navigation rail with a round-square action button |
-| Components | Tonal and filled buttons, outlined fields, search as a pill, filter chips with a check, tonal banners, bottom sheets with 28px corners, a morphing shape loading indicator |
+| Chat list | Flat, full-width rows with no cards or dividers. 56px circle avatars (groups are circles too), name, one-line preview, time at the right (brand blue when unread), unread count badge. Delivery ticks before the preview when my message was last. Sub-group rows show "in <parent>" |
+| Top bar and search | "Team Easy" in brand blue, search as a pill below it, filter chips as pills (variant B) |
+| Phone navigation | Docked tab bar (60px plus safe area) with a pill indicator, and a round-square new-chat button above it. Only screens that exist are listed |
+| Desktop (1024+) | Like WhatsApp Web: narrow rail, chat list column, conversation filling the rest. Hairlines, no floating containers |
+| Conversation | Patterned wallpaper in a brand tint. White header with avatar, name and status. Day pills in capitals |
+| Bubbles | Incoming white, outgoing light brand blue. Small tail on the first bubble of a run. Time and double-tick inside the bubble, bottom right. Group sender names in a color per person. A failed message shows a red outline and "Not sent. Tap to retry" |
+| Composer | White pill field over the wallpaper and a round send button |
+| Motion | Spring curves from Material 3 Expressive, off for reduced motion. Buttons squarer while pressed |
 
-Color source: brand palette primary `#1F62A3`, accent `#2BACE2`, navy text `#0D142E`, highlight `#F6F3DD`. Containers, surfaces and status colors are derived or proposed. Light theme only.
+What is deliberately not here: voice and video call buttons, camera, attachments, emoji, voice notes, status/updates and communities tabs. Those features are not built, and we do not draw stubs.
 
-Still to decide: typeface. Material 3 Expressive uses Roboto Flex or Google Sans; we keep Poppins for brand continuity. Dynamic color and dark theme are out of scope.
+Tokens: `src/styles/tokens.css`. Color: primary `#1F62A3`, accent `#2BACE2`, navy text `#0D142E`, highlight `#F6F3DD`; container, surface, wallpaper and status colors are derived or proposed. Typeface: Poppins.
 
-Limits of this section: written from public coverage of Material 3 Expressive and its rollout in Meet and Chat. The official spec at m3.material.io was not reachable from the build environment, so exact token values are close approximations.
+Limits: written from familiarity with WhatsApp's public UI. Exact WhatsApp pixel values are not copied and are not a goal.
 
 ## 3b. Platform standard
 
@@ -75,7 +74,7 @@ Flows are specified per area in `docs/PRD.md` (IDs). Record design decisions per
 | Group tree and navigation (GRP-01, 02) | **[TO DEFINE]** | |
 | Delete with undo (GRP-10) | **[TO DEFINE]** | |
 | Leave group options (ROL-05, 06) | **[TO DEFINE]** | |
-| Chat list and conversation (CHT-01..05) | Two A/B experiments (see `docs/AB_TESTING.md`). **Chat list** A: plain list, newest first, two-line preview. B: filter chips (All, Unread, Groups, Direct) and a pinned announcements card, one-line preview. **Conversation** A: a time under every message. B: consecutive messages grouped, time on tap. Both: day separators, sent and received bubbles, sending and failed states with retry, delete own message in private chats only (long-press or right-click), new chat by searching members. **Assumed:** the announcements chat allows posting; search covers chat names and last message only (SRC-02 message search not built). | Built on mocks, testing |
+| Chat list and conversation (CHT-01..05) | Two A/B experiments (see `docs/AB_TESTING.md`). **Chat list** A: plain list, newest first. B: filter chips (All, Unread, Groups, Direct) and a pinned announcements card. **Conversation** A: time and ticks inside every bubble. B: consecutive messages with squarer joins, time on tap. Both: day separators, sent and received bubbles, sending and failed states with retry, delete own message in private chats only (long-press or right-click), new chat by searching members. **Assumed:** the announcements chat allows posting; search covers chat names and last message only (SRC-02 message search not built). | Built on mocks, testing |
 | Permission prompts (NFR-04) | **[TO DEFINE]** | |
 | Ads placement (MON-02) | **[TO DEFINE]** | |
 
