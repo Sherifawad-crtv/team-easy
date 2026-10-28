@@ -23,7 +23,7 @@ export function AccountScreen() {
     : []
 
   return (
-    <main className="page fade-in">
+    <main className="page surface fade-in">
       <header className="bar"><h1 className="bar__title">Account</h1></header>
       <div className="page__body stack-lg">
         <div className="row-flex" style={{ gap: 'var(--s-5)' }}>

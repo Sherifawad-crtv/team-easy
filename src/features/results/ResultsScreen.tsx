@@ -28,7 +28,7 @@ export function ResultsScreen() {
   const data = useAsync(loadSummary, [])
   const [cleared, setCleared] = useState(0)
   return (
-    <main className="page fade-in" key={cleared}>
+    <main className="page surface fade-in" key={cleared}>
       <header className="bar"><h1 className="bar__title">A/B results</h1></header>
       <div className="page__body stack-lg">
         {data.status === 'loading' && <Skeleton height={160} radius={20} />}

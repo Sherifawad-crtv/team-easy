@@ -2,8 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../../data'
 import type { Conversation } from '../../data/types'
-import { IconButton } from '../../design/ui'
-import { IconChat, IconPlus } from '../../design/icons'
+import { IconChat } from '../../design/icons'
 import { track, trackExposure } from '../../experiments/analytics'
 import { useAsync } from '../../state/useAsync'
 import { ChatList } from './ChatList'
@@ -61,7 +60,6 @@ export function ChatsScreen() {
       <section className="chats__list" aria-label="Chats">
         <header className={`bar${condensed ? ' bar--condensed' : ''}`}>
           <h1 className="bar__title">Chats</h1>
-          <span className="bar__action"><IconButton label="New chat" onClick={() => setSheet(true)}><IconPlus /></IconButton></span>
         </header>
         <div className="chats__scroll" ref={scroller} onScroll={(e) => setCondensed(e.currentTarget.scrollTop > 24)}>
           <ChatList state={list} activeId={id} onOpen={open} onRetry={list.reload} onNewChat={() => setSheet(true)} />
@@ -77,7 +75,7 @@ export function ChatsScreen() {
           <div className="empty" aria-busy="true"><p className="t-body-sm muted">Loading…</p></div>
         ) : (
           <div className="empty empty--pane">
-            <IconChat size={40} />
+            <span className="empty__icon"><IconChat size={40} /></span>
             <h2 className="t-title">Pick a conversation</h2>
             <p className="t-body-sm muted">Choose a chat on the left, or start a new one.</p>
           </div>

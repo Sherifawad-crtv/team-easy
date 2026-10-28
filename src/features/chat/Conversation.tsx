@@ -132,7 +132,7 @@ export function ConversationView({ conversation, onBack }: { conversation: Conv;
     <div className="convo">
       <header className="convo__bar">
         <span className="convo__back"><BackButton onClick={onBack} label="Back to chats" /></span>
-        <Avatar name={conversation.title} size={40} group={conversation.kind !== 'direct'} presence={isDirect ? conversation.presence : undefined} icon={conversation.kind === 'general' ? <IconMegaphone size={20} /> : undefined} />
+        <Avatar name={conversation.title} size={40} group={conversation.kind !== 'direct'} presence={isDirect ? conversation.presence : undefined} icon={conversation.kind === 'general' ? <IconMegaphone size={20} /> : undefined} tone={conversation.kind === 'general' ? 0 : undefined} />
         <div className="convo__who">
           <h2 className="convo__title">{conversation.title}</h2>
           <p className="convo__sub">{subtitle(conversation)}</p>

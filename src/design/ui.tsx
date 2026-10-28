@@ -3,7 +3,7 @@ import { IconAlert, IconBack, IconCheckCircle, IconEye, IconEyeOff, IconInfo, Ic
 
 /* ---------- Button ---------- */
 
-type Variant = 'primary' | 'secondary' | 'tertiary' | 'destructive'
+type Variant = 'primary' | 'secondary' | 'outlined' | 'tertiary' | 'destructive'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant
@@ -113,9 +113,16 @@ export function initials(name: string): string {
   return (first + last).toUpperCase()
 }
 
-export function Avatar({ name, size = 48, group = false, presence, icon }: { name: string; size?: number; group?: boolean; presence?: 'online' | 'away' | 'offline'; icon?: ReactNode }) {
+/** Stable tone (0 to 4) from a name, so the same person always gets the same color. */
+export function toneFor(name: string): number {
+  let n = 0
+  for (const ch of name) n = (n * 31 + ch.codePointAt(0)!) >>> 0
+  return n % 5
+}
+
+export function Avatar({ name, size = 48, group = false, presence, icon, tone }: { name: string; size?: number; group?: boolean; presence?: 'online' | 'away' | 'offline'; icon?: ReactNode; tone?: number }) {
   return (
-    <span className={`avatar${group ? ' avatar--group' : ''}`} style={{ ['--size' as string]: `${size}px` }} role="img" aria-label={name || 'Profile photo'}>
+    <span className={`avatar avatar--t${tone ?? toneFor(name)}${group ? ' avatar--group' : ''}`} style={{ ['--size' as string]: `${size}px` }} role="img" aria-label={name || 'Profile photo'}>
       {icon ?? (name.trim() ? initials(name) : <IconUser size={Math.round(size * 0.5)} />)}
       {presence && presence !== 'offline' && <span className={`avatar__dot${presence === 'away' ? ' avatar__dot--away' : ''}`} />}
     </span>

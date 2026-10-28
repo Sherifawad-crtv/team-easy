@@ -15,29 +15,33 @@ Sections marked **[TO DEFINE]** are the designer's decisions; Claude Code must n
 - Screens use tokens and design components only. No raw colors, sizes, radii or text styles.
 - A new component goes into `src/design` first, then into screens.
 
-## 3. Tokens
+## 3. Design language: Material 3 Expressive
 
-Names are semantic (`--action`, `--text-2`, `--bubble-sent`), not raw values. Status: **approved by the designer** (palette, logo, Poppins, light only). Derived tints and status colors are proposals.
+Google's current design language (the one Google Chat, Meet and Gmail are moving to), dressed in our brand. Decided 2026-10-28 by the designer, replacing the earlier iOS-style floating pill nav. The Flutter attempt used the older Material 3 default look, and the first PWA build used a custom iOS-style look; neither was Material 3 Expressive.
 
-| Group | Contents | Status |
-|---|---|---|
-| Color | Brand `#3E88C8`, action `#1F62A3` (AA on white), accent `#2BACE2` / `#51C2E6`, text `#0D142E`, highlight `#F6F3DD`; surface and border tints derived from the palette; status colors (success, warning, error) proposed outside the palette | Approved |
-| Light / dark | Light only | Decided |
-| Typography | Poppins (bundled, `public/fonts`). Display 32, headline 26, title 18/16, body 16/14, caption 12 | Approved |
-| Spacing | 4-pt scale: 2, 4, 8, 12, 16, 20, 24, 32, 48. Screen gutter 16 | Approved |
-| Radius | 8 / 12 / 20 / full | Approved |
-| Elevation | low / mid / high, soft navy shadows | Approved |
-| Motion | 120 / 200 / 320 ms, ease-out; zero when reduce-motion is on | Approved |
-| Iconography | Inline SVG set in `src/design/icons.tsx` (24px, 2px stroke) | Proposed |
+What we adopt, and where it lives (`src/styles/tokens.css`, `components.css`, `app.css`; components in `src/design/`):
 
-Brand notes: the T logo is brighter (cyan to azure) than the palette blues. Buttons and links use the deeper `action` blue so white text passes contrast; `brand` is for large shapes only.
+| Principle | In this app |
+|---|---|
+| Tonal color roles | `primary`, `primary-container`, `secondary-container`, `tertiary-container`, status containers, five surface tiers. Hierarchy comes from tone, not outlines or shadows |
+| Containers on a tinted background | App background `surface-container`; lists and conversations sit in white rounded containers (28px) |
+| Bigger, varied shapes | Shape scale 4 / 8 / 12 / 16 / 28 / full. Buttons are pills and morph to a squarer shape while pressed. People are circles, groups are squircles. FAB is a rounded square |
+| Emphasized type | Poppins (brand font). Weight 600 for emphasis, no extra size. Scale: 32, 28, 22, 16 titles; 16, 14, 12 body |
+| Spring motion | Spatial springs (move, can overshoot) and effects springs (fade, recolor, no overshoot) as CSS `linear()` curves, stiffness and damping from the Material 3 Expressive tokens. Reduced motion turns them off |
+| Navigation | Phones: docked navigation bar with a pill indicator, plus an extended "New chat" button. Desktop 1024+: navigation rail with a round-square action button |
+| Components | Tonal and filled buttons, outlined fields, search as a pill, filter chips with a check, tonal banners, bottom sheets with 28px corners, a morphing shape loading indicator |
 
-## 3b. Native-feel standard
+Color source: brand palette primary `#1F62A3`, accent `#2BACE2`, navy text `#0D142E`, highlight `#F6F3DD`. Containers, surfaces and status colors are derived or proposed. Light theme only.
 
-- iOS HIG for structure (spacing, margins, hierarchy), dressed in our colors and type.
-- Phones: floating glass pill nav with a sibling round action button (not docked inside the pill). Only screens that exist are listed.
-- Bottom sheets for actions. 48px touch targets (iOS 44pt minimum). Condensing large header. Back chevron on pushed screens.
-- Fluid layout checked at 360 to 440px, no fixed max-width caps on phones. Real layout swap at 1024px: sidebar plus list and conversation side by side.
+Still to decide: typeface. Material 3 Expressive uses Roboto Flex or Google Sans; we keep Poppins for brand continuity. Dynamic color and dark theme are out of scope.
+
+Limits of this section: written from public coverage of Material 3 Expressive and its rollout in Meet and Chat. The official spec at m3.material.io was not reachable from the build environment, so exact token values are close approximations.
+
+## 3b. Platform standard
+
+- Touch targets 48px (iOS 44pt minimum). Large flexible app bar that condenses on scroll. Back chevron on pushed screens. Bottom sheets for actions.
+- Fluid layout checked at 360 to 440px, real layout swap at 1024px: navigation rail, list and conversation in two containers.
+- Only screens that exist appear in navigation.
 - Home screen icon: opaque 180x180 PNG at `/apple-touch-icon.png`. After changing it, clear Safari website data before re-adding.
 
 ## 4. Components to build (checklist)

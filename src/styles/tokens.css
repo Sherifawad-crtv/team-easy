@@ -1,4 +1,9 @@
-/* Design tokens. Light theme only. Names are semantic, never raw values. */
+/*
+ * Design tokens. Light theme only.
+ * Modeled on Google's Material 3 Expressive: tonal color roles, large and
+ * varied shapes, emphasized type, spring motion. Brand palette on top.
+ * Names are semantic roles, never raw values.
+ */
 @font-face { font-family: 'Poppins'; font-weight: 400; font-display: swap; src: url('/fonts/Poppins_400Regular.ttf') format('truetype'); }
 @font-face { font-family: 'Poppins'; font-weight: 500; font-display: swap; src: url('/fonts/Poppins_500Medium.ttf') format('truetype'); }
 @font-face { font-family: 'Poppins'; font-weight: 600; font-display: swap; src: url('/fonts/Poppins_600SemiBold.ttf') format('truetype'); }
@@ -7,61 +12,89 @@
 :root {
   color-scheme: light;
 
-  /* Brand (palette) */
+  /* ---- Brand (palette) ---- */
   --brand: #3e88c8;
-  --action: #1f62a3; /* interactive; AA with white text */
-  --on-action: #ffffff;
   --accent: #2bace2;
   --accent-soft: #51c2e6;
   --highlight: #f6f3dd;
 
-  /* Surfaces (tints derived from the palette) */
-  --bg: #f5f8fc;
-  --surface: #ffffff;
-  --surface-tint: #e8f1fa;
-  --surface-sunken: #eef3f9;
+  /* ---- Color roles (tonal) ---- */
+  --primary: #1f62a3;                 /* palette: deep blue, AA with white */
+  --on-primary: #ffffff;
+  --primary-container: #d3e4f7;       /* derived tint of primary */
+  --on-primary-container: #0a2e52;
 
-  /* Text */
-  --text: #0d142e;
-  --text-2: #4b5675;
-  --text-disabled: #98a2b8;
+  --secondary-container: #dde6f1;     /* derived, blue-grey */
+  --on-secondary-container: #0d142e;
 
-  /* Lines */
-  --border: #dce5f0;
-  --border-strong: #b4c4d8;
+  --tertiary-container: #d2eef8;      /* derived tint of accent */
+  --on-tertiary-container: #003a4d;
 
-  /* Status (proposed, outside the palette) */
+  --error: #c0392b;                   /* proposed, outside the palette */
+  --error-container: #fbe1dd;
+  --on-error-container: #5a1410;
   --success: #1e8e5a;
+  --success-container: #d5efe2;
+  --on-success-container: #0b3d26;
   --warning: #b7791f;
-  --error: #c0392b;
-  --info: #1f7fa8;
+  --warning-container: #fbebcb;
+  --on-warning-container: #4a3000;
 
-  /* Messages */
-  --bubble-sent: var(--action);
-  --on-bubble-sent: #ffffff;
-  --bubble-received: var(--surface-tint);
-  --on-bubble-received: var(--text);
+  /* Surfaces: blue-tinted neutrals. Lowest is white; the app sits on "container". */
+  --surface: #f7fafd;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f1f5fa;
+  --surface-container: #e9eff6;
+  --surface-container-high: #e3e9f1;
+  --surface-container-highest: #dce3ec;
+
+  --on-surface: #0d142e;              /* palette navy */
+  --on-surface-variant: #4b5675;
+  --on-surface-disabled: #98a2b8;
+  --outline: #74809a;
+  --outline-variant: #c9d3e1;
+  --scrim: rgb(13 20 46 / 0.4);
+
+  /* Message bubbles */
+  --bubble-sent: var(--primary-container);
+  --on-bubble-sent: var(--on-primary-container);
+  --bubble-received: var(--surface-container-low);
+  --on-bubble-received: var(--on-surface);
   --presence-online: var(--success);
   --presence-away: var(--warning);
 
-  /* Spacing, 4-pt scale */
+  /* Avatar tones: tonal pairs so people and groups are easy to tell apart */
+  --tone-0-bg: var(--primary-container);   --tone-0-fg: var(--on-primary-container);
+  --tone-1-bg: var(--tertiary-container);  --tone-1-fg: var(--on-tertiary-container);
+  --tone-2-bg: var(--success-container);   --tone-2-fg: var(--on-success-container);
+  --tone-3-bg: var(--highlight);           --tone-3-fg: #3d3a14;
+  --tone-4-bg: var(--secondary-container); --tone-4-fg: var(--on-secondary-container);
+
+  /* ---- Shape ---- */
+  --shape-xs: 4px; --shape-sm: 8px; --shape-md: 12px; --shape-lg: 16px;
+  --shape-xl: 28px; --shape-full: 999px;
+
+  /* ---- Spacing, 4-pt scale ---- */
   --s-1: 2px; --s-2: 4px; --s-3: 8px; --s-4: 12px; --s-5: 16px;
   --s-6: 20px; --s-7: 24px; --s-8: 32px; --s-9: 48px;
   --gutter: 16px;
 
-  /* Radius */
-  --r-sm: 8px; --r-md: 12px; --r-lg: 20px; --r-full: 999px;
+  /* ---- Elevation: mostly tone, shadow only for floating things ---- */
+  --shadow-1: 0 1px 2px rgb(13 20 46 / 0.08), 0 1px 3px rgb(13 20 46 / 0.06);
+  --shadow-2: 0 2px 6px rgb(13 20 46 / 0.1), 0 4px 12px rgb(13 20 46 / 0.06);
+  --shadow-3: 0 6px 18px rgb(13 20 46 / 0.14), 0 2px 6px rgb(13 20 46 / 0.08);
 
-  /* Elevation, soft navy shadows */
-  --shadow-low: 0 2px 8px rgb(13 20 46 / 0.06);
-  --shadow-mid: 0 6px 20px rgb(13 20 46 / 0.1);
-  --shadow-high: 0 12px 32px rgb(13 20 46 / 0.14);
+  /* ---- Motion: springs (stiffness and damping from Material 3 Expressive) ----
+     Spatial springs move things and can overshoot. Effects springs fade and
+     recolor and never overshoot. Fallback is a plain ease. */
+  --spring-fast-spatial: cubic-bezier(0.2, 0, 0, 1);  --spring-fast-spatial-dur: 329ms;
+  --spring-spatial: cubic-bezier(0.2, 0, 0, 1);       --spring-spatial-dur: 381ms;
+  --spring-slow-spatial: cubic-bezier(0.2, 0, 0, 1);  --spring-slow-spatial-dur: 526ms;
+  --spring-fast-effects: cubic-bezier(0.2, 0, 0, 1);  --spring-fast-effects-dur: 124ms;
+  --spring-effects: cubic-bezier(0.2, 0, 0, 1);       --spring-effects-dur: 192ms;
+  --spring-slow-effects: cubic-bezier(0.2, 0, 0, 1);  --spring-slow-effects-dur: 271ms;
 
-  /* Motion */
-  --t-fast: 120ms; --t-base: 200ms; --t-slow: 320ms;
-  --ease: cubic-bezier(0.215, 0.61, 0.355, 1);
-
-  /* Type */
+  /* ---- Type ---- */
   --font: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* Touch target: 44pt iOS / 48dp Android */
@@ -69,8 +102,43 @@
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* ---- Legacy names (kept so older rules keep working) ---- */
+  --action: var(--primary);
+  --on-action: var(--on-primary);
+  --bg: var(--surface);
+  --text: var(--on-surface);
+  --text-2: var(--on-surface-variant);
+  --text-disabled: var(--on-surface-disabled);
+  --border: var(--outline-variant);
+  --border-strong: var(--outline);
+  --surface-tint: var(--primary-container);
+  --surface-sunken: var(--surface-container-low);
+  --r-sm: var(--shape-sm); --r-md: var(--shape-md); --r-lg: var(--shape-lg); --r-full: var(--shape-full);
+  --shadow-low: var(--shadow-1); --shadow-mid: var(--shadow-2); --shadow-high: var(--shadow-3);
+}
+
+/* Real spring curves where the browser supports linear() easing. */
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --spring-fast-spatial: linear(0, 0.045, 0.157, 0.304, 0.463, 0.617, 0.754, 0.868, 0.957, 1.021, 1.063, 1.086, 1.094, 1.092, 1.083, 1.069, 1.054, 1.04, 1.026, 1.015, 1.006, 0.999, 0.995, 0.992, 0.991, 0.991, 0.992, 0.993, 0.994, 1);
+    --spring-fast-spatial-dur: 329ms;
+    --spring-spatial: linear(0, 0.029, 0.1, 0.195, 0.301, 0.409, 0.513, 0.607, 0.691, 0.763, 0.824, 0.874, 0.913, 0.944, 0.968, 0.985, 0.998, 1.006, 1.011, 1.014, 1.015, 1.015, 1.014, 1.013, 1.011, 1.01, 1.008, 1.007, 1.005, 1);
+    --spring-spatial-dur: 381ms;
+    --spring-slow-spatial: linear(0, 0.029, 0.1, 0.195, 0.302, 0.41, 0.513, 0.608, 0.692, 0.764, 0.825, 0.874, 0.914, 0.945, 0.968, 0.986, 0.998, 1.006, 1.011, 1.014, 1.015, 1.015, 1.014, 1.013, 1.011, 1.01, 1.008, 1.007, 1.005, 1);
+    --spring-slow-spatial-dur: 526ms;
+    --spring-fast-effects: linear(0, 0.029, 0.099, 0.188, 0.284, 0.38, 0.469, 0.55, 0.623, 0.685, 0.739, 0.785, 0.824, 0.856, 0.883, 0.905, 0.923, 0.938, 0.95, 0.96, 0.968, 0.974, 0.979, 0.984, 0.987, 0.99, 0.992, 0.993, 0.995, 1);
+    --spring-fast-effects-dur: 124ms;
+    --spring-effects: linear(0, 0.029, 0.099, 0.189, 0.286, 0.382, 0.471, 0.553, 0.625, 0.688, 0.742, 0.787, 0.826, 0.858, 0.884, 0.906, 0.924, 0.939, 0.951, 0.961, 0.968, 0.975, 0.98, 0.984, 0.987, 0.99, 0.992, 0.994, 0.995, 1);
+    --spring-effects-dur: 192ms;
+    --spring-slow-effects: linear(0, 0.029, 0.099, 0.189, 0.285, 0.381, 0.47, 0.552, 0.624, 0.687, 0.741, 0.787, 0.825, 0.857, 0.884, 0.906, 0.924, 0.939, 0.951, 0.96, 0.968, 0.975, 0.98, 0.984, 0.987, 0.99, 0.992, 0.994, 0.995, 1);
+    --spring-slow-effects-dur: 271ms;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root { --t-fast: 0ms; --t-base: 0ms; --t-slow: 0ms; }
+  :root {
+    --spring-fast-spatial-dur: 0ms; --spring-spatial-dur: 0ms; --spring-slow-spatial-dur: 0ms;
+    --spring-fast-effects-dur: 0ms; --spring-effects-dur: 0ms; --spring-slow-effects-dur: 0ms;
+  }
 }

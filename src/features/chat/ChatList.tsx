@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Avatar, Badge, Button, Skeleton, useOnline } from '../../design/ui'
-import { IconMegaphone, IconPeople, IconSearch } from '../../design/icons'
+import { IconCheck, IconMegaphone, IconPeople, IconSearch } from '../../design/icons'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { Banner } from '../../design/ui'
 import type { Conversation } from '../../data/types'
@@ -31,6 +31,7 @@ function Row({ c, active, onOpen, lines }: { c: Conversation; active: boolean; o
         group={isGroupish(c)}
         presence={c.kind === 'direct' ? c.presence : undefined}
         icon={c.kind === 'general' ? <IconMegaphone size={22} /> : undefined}
+        tone={c.kind === "general" ? 0 : undefined}
       />
       <span className="chat-row__main">
         <span className="chat-row__top">
@@ -92,6 +93,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat }: ChatLi
         <div className="chips" role="group" aria-label="Filter chats">
           {FILTERS.map((f) => (
             <button key={f.id} type="button" className="chip" aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}>
+              {filter === f.id && <IconCheck />}
               {f.label}
               {f.id === 'unread' && all.some((c) => c.unread) && <span className="chip__count">{all.filter((c) => c.unread).length}</span>}
             </button>
@@ -121,7 +123,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat }: ChatLi
 
       {state.status === 'ready' && all.length === 0 && (
         <div className="empty">
-          <IconPeople size={40} />
+          <span className="empty__icon"><IconPeople size={40} /></span>
           <h2 className="t-title">No conversations yet</h2>
           <p className="t-body-sm muted">Start a chat with someone on your team and it will show up here.</p>
           <Button block={false} onClick={onNewChat}>Start a chat</Button>
@@ -141,7 +143,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat }: ChatLi
         <>
           {pinned && (
             <button type="button" className="pinned" onClick={() => onOpen(pinned.id)}>
-              <Avatar name={pinned.title} group icon={<IconMegaphone size={22} />} />
+              <Avatar name={pinned.title} group tone={0} icon={<IconMegaphone size={22} />} />
               <span className="chat-row__main">
                 <span className="chat-row__top">
                   <span className="chat-row__title is-unread">{pinned.title}</span>

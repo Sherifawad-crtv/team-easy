@@ -5,8 +5,8 @@ body {
   font-family: var(--font);
   font-size: 16px;
   line-height: 24px;
-  color: var(--text);
-  background: var(--bg);
+  color: var(--on-surface);
+  background: var(--surface);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
@@ -14,26 +14,26 @@ body {
 button, input, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 h1, h2, h3, p { margin: 0; }
-a { color: var(--action); }
-:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+a { color: var(--primary); }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--primary) 55%, transparent); outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* Type scale */
-.t-display { font-size: 32px; line-height: 40px; font-weight: 700; }
-.t-headline { font-size: 26px; line-height: 34px; font-weight: 600; }
-.t-title { font-size: 18px; line-height: 26px; font-weight: 600; }
+/* Type scale. Emphasized weights (600) carry hierarchy, not extra size. */
+.t-display { font-size: 32px; line-height: 40px; font-weight: 600; letter-spacing: -0.2px; }
+.t-headline { font-size: 28px; line-height: 36px; font-weight: 600; letter-spacing: -0.1px; }
+.t-title { font-size: 22px; line-height: 28px; font-weight: 600; }
 .t-title-sm { font-size: 16px; line-height: 24px; font-weight: 600; }
 .t-body { font-size: 16px; line-height: 24px; }
 .t-body-sm { font-size: 14px; line-height: 20px; }
 .t-caption { font-size: 12px; line-height: 16px; }
-.t-label { font-size: 14px; line-height: 20px; font-weight: 500; }
-.muted { color: var(--text-2); }
+.t-label { font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.1px; }
+.muted { color: var(--on-surface-variant); }
 .stack > * + * { margin-top: var(--s-5); }
 .stack-lg > * + * { margin-top: var(--s-7); }
 .row-flex { display: flex; align-items: center; gap: var(--s-4); }
 .spacer { flex: 1; }
 
-/* Screen frames */
+/* Auth frames sit on the plain surface */
 .auth {
   min-height: 100dvh;
   max-width: 480px;
@@ -43,5 +43,5 @@ a { color: var(--action); }
 }
 .auth__back { margin: 0 calc(var(--s-3) * -1) var(--s-5); align-self: flex-start; }
 
-.fade-in { animation: fade var(--t-base) var(--ease); }
-@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.fade-in { animation: fade var(--spring-effects-dur) var(--spring-effects); }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
