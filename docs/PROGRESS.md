@@ -95,6 +95,7 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 
 ## Session log (latest first)
 
+- 2026-10-28: Brought back the iOS-style floating glass pill tab bar, removed the app name from the chat list, moved New chat to a round button beside search, review tools moved to a thin edge tab.
 - 2026-10-28: Restyled the messaging layout like WhatsApp on the same design system: flat chat rows with ticks, wallpaper conversation with tailed bubbles and in-bubble time, WhatsApp Web style desktop. Experiment `conversation` variant A is now time inside every bubble. Fixed the desktop page scrolling when a conversation opens.
 - 2026-10-28: Redesigned the design system in Material 3 Expressive (Google Chat and Meet style): tonal color roles, rounded containers on a tinted background, spring motion, docked navigation bar with pill indicator and extended New chat button on phones, navigation rail on desktop. Also fixed old Flutter service worker caching on the live site.
 - 2026-10-18: Switched the test harness from Flutter to a React PWA (Flutter archived on `flutter-archive`). Rebuilt onboarding ACC-01..08 and built chat list, conversation, new chat (CHT-01..05, SRC-01) with A/B experiments `chat_list` and `conversation`, results page, review tools. Blocked on: a new Supabase project for collecting A/B results (cost), real photo upload, SRC-02 message search. Next: designer picks the next area.

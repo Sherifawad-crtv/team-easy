@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Avatar, Badge, Button, Skeleton, useOnline } from '../../design/ui'
 import { IconDoubleTick, IconMegaphone, IconPeople, IconSearch } from '../../design/icons'
 import { ErrorBanner } from '../auth/AuthFrame'
@@ -58,9 +58,11 @@ export interface ChatListProps {
   onOpen: (id: string) => void
   onRetry: () => void
   onNewChat: () => void
+  /** Rendered beside the search field (the new chat button). */
+  action?: ReactNode
 }
 
-export function ChatList({ state, activeId, onOpen, onRetry, onNewChat }: ChatListProps) {
+export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action }: ChatListProps) {
   const variant = useVariant('chat_list')
   const online = useOnline()
   const [query, setQuery] = useState('')
@@ -88,9 +90,12 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat }: ChatLi
     <div className="chat-list">
       {!online && <div style={{ padding: 'var(--s-3) var(--gutter)' }}><Banner kind="offline" title="You're offline">Messages will send when you're back online.</Banner></div>}
 
-      <div className="search">
-        <IconSearch size={20} />
-        <input type="search" placeholder="Search chats" aria-label="Search chats" value={query} onChange={(e) => setQuery(e.target.value)} />
+      <div className="searchrow">
+        <div className="search">
+          <IconSearch size={20} />
+          <input type="search" placeholder="Search chats" aria-label="Search chats" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
+        {action}
       </div>
 
       {variant === 'B' && state.status === 'ready' && all.length > 0 && (

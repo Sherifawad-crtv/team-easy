@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../../data'
 import type { Conversation } from '../../data/types'
-import { IconChat } from '../../design/icons'
+import { IconChat, IconEdit } from '../../design/icons'
 import { track, trackExposure } from '../../experiments/analytics'
 import { useAsync } from '../../state/useAsync'
 import { ChatList } from './ChatList'
@@ -57,11 +57,20 @@ export function ChatsScreen() {
   return (
     <div className="chats" data-open={id ? 'true' : 'false'}>
       <section className="chats__list" aria-label="Chats">
-        <header className="bar">
-          <h1 className="bar__title">Team Easy</h1>
-        </header>
+        <h1 className="sr-only">Chats</h1>
         <div className="chats__scroll" ref={scroller}>
-          <ChatList state={list} activeId={id} onOpen={open} onRetry={list.reload} onNewChat={() => setSheet(true)} />
+          <ChatList
+            state={list}
+            activeId={id}
+            onOpen={open}
+            onRetry={list.reload}
+            onNewChat={() => setSheet(true)}
+            action={
+              <button type="button" className="newchat" aria-label="New chat" onClick={() => setSheet(true)}>
+                <IconEdit size={22} />
+              </button>
+            }
+          />
         </div>
       </section>
 

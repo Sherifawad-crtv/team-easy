@@ -22,9 +22,9 @@ Decided 2026-10-28 by the designer. The layout and behavior of a messaging app p
 | Area | What we do |
 |---|---|
 | Chat list | Flat, full-width rows with no cards or dividers. 56px circle avatars (groups are circles too), name, one-line preview, time at the right (brand blue when unread), unread count badge. Delivery ticks before the preview when my message was last. Sub-group rows show "in <parent>" |
-| Top bar and search | "Team Easy" in brand blue, search as a pill below it, filter chips as pills (variant B) |
-| Phone navigation | Docked tab bar (60px plus safe area) with a pill indicator, and a round-square new-chat button above it. Only screens that exist are listed |
-| Desktop (1024+) | Like WhatsApp Web: narrow rail, chat list column, conversation filling the rest. Hairlines, no floating containers |
+| Top of the chat list | No app name. One row: search as a pill and a round new-chat button. Filter chips as pills below it (variant B) |
+| Phone navigation | The iOS-style floating glass pill with the tabs, centered above the bottom edge; lists scroll under it. No floating action button. Only screens that exist are listed |
+| Desktop (1024+) | Like WhatsApp Web: narrow rail, chat list column (same search and new-chat row), conversation filling the rest. Hairlines, no floating containers |
 | Conversation | Patterned wallpaper in a brand tint. White header with avatar, name and status. Day pills in capitals |
 | Bubbles | Incoming white, outgoing light brand blue. Small tail on the first bubble of a run. Time and double-tick inside the bubble, bottom right. Group sender names in a color per person. A failed message shows a red outline and "Not sent. Tap to retry" |
 | Composer | White pill field over the wallpaper and a round send button |
@@ -70,7 +70,7 @@ Flows are specified per area in `docs/PRD.md` (IDs). Record design decisions per
 | Area | Decisions | Status |
 |---|---|---|
 | Onboarding and signup (ACC-01..04) | Welcome screen with three paths: Create account, Sign in, "I have an organization invite". Sign-in is email + password with Forgot password. Signup asks name, email, password, optional photo, optional job title, and an optional invite code (collapsed behind "I have an organization invite"). Invite link `/invite/<token>` shows the organization and who invited the user, then continues to signup with the organization attached. Invalid, expired and offline invites each have their own state. **Assumed:** password rules (8+, letter and number), job title is optional and feeds the title tag (ROL-04), a signed-in user opening an invite link is sent home, existing users cannot accept an invite yet. | Built on mocks, awaiting review |
-| Account switching (ACC-07) | Placeholder on the signed-in screen: "Using Team Easy as" with Myself / organization name. Final placement is open. | Placeholder |
+| Account switching (ACC-07) | Placeholder on the signed-in screen: "Chat as" with Myself / organization name. Final placement is open. | Placeholder |
 | Group tree and navigation (GRP-01, 02) | **[TO DEFINE]** | |
 | Delete with undo (GRP-10) | **[TO DEFINE]** | |
 | Leave group options (ROL-05, 06) | **[TO DEFINE]** | |

@@ -66,7 +66,7 @@ function InviteDetails({ token }: { token: string }) {
               <p className="t-body-sm muted">Invited by {invite.data.invitedBy}</p>
             </div>
           </div>
-          <p className="t-body-sm muted">You can still use Team Easy on your own. Your organization account stays separate.</p>
+          <p className="t-body-sm muted">You can still use the app on your own. Your organization account stays separate.</p>
           <Button onClick={() => navigate(`/sign-up?invite=${encodeURIComponent(invite.data.token)}`)}>Continue to create account</Button>
         </div>
       )}

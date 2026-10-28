@@ -39,7 +39,7 @@ export function AccountScreen() {
 
         {org && (
           <section>
-            <h2 className="t-title-sm" style={{ marginBottom: 'var(--s-3)' }}>Using Team Easy as</h2>
+            <h2 className="t-title-sm" style={{ marginBottom: 'var(--s-3)' }}>Chat as</h2>
             <div className="card" role="radiogroup" aria-label="Identity">
               {choices.map((c) => (
                 <button key={c.kind} type="button" className="radio-row" role="radio" aria-checked={account.activeIdentity === c.kind} disabled={action.busy}
