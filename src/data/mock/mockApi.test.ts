@@ -184,3 +184,77 @@ describe('mock groups', () => {
     await mockApi.groups.setTitleTag('u-noor', '')
   })
 })
+
+describe('mock calendar', () => {
+  const DAY = 86_400_000
+  it('gives members only their calendars and admins all of them', async () => {
+    roleStore.set('member')
+    const mine = await mockApi.calendar.calendars()
+    expect(mine.every((c) => c.assigned)).toBe(true)
+    expect(mine.some((c) => c.name === 'Support on-call')).toBe(false)
+    roleStore.set('admin')
+    expect((await mockApi.calendar.calendars()).some((c) => c.name === 'Support on-call')).toBe(true)
+  })
+
+  it('returns events in range and hides unassigned calendars from members', async () => {
+    const from = Date.now()
+    roleStore.set('admin')
+    const all = await mockApi.calendar.events(from, from + 14 * DAY)
+    expect(all.length).toBeGreaterThan(4)
+    expect(all.some((e) => e.calendarId === 'cal-oncall')).toBe(true)
+    roleStore.set('member')
+    const some = await mockApi.calendar.events(from, from + 14 * DAY)
+    expect(some.some((e) => e.calendarId === 'cal-oncall')).toBe(false)
+    roleStore.set('admin')
+  })
+
+  it('lets only admins assign, and changes who has a calendar', async () => {
+    roleStore.set('member')
+    expect(await code(mockApi.calendar.assign('cal-oncall', ['u-sam']))).toBe('not_allowed')
+    roleStore.set('admin')
+    await mockApi.calendar.assign('cal-oncall', ['me', 'u-sam'])
+    const cal = (await mockApi.calendar.calendars()).find((c) => c.id === 'cal-oncall')!
+    expect(cal).toMatchObject({ assigned: true, assignedCount: 2 })
+  })
+})
+
+describe('mock notifications and data', () => {
+  it('saves settings, mutes groups and respects both when a message arrives', async () => {
+    const got: string[] = []
+    const off = mockApi.notifications.subscribe((p) => got.push(p.title))
+    await mockApi.notifications.saveSettings({ groups: false })
+    expect((await mockApi.notifications.settings()).groups).toBe(false)
+    await mockApi.notifications.setGroupMuted('g-product', true)
+    expect(await mockApi.notifications.mutedGroups()).toEqual(['g-product'])
+    await mockApi.notifications.setGroupMuted('g-product', false)
+    expect(await mockApi.notifications.mutedGroups()).toEqual([])
+    off()
+  })
+
+  it('shows one banner and not again after it is dismissed', async () => {
+    const [b] = await mockApi.notifications.banners()
+    await mockApi.notifications.dismissBanner(b.id)
+    expect((await mockApi.notifications.banners()).some((x) => x.id === b.id)).toBe(false)
+  })
+
+  it('reports shorter retention for personal and longer for work accounts', async () => {
+    await mockApi.auth.signIn('a@b.co', 'longpass1')
+    expect((await mockApi.data.retention()).attachmentDays).toBe(6)
+    await mockApi.auth.switchIdentity('organization')
+    expect(await mockApi.data.retention()).toMatchObject({ plan: 'business', attachmentDays: 15 })
+  })
+
+  it('lists files that will expire, soonest first, and backs up', async () => {
+    const files = await mockApi.data.expiringFiles()
+    expect(files.length).toBeGreaterThan(2)
+    expect(files[0].expiresAt).toBeLessThanOrEqual(files[1].expiresAt)
+    expect((await mockApi.data.backup()).lastBackupAt).toBeNull()
+    expect((await mockApi.data.startBackup()).lastBackupAt).not.toBeNull()
+    expect((await mockApi.data.transferCode()).code).toMatch(/^\d{6}$/)
+  })
+
+  it('marks an archived group with its deletion date', async () => {
+    const offsite = (await mockApi.groups.list()).groups.find((g) => g.name === '2025 Offsite')!
+    expect(offsite.deleteAt).toBeGreaterThan(Date.now())
+  })
+})

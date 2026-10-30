@@ -10,6 +10,10 @@ import { SignUpScreen } from './features/auth/SignUpScreen'
 import { WelcomeScreen } from './features/auth/WelcomeScreen'
 import { GroupsScreen } from './features/groups/GroupsScreen'
 import { JoinScreen, pendingJoin } from './features/groups/JoinScreen'
+import { CalendarScreen } from './features/calendar/CalendarScreen'
+import { DataScreen } from './features/data/DataScreen'
+import { NotificationSettingsScreen } from './features/notifications/NotificationSettingsScreen'
+import { UpdatesScreen } from './features/notifications/UpdatesScreen'
 import { ChatsScreen } from './features/chat/ChatsScreen'
 import { ResultsScreen } from './features/results/ResultsScreen'
 import { AppShell } from './features/shell/AppShell'
@@ -51,6 +55,10 @@ export function App() {
           <Route element={<Private />}>
             <Route path="/chats/:id?" element={<ChatsScreen />} />
             <Route path="/groups/:id?" element={<GroupsScreen />} />
+            <Route path="/calendar" element={<CalendarScreen />} />
+            <Route path="/updates/:id?" element={<UpdatesScreen />} />
+            <Route path="/account/notifications" element={<NotificationSettingsScreen />} />
+            <Route path="/account/data" element={<DataScreen />} />
             <Route path="/account" element={<AccountScreen />} />
             <Route path="/account/edit" element={<EditProfileScreen />} />
             <Route path="/results" element={<ResultsScreen />} />

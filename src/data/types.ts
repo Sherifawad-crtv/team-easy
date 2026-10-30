@@ -71,6 +71,8 @@ export interface Attachment {
   url?: string
   /** Deleted by the retention rule (DAT-02). */
   expired?: boolean
+  /** When the server deletes it if nobody opens it (DAT-02). */
+  expiresAt?: number
 }
 
 export interface Message {
@@ -127,7 +129,7 @@ export interface SearchResults {
   documents: MessageHit[]
 }
 
-export type PermissionKind = 'photos'
+export type PermissionKind = 'photos' | 'notifications'
 export type PermissionStatus = 'unknown' | 'granted' | 'denied'
 
 export interface ProfilePatch {
@@ -155,6 +157,8 @@ export interface Group {
   rootMemberCount: number
   myRole: Role
   archived: boolean
+  /** DAT-04: when an archived group is deleted automatically. Set by the server. */
+  deleteAt?: number
   /** ROL-05: the user left but kept the group in the list. */
   left: boolean
   unread: number
@@ -200,4 +204,94 @@ export interface GroupLinkInfo {
   memberCount: number
   invitedBy: string
   alreadyMember: boolean
+}
+
+// ---- Calendar (CAL-*) ----
+
+export interface CalendarInfo {
+  id: string
+  name: string
+  description: string
+  /** Colour tone 0 to 4, the same palette as avatars. */
+  tone: number
+  /** Is this calendar assigned to me? Admins also see calendars that are not. */
+  assigned: boolean
+  assignedCount: number
+}
+
+export interface CalendarEvent {
+  id: string
+  calendarId: string
+  title: string
+  start: number
+  end: number
+  allDay: boolean
+  location?: string
+  description?: string
+}
+
+export interface CalendarAssignee {
+  id: string
+  name: string
+  jobTitle?: string
+  assigned: boolean
+}
+
+// ---- Notifications (NTF-*) ----
+
+export type UpdateKind = 'release' | 'update' | 'offer'
+
+export interface UpdateItem {
+  id: string
+  kind: UpdateKind
+  title: string
+  summary: string
+  body: string[]
+  at: number
+}
+
+export interface NotificationSettings {
+  messages: boolean
+  groups: boolean
+  updates: boolean
+  offers: boolean
+}
+
+export interface PushNotification {
+  id: string
+  title: string
+  body: string
+  at: number
+  /** Where tapping it goes (NTF-03). */
+  target: { type: 'chat'; conversationId: string; messageId?: string } | { type: 'update'; updateId: string }
+}
+
+// ---- Data and storage (DAT-*) ----
+
+export interface RetentionInfo {
+  plan: 'standard' | 'business'
+  /** DAT-02: days before an unopened attachment is deleted. */
+  attachmentDays: number
+  /** DAT-04: days before an archived group is deleted. A database value. */
+  archivedDays: number
+}
+
+export interface ExpiringFile {
+  conversationId: string
+  conversationTitle: string
+  messageId: string
+  name: string
+  kind: AttachmentKind
+  size: number
+  expiresAt: number
+}
+
+export interface BackupStatus {
+  lastBackupAt: number | null
+  sizeBytes: number | null
+}
+
+export interface TransferCode {
+  code: string
+  expiresAt: number
 }

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import type { Message } from '../../data/types'
 import { formatBytes } from '../../config/limits'
-import { IconDocument, IconDownload } from '../../design/icons'
+import { IconClock, IconDocument, IconDownload } from '../../design/icons'
 import { settings, useCacheVersion, useConnection, useMediaPolicy } from '../../state/settings'
+import { daysLeftLabel, isExpiringSoon } from '../data/retention'
 import { ImageViewer } from './ImageViewer'
 import { mediaState } from './mediaState'
 
@@ -44,13 +45,21 @@ export function MessageAttachment({ message, mine }: { message: Message; mine: b
     )
   }
 
+  // DAT-02: say so when an unopened file is about to be deleted.
+  const note = !mine && !settings.isCached(message.id) && a.expiresAt && isExpiringSoon(a.expiresAt)
+    ? <span className="file-expiry"><IconClock size={14} /> Deleted in {daysLeftLabel(a.expiresAt).text.replace(' left', '')} unless you open it</span>
+    : null
+
   if (a.kind === 'image') {
     if (state === 'needs-download') {
       return (
-        <button type="button" className="img-wait" onClick={download} aria-busy={busy || undefined} aria-label={`Download photo, ${formatBytes(a.size)}`}>
-          {busy ? <span className="spinner" aria-label="Downloading" /> : <IconDownload size={26} />}
-          <span>{busy ? 'Downloading…' : `Photo · ${formatBytes(a.size)}`}</span>
-        </button>
+        <>
+          <button type="button" className="img-wait" onClick={download} aria-busy={busy || undefined} aria-label={`Download photo, ${formatBytes(a.size)}`}>
+            {busy ? <span className="spinner" aria-label="Downloading" /> : <IconDownload size={26} />}
+            <span>{busy ? 'Downloading…' : `Photo · ${formatBytes(a.size)}`}</span>
+          </button>
+          {note}
+        </>
       )
     }
     return (
@@ -58,6 +67,7 @@ export function MessageAttachment({ message, mine }: { message: Message; mine: b
         <button type="button" className="img-thumb" onClick={() => { settings.cacheMedia(message.id); setViewing(true) }} aria-label={`Open photo ${a.name}`}>
           <img src={a.url} alt={message.text || a.name} loading="lazy" />
         </button>
+        {note}
         {viewing && <ImageViewer message={message} onClose={() => setViewing(false)} />}
       </>
     )
@@ -69,6 +79,7 @@ export function MessageAttachment({ message, mine }: { message: Message; mine: b
     if (a.url) window.open(a.url, '_blank', 'noopener')
   }
   return (
+    <>
     <div className="doc-row">
       <DocIcon name={a.name} />
       <span className="doc-row__text">
@@ -83,5 +94,7 @@ export function MessageAttachment({ message, mine }: { message: Message; mine: b
         <button type="button" className="doc-row__open" onClick={open} aria-label={`Open ${a.name}`}>Open</button>
       )}
     </div>
+    {note}
+    </>
   )
 }

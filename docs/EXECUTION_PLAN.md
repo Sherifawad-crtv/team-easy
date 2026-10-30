@@ -87,6 +87,8 @@ Exit: build the whole group tree on mocks, test navigation with A/B (tree vs fla
 | DAT-02, 04 | Retention notices in the UI (6 / 15 day unopened attachments, archived chat deletion) | Archived retention period value |
 | DAT-01 | Settings entry for backing up and transferring chats | What "chat transfer" means to users |
 
+**Status (2026-10-30): built on mocks.** Real push delivery is native work. Assumptions are in PRD open question 17.
+
 ### Phase 4: calls (size M for the UI, much more to make real)
 
 | IDs | What gets built | Needs from product |

@@ -201,6 +201,11 @@ const FILES: [string, number, Attachment, string][] = [
   ['c-general', 3, doc('offsite-schedule.pdf', 330_000), ''],
 ]
 
+/** Hours left before an unopened file is deleted (DAT-02). Anything else has most of its time left. */
+const HOURS_LEFT: Record<string, number> = {
+  'Q4-roadmap.pdf': 20, 'customer-interview-notes.pdf': 26, 'build-214-screenshot.png': 30, 'motion-spec.pdf': 44, 'group-tree-mockups.png': 60,
+}
+
 /** Adds the demo files to a seeded history. Files come from other people, except where noted. */
 export function withFiles(conversationId: string, list: Message[]): Message[] {
   const conv = CONVERSATIONS.find((c) => c.id === conversationId)
@@ -212,7 +217,8 @@ export function withFiles(conversationId: string, list: Message[]): Message[] {
     const mine = MINE.has(attachment.name)
     const other = conv.kind === 'direct' ? { id: `u-${conv.id}`, name: conv.title } : MEMBERS[n % 5]
     const who = mine ? ME : other
-    list[i] = { ...list[i], senderId: who.id, senderName: who.name, attachment, text: caption }
+    const expiresAt = mine || attachment.expired ? undefined : Date.now() + (HOURS_LEFT[attachment.name] ?? 120) * HOUR
+    list[i] = { ...list[i], senderId: who.id, senderName: who.name, attachment: { ...attachment, expiresAt }, text: caption }
   })
   return list
 }

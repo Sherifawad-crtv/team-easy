@@ -1,5 +1,9 @@
 import type {
   Account,
+  BackupStatus,
+  CalendarAssignee,
+  CalendarEvent,
+  CalendarInfo,
   ChatEvent,
   Conversation,
   DeletedGroup,
@@ -16,7 +20,13 @@ import type {
   OrgInvite,
   PermissionKind,
   PermissionStatus,
+  ExpiringFile,
+  NotificationSettings,
   ProfilePatch,
+  PushNotification,
+  RetentionInfo,
+  TransferCode,
+  UpdateItem,
   SearchFilters,
   SearchResults,
   SignUpData,
@@ -93,10 +103,50 @@ export interface GroupApi {
   join(token: string): Promise<Group>
 }
 
+export interface CalendarApi {
+  /** CAL-01, 02: members get the calendars assigned to them, admins get all of them. */
+  calendars(): Promise<CalendarInfo[]>
+  /** Events of the visible calendars between two times (ms). */
+  events(from: number, to: number): Promise<CalendarEvent[]>
+  /** Admin only: everyone, with whether the calendar is assigned to them. */
+  assignees(calendarId: string): Promise<CalendarAssignee[]>
+  /** CAL-02: admin only. Sets exactly who has this calendar. */
+  assign(calendarId: string, memberIds: string[]): Promise<void>
+}
+
+export interface NotificationsApi {
+  /** NTF-01: updates to show as a banner, not dismissed yet. */
+  banners(): Promise<UpdateItem[]>
+  dismissBanner(id: string): Promise<void>
+  /** NTF-01, NTF-03: the log of releases, updates and offers, newest first. */
+  updates(): Promise<UpdateItem[]>
+  update(id: string): Promise<UpdateItem>
+  /** NTF-02 */
+  settings(): Promise<NotificationSettings>
+  saveSettings(patch: Partial<NotificationSettings>): Promise<NotificationSettings>
+  mutedGroups(): Promise<string[]>
+  setGroupMuted(groupId: string, muted: boolean): Promise<void>
+  /** Pushes that arrive while the app is open. The OS delivers them when it is closed. */
+  subscribe(listener: (push: PushNotification) => void): () => void
+}
+
+export interface DataApi {
+  retention(): Promise<RetentionInfo>
+  /** DAT-02: files that will be deleted soon if nobody opens them. */
+  expiringFiles(): Promise<ExpiringFile[]>
+  backup(): Promise<BackupStatus>
+  startBackup(): Promise<BackupStatus>
+  /** DAT-01 (assumed meaning): a short code that moves chats to a new phone. */
+  transferCode(): Promise<TransferCode>
+}
+
 export interface Api {
   auth: AuthApi
   chat: ChatApi
   profile: ProfileApi
   groups: GroupApi
+  calendar: CalendarApi
+  notifications: NotificationsApi
+  data: DataApi
   permissions: PermissionsApi
 }

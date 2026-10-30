@@ -65,20 +65,20 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 | CLL-03 | 1-to-1 video calls | TODO | `calls.service` | | |
 | CLL-04 | Group and sub-group video calls (max 5) | TODO | `calls.service` | | |
 | CLL-05 | Daily call cap, 1 h/user/day | TODO | `calls.service`, `config.limits` | | |
-| CAL-01 | Built-in calendar | TODO | `calendar.events` | | |
-| CAL-02 | Admin assigns calendar to users | TODO | `calendar.events` | | |
-| NTF-01 | In-app banner (update logs, what's new) | TODO | `notifications.in-app-banner` | | |
-| NTF-02 | Chat and group chat notifications | TODO | `notifications.push` | | |
-| NTF-03 | Push banner opens release/update/offers page | TODO | `notifications.push` | | |
+| CAL-01 | Built-in calendar | UI | `calendar.events` | | |
+| CAL-02 | Admin assigns calendar to users | UI | `calendar.events` | | |
+| NTF-01 | In-app banner (update logs, what's new) | UI | `notifications.in-app-banner` | | |
+| NTF-02 | Chat and group chat notifications | UI | `notifications.push` | | |
+| NTF-03 | Push banner opens release/update/offers page | UI | `notifications.push` | | |
 | DEV-01 | App in suggested contact means on device | TODO | `device.contacts` | | |
 | DEV-02 | See people from device contacts | TODO | `device.contacts` | | |
 | DEV-03 | Email icon opens native mail app | TODO | `device.share-mail` | | |
 | DEV-04 | App in native share sheet | TODO | `device.share-mail` | | |
 | PRF-01 | Profile editing | UI | `profile.edit` | | |
-| DAT-01 | Backups for chat transfers | TODO | `data.backup` | | |
-| DAT-02 | Attachment retention (6 d / 15 d) | TODO | `data.retention` | | |
+| DAT-01 | Backups for chat transfers | UI | `data.backup` | | |
+| DAT-02 | Attachment retention (6 d / 15 d) | UI | `data.retention` | | |
 | DAT-03 | Opened media cached locally | UI | `media.download-policy` | | |
-| DAT-04 | Archived chat retention (configurable) | TODO | `data.retention` | | |
+| DAT-04 | Archived chat retention (configurable) | UI | `data.retention` | | Archived groups only; archived single chats not built |
 | MON-01 | Ads for free users | TODO | `monetization.ads` | | |
 | MON-02 | Ads in private chats outside the organization | TODO | `monetization.ads` | | PRD open question 6 |
 | MON-03 | Paid additions (members > 300, extra groups) | TODO | `monetization.purchases` | | |
@@ -111,3 +111,4 @@ _None yet._
 See `docs/decisions/README.md` and the PRD "Open questions".
 - 2026-10-28: Phase 1 built on mocks. Send images and documents (MED-01..03) with caption, sending/failed states and a full-screen image viewer. Download setting and cache (MED-05, DAT-03): Always / Wi-Fi only / Never, tap-to-download on mobile data. Search (SRC-02..04): message text and document names with date, chat and type filters, jump to the message. Profile edit with photo (PRF-01). Photo permission prompt with rationale and denied state (NFR-04). Not built: read receipts and typing indicators (scope unconfirmed), retention notices (DAT-02, Phase 3), media library (MED-04, Phase 2). Next: Phase 2, groups and roles.
 - 2026-10-28: Phase 2 built on mocks. Groups tab with the 5/5/5 tree (A/B `group_nav`: tree vs flat list), group page with chat, invite link, sub-groups, members, member limit counter (admin), per-user group limit, create, archive, delete with undo, leave (keep or delete for me), add people, block, title tags, join-by-link screen. Review tools can view as Admin or Member. Not built: Flights (GRP-03, 04) wait for product answers; GRP-07 store fallback is native; archiving a single chat (GRP-11) is groups only. Next: Phase 3 or review.
+- 2026-10-30: Phase 3 built on mocks. Calendar tab (month, agenda, event details, calendar filter, admin assigns calendars). In-app notice banner on the chat list and a What's new log (NTF-01). Notification settings, per-group mute, own permission sheet, and push banners that open the chat or the release/update/offer page (NTF-02, 03). Data and storage: retention rules, files about to be deleted (with notes in chats), backup, and a transfer code for a new phone (DAT-01, 02, 04). Archived groups show their deletion date. Not built: real push (OS), retention of single archived chats. Next: Phase 4 calls or review.

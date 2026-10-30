@@ -15,6 +15,12 @@ export const LIMITS = {
   maxGroupsPerUser: 12,
   /** GRP-10: how long deleting a group can be undone. A database value in production. */
   undoWindowSeconds: 8,
+  /** DAT-04: days before an archived group is deleted. A database value in production; assumed (open question 17). */
+  archivedRetentionDays: 90,
+  /** How long a transfer code works (DAT-01, assumed). */
+  transferCodeMinutes: 10,
+  /** Show the "deleted soon" note when this few days are left (DAT-02). */
+  expiryWarningDays: 3,
   groupNameMax: 40,
   /** ROL-04: length of a title tag. */
   titleTagMax: 24,

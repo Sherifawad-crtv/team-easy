@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { simulatePermission } from '../data/mock/mockApi'
+import { simulatePermission, simulatePush } from '../data/mock/mockApi'
 import { roleStore } from '../data/mock/role'
 import { SCENARIOS, scenarioStore } from '../data/mock/scenario'
 import { settings, useConnection } from '../state/settings'
@@ -52,8 +52,13 @@ export function DebugPanel() {
               <button key={id} type="button" aria-pressed={photoAccess === id || (id === 'ask' && photoAccess === 'granted')} onClick={() => { simulatePermission('photos', value); setPhotoAccess(id) }}>{label}</button>
             ))}
           </div>
-          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>View groups as</p>
-          <div className="seg" role="group" aria-label="View groups as">
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Send a test push</p>
+          <div className="seg" role="group" aria-label="Send a test push">
+            <button type="button" onClick={() => simulatePush('release')}>New version</button>
+            <button type="button" onClick={() => simulatePush('offer')}>Offer</button>
+          </div>
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>View groups and calendar as</p>
+          <div className="seg" role="group" aria-label="View as">
             {(['admin', 'member'] as const).map((r) => (
               <button key={r} type="button" aria-pressed={role === r} onClick={() => roleStore.set(r)}>{r === 'admin' ? 'Admin' : 'Member'}</button>
             ))}

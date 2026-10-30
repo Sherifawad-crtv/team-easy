@@ -61,9 +61,11 @@ export interface ChatListProps {
   onNewChat: () => void
   /** Rendered beside the search field (the new chat button). */
   action?: ReactNode
+  /** In-app notice shown under the search field (NTF-01). */
+  banner?: ReactNode
 }
 
-export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action }: ChatListProps) {
+export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, banner }: ChatListProps) {
   const variant = useVariant('chat_list')
   const online = useOnline()
   const [query, setQuery] = useState('')
@@ -99,6 +101,8 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action }
         </div>
         {action}
       </div>
+
+      {!searching && banner}
 
       {searching && <SearchPanel query={query} conversations={all} onOpen={onOpen} />}
 

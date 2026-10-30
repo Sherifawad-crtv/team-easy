@@ -12,6 +12,7 @@ import { useReviewRole } from '../../state/useReviewRole'
 import { useSubmit } from '../../state/useSubmit'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { groupTiming } from '../chat/timing'
+import { daysLeftLabel } from '../data/retention'
 import { GroupDetail } from './GroupDetail'
 import { CreateGroupSheet } from './GroupSheets'
 import { LEVEL_NAME, buildTree, childSlots, memberLabel, pathOf, type TreeNode } from './tree'
@@ -206,7 +207,7 @@ export function GroupsScreen() {
                   <button type="button" className="garchived__head" aria-expanded={showArchived} onClick={() => setShowArchived((s) => !s)}>
                     {showArchived ? <IconChevronDown size={18} /> : <IconChevronRight size={18} />} Archived ({archived.length})
                   </button>
-                  {showArchived && archived.map((g) => <GroupRow key={g.id} group={g} active={g.id === id} sub={`${LEVEL_NAME[g.level]} · archived`} onOpen={openGroup} />)}
+                  {showArchived && archived.map((g) => <GroupRow key={g.id} group={g} active={g.id === id} sub={g.deleteAt ? `Archived · deleted in ${daysLeftLabel(g.deleteAt).text.replace(' left', '')}` : `${LEVEL_NAME[g.level]} · archived`} onOpen={openGroup} />)}
                 </div>
               )}
               {admin && rootSlots.full && (

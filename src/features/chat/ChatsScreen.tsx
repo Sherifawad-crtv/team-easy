@@ -5,6 +5,7 @@ import type { Conversation } from '../../data/types'
 import { IconChat, IconEdit } from '../../design/icons'
 import { track, trackExposure } from '../../experiments/analytics'
 import { useAsync } from '../../state/useAsync'
+import { UpdatesBanner } from '../notifications/UpdatesBanner'
 import { ChatList } from './ChatList'
 import { ConversationView } from './Conversation'
 import { NewChatSheet } from './NewChatSheet'
@@ -65,6 +66,7 @@ export function ChatsScreen() {
             onOpen={open}
             onRetry={list.reload}
             onNewChat={() => setSheet(true)}
+            banner={<UpdatesBanner />}
             action={
               <button type="button" className="newchat" aria-label="New chat" onClick={() => setSheet(true)}>
                 <IconEdit size={22} />

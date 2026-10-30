@@ -9,7 +9,9 @@ import {
   AltArrowRightIcon,
   ArchiveMinimalisticIcon,
   ArrowUpIcon,
+  BellIcon,
   BugIcon,
+  CalendarIcon,
   CameraIcon,
   Chart2Icon,
   ChatRoundLineIcon,
@@ -18,6 +20,7 @@ import {
   CheckReadIcon,
   ClockCircleIcon,
   CloseIcon,
+  CloudUploadIcon,
   CopyIcon,
   DangerCircleIcon,
   DocumentTextIcon,
@@ -33,6 +36,7 @@ import {
   PaperclipIcon,
   PenNewSquareIcon,
   RestartIcon,
+  SmartphoneIcon,
   TagIcon,
   TrashBinMinimalisticIcon,
   UserRoundedIcon,
@@ -84,3 +88,7 @@ export const IconBlock = make(ForbiddenCircleIcon)
 export const IconTag = make(TagIcon)
 export const IconLeave = make(LogoutIcon)
 export const IconCopy = make(CopyIcon)
+export const IconBell = make(BellIcon)
+export const IconBackup = make(CloudUploadIcon)
+export const IconPhone = make(SmartphoneIcon)
+export const IconCalendar = make(CalendarIcon)

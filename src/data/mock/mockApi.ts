@@ -88,6 +88,31 @@
 // Real: an admin gives a person a short free-text tag shown in member lists and next to their name in group chats (assumed, open question 2)
 // Server must enforce: admin-only, length limit, no permissions attached to a tag
 //
+// WIRE: calendar.events
+// Req: CAL-01, CAL-02 | Contract: CalendarApi.calendars/events/assignees/assign | Mock: mockApi.calendar
+// Real: events of the calendars a user has, by time range, recurring events expanded by the server; admins set who has each calendar (done in the web admin app in production)
+// Server must enforce: visibility by assignment (admins see all, assumed), admin-only assignment
+//
+// WIRE: notifications.in-app-banner
+// Req: NTF-01 | Contract: NotificationsApi.banners/dismissBanner/updates/update | Mock: mockApi.notifications
+// Real: app-to-user notices (update logs, what's new, offers) from an admin-managed source; dismissals stored per user
+// Server must enforce: audience, dismissal per user
+//
+// WIRE: notifications.push
+// Req: NTF-02, NTF-03, NFR-03 | Contract: NotificationsApi.settings/saveSettings/mutedGroups/setGroupMuted/subscribe | Mock: mockApi.notifications
+// Real: APNs/FCM registration, chat and group pushes that respect these settings and per-group mute, and a push whose tap opens a release, update or offers page (deep link). The PWA only shows pushes that arrive while it is open
+// Server must enforce: send only what the settings allow, never push muted groups, delivery live at launch (NFR-03)
+//
+// WIRE: data.retention
+// Req: DAT-02, DAT-04 | Contract: DataApi.retention/expiringFiles, Attachment.expiresAt, Group.deleteAt | Mock: mockApi.data
+// Real: 6 days (standard) or 15 days (business) for unopened attachments, archived-group deletion after a database-configured period; the server job does the deleting
+// Server must enforce: all deletion, plan lookup, the configured archive period
+//
+// WIRE: data.backup
+// Req: DAT-01 | Contract: DataApi.backup/startBackup/transferCode | Mock: mockApi.data
+// Real: back up chats, and a short-lived code that moves chats to a new phone (assumed meaning, open question 17)
+// Server must enforce: owner-only, code expiry and single use, storage access
+//
 // Demo data: any email with a password of 8+ characters signs in, except the
 // password "wrongpass1". Emails starting "taken@" are already registered.
 // Invites: ORG-ACME valid, ORG-OLD expired, anything else invalid. A message
@@ -109,7 +134,10 @@ import type {
   SearchFilters,
   SearchResults,
 } from '../types'
+import { createCalendar } from './calendarMock'
+import { createData } from './dataMock'
 import { createGroups } from './groupsMock'
+import { createNotifications } from './notificationsMock'
 import { scenarioStore } from './scenario'
 import { CONVERSATIONS, MEMBERS, ME, seedMessages, withFiles } from './seed'
 
@@ -173,6 +201,9 @@ const messagesFor = (id: string): Message[] => {
 const emit = (e: ChatEvent) => listeners.forEach((l) => l(e))
 
 const groupsMock = createGroups({ conversations, history, emit, gate })
+const calendarMock = createCalendar({ gate })
+const notificationsMock = createNotifications({ gate })
+const dataApi = createData({ gate, identity: () => current?.activeIdentity ?? 'individual', conversations, messagesFor })
 
 function receive(conv: Conversation, text: string, senderName: string, senderId: string) {
   if (conv.left || groupsMock.muted(conv.id, senderId)) return
@@ -187,6 +218,7 @@ function receive(conv: Conversation, text: string, senderName: string, senderId:
   conv.unread += 1
   emit({ type: 'message', message })
   emit({ type: 'conversation', conversation: { ...conv } })
+  notificationsMock.notifyMessage(conv, senderName, text, message.id)
 }
 
 const INCOMING = ['Quick question when you have a minute', 'Just pushed the update 🚀', 'Can you look at this?', 'Thanks, that works!', 'Heads up: meeting moved to 4pm']
@@ -259,6 +291,9 @@ export function simulatePermission(kind: PermissionKind, status: PermissionStatu
     // ignore
   }
 }
+
+/** Review tool: pretend the server sent a push about a release or an offer. */
+export const simulatePush = (kind: 'release' | 'offer') => notificationsMock.sendTest(kind)
 
 export const mockApi: Api = {
   auth: {
@@ -423,6 +458,9 @@ export const mockApi: Api = {
   },
 
   groups: groupsMock.api,
+  calendar: calendarMock.api,
+  notifications: notificationsMock.api,
+  data: dataApi,
 
   permissions: {
     async status(kind: PermissionKind): Promise<PermissionStatus> {

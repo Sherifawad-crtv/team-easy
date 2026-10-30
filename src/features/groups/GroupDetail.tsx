@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { api } from '../../data'
 import { LIMITS } from '../../config/limits'
 import type { DeletedGroup, Group, GroupMember, LeaveMode } from '../../data/types'
-import { Avatar, Banner, BackButton, Button, Skeleton } from '../../design/ui'
+import { Avatar, Banner, BackButton, Button, Skeleton, Switch } from '../../design/ui'
 import { IconArchive, IconChat, IconChevronRight, IconLeave, IconLink, IconMore, IconPeople, IconPlus, IconTrash } from '../../design/icons'
 import { useAsync } from '../../state/useAsync'
 import { useSubmit } from '../../state/useSubmit'
+import { daysLeftLabel } from '../data/retention'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { AddMembersSheet, ArchiveSheet, CreateGroupSheet, DeleteSheet, InviteSheet, LeaveSheet, MemberSheet } from './GroupSheets'
 import { LEVEL_NAME, childSlots, memberLabel, pathOf } from './tree'
@@ -31,6 +32,9 @@ export function GroupDetail({ group, all, onBack, onOpenGroup, onOpenChat, onCha
   const [memberFor, setMemberFor] = useState<GroupMember | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const chat = useSubmit()
+  const muted = useAsync(async () => (await api.notifications.mutedGroups()).includes(group.id), [group.id])
+  const [muteOverride, setMuteOverride] = useState<boolean | null>(null)
+  const isMuted = muteOverride ?? (muted.status === 'ready' ? muted.data : false)
   const admin = group.myRole === 'admin'
   const path = pathOf(group, all)
   const kids = all.filter((g) => g.parentId === group.id && !g.archived).sort((a, b) => a.name.localeCompare(b.name))
@@ -68,12 +72,24 @@ export function GroupDetail({ group, all, onBack, onOpenGroup, onOpenChat, onCha
         {notice && <Banner kind="success">{notice}</Banner>}
         {chat.error != null && <ErrorBanner error={chat.error} onRetry={() => void openChat()} />}
         {group.left && <Banner kind="info">You left this group. You can read the chat, but you won't get new messages.</Banner>}
-        {group.archived && <Banner kind="info">This group is archived. Its chat is out of your chat list.{admin ? ' Bring it back below.' : ''}</Banner>}
+        {group.archived && <Banner kind="info" title="This group is archived">Its chat is out of your chat list. {group.deleteAt ? <>It is deleted automatically in {daysLeftLabel(group.deleteAt).text.replace(' left', '')}.</> : null}{admin ? ' Bring it back below to keep it.' : ''}</Banner>}
 
         <div className="stack">
           {!group.archived && <Button loading={chat.busy} onClick={() => void openChat()}><IconChat size={18} /> Open chat</Button>}
           {active && <Button variant="secondary" onClick={() => setSheet('invite')}><IconLink size={18} /> Invite with a link</Button>}
         </div>
+
+        {active && (
+          <div className="card">
+            <div className="setting-row">
+              <span>
+                <span className="t-title-sm" style={{ display: 'block' }}>Mute notifications</span>
+                <span className="t-body-sm muted">No banners for this group. You still see its messages.</span>
+              </span>
+              <Switch checked={isMuted} label="Mute notifications" disabled={muted.status !== 'ready'} onChange={(v) => { setMuteOverride(v); void api.notifications.setGroupMuted(group.id, v) }} />
+            </div>
+          </div>
+        )}
 
         {admin && (
           <section aria-label="Member limit">

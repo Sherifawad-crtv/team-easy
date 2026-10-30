@@ -81,6 +81,9 @@ export function AccountScreen() {
 
         <div className="stack">
           <Button variant="secondary" onClick={() => navigate('/account/edit')}>Edit profile</Button>
+          <Button variant="secondary" onClick={() => navigate('/account/notifications')}>Notifications</Button>
+          <Button variant="secondary" onClick={() => navigate('/account/data')}>Data and storage</Button>
+          <Button variant="secondary" onClick={() => navigate('/updates')}>What's new</Button>
           <Button variant="secondary" loading={action.busy} onClick={() => void action.run(signOut)}>Sign out</Button>
           <Button variant="tertiary" onClick={() => navigate('/results')} className="only-mobile">A/B results</Button>
           <Button variant="tertiary" onClick={() => setConfirmDelete(true)} disabled={action.busy}>Delete account</Button>

@@ -75,14 +75,14 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `media.library` | MED-04 | `MediaRepository.library` | Per-team media listing | Access | PLANNED |
 | `media.download-policy` | MED-05, DAT-03 | `MediaDownloadPolicy` | Auto / Wi-Fi only / manual download; local cache of opened media | n/a (client) | MOCKED |
 | `calls.service` | CLL-01..05 | `CallService` | Zeego Cloud audio/video: 1-to-1 and group (max 5), call state stream, native call UI | 5-participant cap, 1h/day cap | PLANNED |
-| `calendar.events` | CAL-01, CAL-02 | `CalendarRepository` | Built-in calendar; admin assigns calendars to users | Assignment rights | PLANNED |
-| `notifications.push` | NTF-02, NTF-03, NFR-03 | `PushService` | APNs/FCM registration, chat/group pushes, banner deep link | Delivery rules | PLANNED |
-| `notifications.in-app-banner` | NTF-01 | `InAppBannerRepository` | App-to-user in-app notifications: update logs, what's new | n/a | PLANNED |
+| `calendar.events` | CAL-01, CAL-02 | `CalendarRepository` | Built-in calendar; admin assigns calendars to users | Assignment rights | MOCKED |
+| `notifications.push` | NTF-02, NTF-03, NFR-03 | `PushService` | APNs/FCM registration, chat/group pushes, banner deep link | Delivery rules | MOCKED |
+| `notifications.in-app-banner` | NTF-01 | `InAppBannerRepository` | App-to-user in-app notifications: update logs, what's new | n/a | MOCKED |
 | `device.contacts` | DEV-01, DEV-02 | `DeviceContactsService` | Read device contacts with permission; suggested contact entry | n/a (OS permission) | PLANNED |
 | `device.share-mail` | DEV-03, DEV-04 | `DeviceActionsService` | Open native mail app, appear in native share sheet | n/a | PLANNED |
 | `permissions.runtime` | NFR-04 | `PermissionService` | Request/check OS permissions per feature with rationale | n/a | MOCKED |
-| `data.backup` | DAT-01 | `BackupService` | Backups for chat transfers | Storage, access | PLANNED |
-| `data.retention` | DAT-02, DAT-04 | server job + `RetentionConfig` | Delete unopened attachments after 6d (standard) / 15d (business); delete archived chats after configured period | All deletion (server job) | PLANNED |
+| `data.backup` | DAT-01 | `BackupService` | Backups for chat transfers | Storage, access | MOCKED |
+| `data.retention` | DAT-02, DAT-04 | server job + `RetentionConfig` | Delete unopened attachments after 6d (standard) / 15d (business); delete archived chats after configured period | All deletion (server job) | MOCKED |
 | `monetization.ads` | MON-01, MON-02 | `AdService` | Serve ads to free users per placement rules | Eligibility | PLANNED |
 | `monetization.purchases` | MON-03, MON-04 | `PurchaseService` | RevenueCat: subscriptions and purchases for members beyond 300, extra groups and sub-groups | Entitlements | PLANNED |
 | `config.limits` | Part B §16 | `AppConfigRepository` | Limits, quotas, undo window, retention values served from config/DB, not hardcoded | Source of truth | PLANNED |

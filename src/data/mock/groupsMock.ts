@@ -28,6 +28,8 @@ interface Row {
   roster: string[]
   convId?: string
   archived?: boolean
+  /** When it was archived, for the automatic deletion date (DAT-04). */
+  archivedAt?: number
   /** The user left but kept the group in the list. */
   left?: boolean
   /** The user left and deleted it for themselves. */
@@ -64,7 +66,7 @@ const seed = (): Row[] => [
   { id: 'g-ops', name: 'Operations', parentId: null, count: 19, joined: true, roster: people('u-maya', 'u-tomas', 'u-leila', ME.id) },
   { id: 'g-finance', name: 'Finance close', parentId: 'g-ops', count: 5, convId: 'c-finance', joined: true,
     roster: people('u-tomas', 'u-maya', ME.id) },
-  { id: 'g-offsite', name: '2025 Offsite', parentId: null, count: 22, archived: true, joined: true, roster: people('u-maya', 'u-tomas', ME.id) },
+  { id: 'g-offsite', name: '2025 Offsite', parentId: null, count: 22, archived: true, archivedAt: Date.now() - 20 * 86_400_000, joined: true, roster: people('u-maya', 'u-tomas', ME.id) },
 ]
 
 export interface GroupDeps {
@@ -113,7 +115,8 @@ export function createGroups(deps: GroupDeps) {
     return {
       id: r.id, name: r.name, parentId: r.parentId, level: levelOf(r),
       memberCount: r.count, rootMemberCount: rootOf(r).count,
-      myRole: roleStore.get(), archived: Boolean(r.archived), left: Boolean(r.left),
+      myRole: roleStore.get(), archived: Boolean(r.archived),
+      deleteAt: r.archived && r.archivedAt ? r.archivedAt + LIMITS.archivedRetentionDays * 86_400_000 : undefined, left: Boolean(r.left),
       unread: conv?.unread ?? 0,
     }
   }
@@ -200,6 +203,7 @@ export function createGroups(deps: GroupDeps) {
       }
       for (const r of [row, ...descendants(id)]) {
         r.archived = archived
+        r.archivedAt = archived ? Date.now() : undefined
         if (archived) hiddenConvs.add(convIdOf(r))
         else hiddenConvs.delete(convIdOf(r))
       }

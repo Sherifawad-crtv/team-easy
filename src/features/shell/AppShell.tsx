@@ -1,7 +1,8 @@
 import { NavLink, Outlet, matchPath, useLocation } from 'react-router-dom'
 import { Avatar, Logo } from '../../design/ui'
-import { IconChart, IconChat, IconPeople, IconUser } from '../../design/icons'
+import { IconCalendar, IconChart, IconChat, IconPeople, IconUser } from '../../design/icons'
 import { useSession } from '../../state/session'
+import { PushHost } from '../notifications/PushHost'
 
 // Phones: floating glass pill with the tabs. Desktop (1024+): navigation rail.
 // Only screens that exist are listed. New chat lives at the top of the chat list.
@@ -9,6 +10,7 @@ import { useSession } from '../../state/session'
 const NAV = [
   { to: '/chats', label: 'Chats', icon: IconChat },
   { to: '/groups', label: 'Groups', icon: IconPeople },
+  { to: '/calendar', label: 'Calendar', icon: IconCalendar },
   { to: '/account', label: 'Account', icon: IconUser },
 ]
 const RAIL = [...NAV, { to: '/results', label: 'A/B', icon: IconChart }]
@@ -34,6 +36,7 @@ export function AppShell() {
       </aside>
 
       <div className="shell__main"><Outlet /></div>
+      <PushHost />
 
       <div className="dock">
         <nav className="pill" aria-label="Main">
