@@ -1,6 +1,11 @@
 import type {
   Account,
   BackupStatus,
+  CallEvent,
+  CallMode,
+  CallRecord,
+  CallSession,
+  CallUsage,
   CalendarAssignee,
   CalendarEvent,
   CalendarInfo,
@@ -140,6 +145,20 @@ export interface DataApi {
   transferCode(): Promise<TransferCode>
 }
 
+export interface CallsApi {
+  /** CLL-05: today's calling time against the daily cap. */
+  usage(): Promise<CallUsage>
+  /** CLL-01..04: start an audio or video call in a chat. Rejects past the daily cap or when the call is full. */
+  start(conversationId: string, mode: CallMode): Promise<CallSession>
+  answer(callId: string): Promise<CallSession>
+  decline(callId: string): Promise<void>
+  /** Hang up. Returns the record, with how long it lasted. */
+  end(callId: string): Promise<CallRecord>
+  history(): Promise<CallRecord[]>
+  /** Call state changes: incoming calls, people joining and leaving, the call ending. */
+  subscribe(listener: (event: CallEvent) => void): () => void
+}
+
 export interface Api {
   auth: AuthApi
   chat: ChatApi
@@ -148,5 +167,6 @@ export interface Api {
   calendar: CalendarApi
   notifications: NotificationsApi
   data: DataApi
+  calls: CallsApi
   permissions: PermissionsApi
 }

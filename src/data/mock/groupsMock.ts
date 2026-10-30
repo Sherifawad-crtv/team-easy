@@ -340,6 +340,15 @@ export function createGroups(deps: GroupDeps) {
       if (!row) return false
       return Boolean(row.left) || blocked.has(`${row.id}:${memberId}`)
     },
+    /** The people of a group chat other than the user, with presence (used for calls). */
+    rosterOf(convId: string) {
+      const row = rows.find((r) => convIdOf(r) === convId)
+      if (!row) return []
+      return row.roster.filter((p) => p !== ME.id && !blocked.has(`${row.id}:${p}`)).map((p) => {
+        const m = MEMBERS.find((x) => x.id === p)
+        return { id: p, name: m?.name ?? p, presence: m?.presence ?? ('online' as const) }
+      })
+    },
     reset() {
       rows = seed()
       blocked.clear()

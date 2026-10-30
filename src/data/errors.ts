@@ -13,6 +13,10 @@ export type ApiErrorCode =
   | 'undo_expired'
   | 'link_invalid'
   | 'name_taken'
+  | 'call_cap_reached'
+  | 'call_full'
+  | 'call_active'
+  | 'call_unavailable'
 
 export class ApiError extends Error {
   code: ApiErrorCode
@@ -59,6 +63,14 @@ export function describeError(error: unknown): UserMessage {
       return { title: "This link isn't valid", body: 'It may have been turned off. Ask for a new one.', offline: false }
     case 'name_taken':
       return { title: 'That name is already used here', body: 'Pick a different name for this group.', offline: false }
+    case 'call_cap_reached':
+      return { title: "You've used today's calling time", body: 'Calls are limited to 1 hour a day. Your time starts again at midnight.', offline: false }
+    case 'call_full':
+      return { title: 'This call is full', body: 'A call holds up to 5 people.', offline: false }
+    case 'call_active':
+      return { title: "You're already in a call", body: 'Hang up first, then start a new one.', offline: false }
+    case 'call_unavailable':
+      return { title: "Can't call here", body: "This chat can't be called.", offline: false }
     default:
       return { title: 'Something went wrong on our side', body: 'Nothing was changed. Try again in a moment.', offline: false }
   }

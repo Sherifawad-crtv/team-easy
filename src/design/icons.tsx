@@ -19,6 +19,7 @@ import {
   CheckIcon,
   CheckReadIcon,
   ClockCircleIcon,
+  CallDroppedRoundedIcon,
   CloseIcon,
   CloudUploadIcon,
   CopyIcon,
@@ -27,12 +28,17 @@ import {
   DownloadMinimalisticIcon,
   EyeClosedIcon,
   EyeIcon,
+  EndCallRoundedIcon,
   ForbiddenCircleIcon,
+  IncomingCallRoundedIcon,
   InfoCircleIcon,
   LinkRoundIcon,
   LogoutIcon,
   MagnifierIcon,
   MenuDotsVerticalIcon,
+  MicrophoneIcon,
+  OutgoingCallRoundedIcon,
+  PhoneCallingRoundedIcon,
   PaperclipIcon,
   PenNewSquareIcon,
   RestartIcon,
@@ -41,6 +47,8 @@ import {
   TrashBinMinimalisticIcon,
   UserRoundedIcon,
   UsersGroupRoundedIcon,
+  VideocameraIcon,
+  VideocameraOffIcon,
   VolumeLoudIcon,
   WiFiNoneIcon,
 } from '@solar-icons/react/linear'
@@ -92,3 +100,12 @@ export const IconBell = make(BellIcon)
 export const IconBackup = make(CloudUploadIcon)
 export const IconPhone = make(SmartphoneIcon)
 export const IconCalendar = make(CalendarIcon)
+export const IconCall = make(PhoneCallingRoundedIcon)
+export const IconEndCall = make(EndCallRoundedIcon)
+export const IconVideo = make(VideocameraIcon)
+export const IconVideoOff = make(VideocameraOffIcon)
+export const IconMic = make(MicrophoneIcon)
+export const IconSpeaker = make(VolumeLoudIcon)
+export const IconCallIn = make(IncomingCallRoundedIcon)
+export const IconCallOut = make(OutgoingCallRoundedIcon)
+export const IconCallMissed = make(CallDroppedRoundedIcon)

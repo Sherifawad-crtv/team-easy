@@ -2,6 +2,8 @@ import { NavLink, Outlet, matchPath, useLocation } from 'react-router-dom'
 import { Avatar, Logo } from '../../design/ui'
 import { IconCalendar, IconChart, IconChat, IconPeople, IconUser } from '../../design/icons'
 import { useSession } from '../../state/session'
+import { CallsProvider } from '../../state/calls'
+import { CallOverlay } from '../calls/CallOverlay'
 import { PushHost } from '../notifications/PushHost'
 
 // Phones: floating glass pill with the tabs. Desktop (1024+): navigation rail.
@@ -21,6 +23,7 @@ export function AppShell() {
   const inConversation = Boolean(matchPath('/chats/:id', pathname) || matchPath('/groups/:id', pathname))
 
   return (
+    <CallsProvider>
     <div className={`shell${inConversation ? ' shell--convo' : ''}`}>
       <aside className="rail" aria-label="Main">
         <span className="rail__logo"><Logo size={40} label="Team Easy" /></span>
@@ -37,6 +40,7 @@ export function AppShell() {
 
       <div className="shell__main"><Outlet /></div>
       <PushHost />
+      <CallOverlay />
 
       <div className="dock">
         <nav className="pill" aria-label="Main">
@@ -48,5 +52,6 @@ export function AppShell() {
         </nav>
       </div>
     </div>
+    </CallsProvider>
   )
 }

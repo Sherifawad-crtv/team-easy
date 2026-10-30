@@ -129,7 +129,7 @@ export interface SearchResults {
   documents: MessageHit[]
 }
 
-export type PermissionKind = 'photos' | 'notifications'
+export type PermissionKind = 'photos' | 'notifications' | 'microphone' | 'camera'
 export type PermissionStatus = 'unknown' | 'granted' | 'denied'
 
 export interface ProfilePatch {
@@ -294,4 +294,58 @@ export interface BackupStatus {
 export interface TransferCode {
   code: string
   expiresAt: number
+}
+
+// ---- Calls (CLL-*) ----
+
+export type CallMode = 'audio' | 'video'
+export type ParticipantState = 'ringing' | 'connected' | 'declined' | 'no_answer' | 'left'
+
+export interface CallParticipant {
+  id: string
+  name: string
+  state: ParticipantState
+  isMe: boolean
+  speaking: boolean
+  muted: boolean
+  cameraOn: boolean
+}
+
+export interface CallSession {
+  id: string
+  conversationId: string
+  title: string
+  mode: CallMode
+  /** A group or sub-group call (more than one other person can join). */
+  group: boolean
+  direction: 'outgoing' | 'incoming'
+  participants: CallParticipant[]
+  /** When the call became live (someone answered). Null while it is still ringing. */
+  startedAt: number | null
+}
+
+export type CallEndReason = 'ended' | 'cap_reached' | 'declined' | 'no_answer' | 'failed'
+
+export type CallEvent =
+  | { type: 'incoming'; call: CallSession }
+  | { type: 'started'; callId: string; startedAt: number }
+  | { type: 'participant'; callId: string; participant: CallParticipant }
+  | { type: 'ended'; callId: string; reason: CallEndReason; seconds: number }
+
+export interface CallUsage {
+  usedSeconds: number
+  capSeconds: number
+  /** When the daily total starts again (ms). */
+  resetsAt: number
+}
+
+export interface CallRecord {
+  id: string
+  conversationId: string
+  title: string
+  mode: CallMode
+  group: boolean
+  direction: 'outgoing' | 'incoming' | 'missed'
+  startedAt: number
+  seconds: number
 }

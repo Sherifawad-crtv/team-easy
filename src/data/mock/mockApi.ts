@@ -113,6 +113,11 @@
 // Real: back up chats, and a short-lived code that moves chats to a new phone (assumed meaning, open question 17)
 // Server must enforce: owner-only, code expiry and single use, storage access
 //
+// WIRE: calls.service
+// Req: CLL-01..05 | Contract: CallsApi | Mock: mockApi.calls
+// Real: Zeego Cloud (name to confirm, open question 11) audio and video: 1-to-1 and group and sub-group calls of up to 5 people, ringing and incoming calls (also when the app is closed, with the native call screen), call state stream, microphone and camera access, daily 1-hour usage metering
+// Server must enforce: 5-participant cap, 1 hour per user per day across audio and video (end the call at the cap), who may call whom (membership, blocked and departed members), no call in announcement chats
+//
 // Demo data: any email with a password of 8+ characters signs in, except the
 // password "wrongpass1". Emails starting "taken@" are already registered.
 // Invites: ORG-ACME valid, ORG-OLD expired, anything else invalid. A message
@@ -134,6 +139,7 @@ import type {
   SearchFilters,
   SearchResults,
 } from '../types'
+import { createCalls } from './callsMock'
 import { createCalendar } from './calendarMock'
 import { createData } from './dataMock'
 import { createGroups } from './groupsMock'
@@ -203,6 +209,14 @@ const emit = (e: ChatEvent) => listeners.forEach((l) => l(e))
 const groupsMock = createGroups({ conversations, history, emit, gate })
 const calendarMock = createCalendar({ gate })
 const notificationsMock = createNotifications({ gate })
+const callsMock = createCalls({
+  gate, conversations,
+  rosterOf: (id) => groupsMock.rosterOf(id),
+  directPerson: (conv) => {
+    const m = MEMBERS.find((x) => x.name === conv.title)
+    return { id: m?.id ?? `u-${conv.id}`, name: conv.title, presence: conv.presence ?? m?.presence ?? 'online' }
+  },
+})
 const dataApi = createData({ gate, identity: () => current?.activeIdentity ?? 'individual', conversations, messagesFor })
 
 function receive(conv: Conversation, text: string, senderName: string, senderId: string) {
@@ -294,6 +308,10 @@ export function simulatePermission(kind: PermissionKind, status: PermissionStatu
 
 /** Review tool: pretend the server sent a push about a release or an offer. */
 export const simulatePush = (kind: 'release' | 'offer') => notificationsMock.sendTest(kind)
+
+/** Review tools for calls. */
+export const simulateIncomingCall = (kind: 'direct' | 'group', mode: 'audio' | 'video') => callsMock.simulateIncoming(kind, mode)
+export const simulateCallTimeLeft = (seconds: number | null) => callsMock.setRemaining(seconds)
 
 export const mockApi: Api = {
   auth: {
@@ -461,6 +479,7 @@ export const mockApi: Api = {
   calendar: calendarMock.api,
   notifications: notificationsMock.api,
   data: dataApi,
+  calls: callsMock.api,
 
   permissions: {
     async status(kind: PermissionKind): Promise<PermissionStatus> {

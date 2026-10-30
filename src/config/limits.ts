@@ -21,6 +21,12 @@ export const LIMITS = {
   transferCodeMinutes: 10,
   /** Show the "deleted soon" note when this few days are left (DAT-02). */
   expiryWarningDays: 3,
+  /** CLL-02, 04: people in one group call, counting you. */
+  maxCallParticipants: 5,
+  /** CLL-05: calling time per user per day, across audio and video. */
+  callCapSeconds: 3600,
+  /** Warn when this much calling time is left in a call (assumed, open question 18). */
+  callWarnSeconds: [300, 60],
   groupNameMax: 40,
   /** ROL-04: length of a title tag. */
   titleTagMax: 24,

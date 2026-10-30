@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { ApiError } from '../errors'
-import { mockApi } from './mockApi'
+import { mockApi, simulateCallTimeLeft } from './mockApi'
 import { roleStore } from './role'
 import { scenarioStore } from './scenario'
 
@@ -257,4 +257,51 @@ describe('mock notifications and data', () => {
     const offsite = (await mockApi.groups.list()).groups.find((g) => g.name === '2025 Offsite')!
     expect(offsite.deleteAt).toBeGreaterThan(Date.now())
   })
+})
+
+describe('mock calls', () => {
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+  const events: import('../types').CallEvent[] = []
+  let off = () => {}
+  beforeEach(() => {
+    events.length = 0
+    off()
+    off = mockApi.calls.subscribe((e) => events.push(e))
+    simulateCallTimeLeft(null)
+  })
+
+  it('refuses announcement chats and the daily cap', async () => {
+    expect(await code(mockApi.calls.start('c-general', 'audio'))).toBe('call_unavailable')
+    simulateCallTimeLeft(0)
+    expect(await code(mockApi.calls.start('c-omar', 'audio'))).toBe('call_cap_reached')
+    expect((await mockApi.calls.usage()).usedSeconds).toBe(3600)
+  })
+
+  it('connects an online person, refuses a second call, and records the call', async () => {
+    const call = await mockApi.calls.start('c-omar', 'video')
+    expect(call.participants.map((p) => p.state)).toEqual(['connected', 'ringing'])
+    expect(await code(mockApi.calls.start('c-priya', 'audio'))).toBe('call_active')
+    await wait(2600)
+    expect(events.some((e) => e.type === 'started')).toBe(true)
+    const rec = await mockApi.calls.end(call.id)
+    expect(rec).toMatchObject({ direction: 'outgoing', mode: 'video', title: 'Omar Al-Fayed' })
+    expect((await mockApi.calls.history())[0].id).toBe(call.id)
+  }, 15000)
+
+  it('ends the call when someone who is away declines', async () => {
+    await mockApi.calls.start('c-amelia', 'audio')
+    await wait(4200)
+    expect(events.find((e) => e.type === 'ended')).toMatchObject({ reason: 'declined' })
+    expect((await mockApi.calls.history())[0].direction).toBe('missed')
+  }, 15000)
+
+  it('rings at most four others in a group call and ends a call that hits the cap', async () => {
+    const call = await mockApi.calls.start('c-product', 'audio')
+    expect(call.group).toBe(true)
+    expect(call.participants.length).toBeLessThanOrEqual(5)
+    await wait(2300)
+    simulateCallTimeLeft(1)
+    await wait(2300)
+    expect(events.find((e) => e.type === 'ended')).toMatchObject({ reason: 'cap_reached' })
+  }, 15000)
 })

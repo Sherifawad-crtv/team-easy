@@ -74,7 +74,7 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `media.upload` | MED-01..03 | `MediaRepository.upload` | Upload images to individuals, groups, sub-groups | Size/type limits, access | MOCKED |
 | `media.library` | MED-04 | `MediaRepository.library` | Per-team media listing | Access | PLANNED |
 | `media.download-policy` | MED-05, DAT-03 | `MediaDownloadPolicy` | Auto / Wi-Fi only / manual download; local cache of opened media | n/a (client) | MOCKED |
-| `calls.service` | CLL-01..05 | `CallService` | Zeego Cloud audio/video: 1-to-1 and group (max 5), call state stream, native call UI | 5-participant cap, 1h/day cap | PLANNED |
+| `calls.service` | CLL-01..05 | `CallService` | Zeego Cloud audio/video: 1-to-1 and group (max 5), call state stream, native call UI | 5-participant cap, 1h/day cap | MOCKED |
 | `calendar.events` | CAL-01, CAL-02 | `CalendarRepository` | Built-in calendar; admin assigns calendars to users | Assignment rights | MOCKED |
 | `notifications.push` | NTF-02, NTF-03, NFR-03 | `PushService` | APNs/FCM registration, chat/group pushes, banner deep link | Delivery rules | MOCKED |
 | `notifications.in-app-banner` | NTF-01 | `InAppBannerRepository` | App-to-user in-app notifications: update logs, what's new | n/a | MOCKED |

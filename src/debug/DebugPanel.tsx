@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { simulatePermission, simulatePush } from '../data/mock/mockApi'
+import { simulateCallTimeLeft, simulateIncomingCall, simulatePermission, simulatePush } from '../data/mock/mockApi'
 import { roleStore } from '../data/mock/role'
 import { SCENARIOS, scenarioStore } from '../data/mock/scenario'
 import { settings, useConnection } from '../state/settings'
@@ -29,6 +29,7 @@ export function DebugPanel() {
   const scenario = useScenario()
   const connection = useConnection()
   const role = useReviewRole()
+  const [micAccess, setMicAccess] = useState<string>(() => { try { return localStorage.getItem('te.perm.microphone') === 'denied' ? 'denied' : 'ask' } catch { return 'ask' } })
   const [photoAccess, setPhotoAccess] = useState<string>(() => { try { return localStorage.getItem('te.perm.photos') ?? 'ask' } catch { return 'ask' } })
   return (
     <div className="debug">
@@ -50,6 +51,23 @@ export function DebugPanel() {
           <div className="seg" role="group" aria-label="Photo access">
             {([['ask', 'Ask first', null], ['denied', 'Denied', 'denied']] as const).map(([id, label, value]) => (
               <button key={id} type="button" aria-pressed={photoAccess === id || (id === 'ask' && photoAccess === 'granted')} onClick={() => { simulatePermission('photos', value); setPhotoAccess(id) }}>{label}</button>
+            ))}
+          </div>
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Calls</p>
+          <div className="seg seg--wrap" role="group" aria-label="Calls">
+            <button type="button" onClick={() => { setOpen(false); simulateIncomingCall('direct', 'audio') }}>Incoming audio</button>
+            <button type="button" onClick={() => { setOpen(false); simulateIncomingCall('direct', 'video') }}>Incoming video</button>
+            <button type="button" onClick={() => { setOpen(false); simulateIncomingCall('group', 'video') }}>Incoming group</button>
+          </div>
+          <div className="seg seg--wrap" role="group" aria-label="Calling time">
+            <button type="button" onClick={() => simulateCallTimeLeft(20)}>20 sec left today</button>
+            <button type="button" onClick={() => simulateCallTimeLeft(0)}>None left</button>
+            <button type="button" onClick={() => simulateCallTimeLeft(null)}>Reset</button>
+          </div>
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Mic and camera access</p>
+          <div className="seg" role="group" aria-label="Mic and camera access">
+            {([['ask', 'Ask first', null], ['denied', 'Denied', 'denied']] as const).map(([id, label, value]) => (
+              <button key={id} type="button" aria-pressed={micAccess === id} onClick={() => { simulatePermission('microphone', value); simulatePermission('camera', value); setMicAccess(id) }}>{label}</button>
             ))}
           </div>
           <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Send a test push</p>

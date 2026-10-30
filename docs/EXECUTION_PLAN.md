@@ -98,6 +98,8 @@ Exit: build the whole group tree on mocks, test navigation with A/B (tree vs fla
 
 The PWA can only show these screens with simulated calls. Real audio and video, native call UI and background ringing are engineering work on the native app.
 
+**Status (2026-10-30): built as a working simulation.** Real audio, video, ringing when the app is closed and the native call screen are engineering work. Assumptions are in PRD open question 18.
+
 ### Phase 5: monetization (size S to M)
 
 | IDs | What gets built | Needs from product |

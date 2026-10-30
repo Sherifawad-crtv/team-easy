@@ -8,6 +8,7 @@ import { track, trackExposure } from '../../experiments/analytics'
 import { useVariant } from '../../experiments/experiments'
 import { useAsync } from '../../state/useAsync'
 import { ErrorBanner } from '../auth/AuthFrame'
+import { CallButtons } from '../calls/CallButtons'
 import { AttachSheet } from '../media/AttachSheet'
 import { MessageAttachment } from '../media/MessageAttachment'
 import { dayLabel, messageTime, sameDay } from './format'
@@ -166,6 +167,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
             <p className="convo__sub">{subtitle(conversation)}</p>
           </div>
         )}
+        <CallButtons conversation={conversation} />
       </header>
 
       <div className="convo__scroll" ref={scrollRef} role="log" aria-live="polite" aria-label={`Messages with ${conversation.title}`}>
