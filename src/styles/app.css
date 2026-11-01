@@ -492,17 +492,3 @@ ul.card > li + li { border-top: 1px solid var(--outline-variant); }
 }
 
 /* ---------- Add to home screen ---------- */
-.isteps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-5); }
-.istep { display: flex; gap: var(--s-4); align-items: flex-start; }
-.istep__n { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: var(--on-primary); font-size: 14px; font-weight: 700; }
-.istep__body { display: flex; flex-direction: column; gap: var(--s-3); min-width: 0; }
-.ishare { display: block; }
-.ishare__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); width: 100%; max-width: 280px; padding: var(--s-3) var(--s-5); border-radius: var(--shape-lg); background: var(--surface-container); }
-.ishare__dot { width: 18px; height: 18px; border-radius: 6px; background: var(--outline-variant); }
-.ishare__btn { display: grid; place-items: center; width: 40px; height: 36px; border-radius: var(--shape-md); color: var(--primary); }
-.ishare__btn.is-hit { background: var(--primary-container); box-shadow: 0 0 0 3px var(--accent-soft); animation: nudge 1.6s var(--spring-spatial) infinite; }
-@keyframes nudge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
-.iadd { display: inline-flex; align-items: center; gap: var(--s-3); align-self: flex-start; padding: var(--s-3) var(--s-5); border-radius: var(--shape-md); background: var(--surface-container); font-size: 14px; font-weight: 500; }
-.ipointer { position: fixed; z-index: 200; left: 50%; bottom: calc(var(--safe-bottom) + 6px); transform: translateX(-50%); display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-5); border-radius: var(--shape-full); background: var(--primary); color: var(--on-primary); font-size: 13px; font-weight: 600; box-shadow: var(--shadow-3); pointer-events: none; animation: bob 1.4s var(--spring-spatial) infinite; }
-@keyframes bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 6px); } }
-@media (prefers-reduced-motion: reduce) { .ishare__btn.is-hit, .ipointer { animation: none; } }

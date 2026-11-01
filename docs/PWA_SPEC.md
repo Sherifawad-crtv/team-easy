@@ -39,9 +39,9 @@ The app is installable (manifest, icons, standalone display). How people add it 
 | Browser | What happens |
 |---|---|
 | Chrome or Edge on Android | The browser's own install prompt, started from our button |
-| Safari on iPhone | No prompt exists, so a three-step picture teaches Share, Add to Home Screen, Add, with a pointer to the Share button |
-| Chrome, Edge or Firefox on iPhone | The same steps, mentioning the ⋯ menu and Safari as a fallback |
+| Safari on iPhone | No prompt exists, so one line says Share, then Add to Home Screen |
+| Chrome, Edge or Firefox on iPhone | The same line, mentioning the ⋯ menu and Safari as a fallback |
 | A browser inside another app (Instagram, Facebook and so on) | Cannot install. We say to open the link in a browser and offer to copy it |
 | Already on the home screen | Nothing is shown |
 
-Where it appears: a dismissible card under the notice on the chat list (phones only, back after a week), and Account, Add to home screen. The review tools can show the steps for each browser. Limits: the iPhone steps cannot be automated, and the wording of Apple's Share menu changes between iOS versions.
+Where it appears: a dismissible card under the notice on the chat list (phones only, back after a week), and Account, Add to home screen. The review tools can show the steps for each browser. Limits: the iPhone instruction cannot be automated, and the wording of Apple's Share menu changes between iOS versions.

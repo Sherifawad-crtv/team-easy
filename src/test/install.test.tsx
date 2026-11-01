@@ -5,19 +5,16 @@ import { InstallSheet } from '../features/install/InstallSheet'
 afterEach(cleanup)
 
 describe('add to home screen sheet', () => {
-  it('shows the three Share steps on iPhone Safari with a pointer to the Share button', () => {
+  it('says Share, then Add to Home Screen, in one line on iPhone, with no step list', () => {
     render(<InstallSheet mode="ios-safari" onClose={() => {}} />)
-    expect(screen.getByText('Tap the Share button')).toBeTruthy()
-    expect(screen.getByText('Choose Add to Home Screen')).toBeTruthy()
-    expect(screen.getByText('Tap Add')).toBeTruthy()
-    expect(document.querySelector('.ipointer')).not.toBeNull()
-    expect(screen.getByText('Share button is down here')).toBeTruthy()
+    expect(screen.getByText(/Add to Home Screen/)).toBeTruthy()
+    expect(document.querySelector('.isteps, .ipointer, .ishare')).toBeNull()
   })
 
-  it('points other iPhone browsers to the menu and to Safari', () => {
+  it('mentions the menu and Safari for other iPhone browsers', () => {
     render(<InstallSheet mode="ios-other" onClose={() => {}} />)
-    expect(screen.getByText(/Share button or the ⋯ menu/)).toBeTruthy()
-    expect(document.querySelector('.ipointer')).toBeNull()
+    expect(screen.getByText(/or the ⋯ menu/)).toBeTruthy()
+    expect(screen.getByText(/open this page in Safari/)).toBeTruthy()
   })
 
   it('asks people in another app to open their browser, with a link to copy', () => {
