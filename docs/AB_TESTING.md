@@ -1,6 +1,6 @@
 # A/B testing
 
-Three experiments run on the chat list, the conversation and group navigation. Each visitor is assigned a variant once, at random (50/50), and keeps it. Assignment is stored in the browser.
+Four experiments run on the chat list, the conversation, group navigation and motion style. Each visitor is assigned a variant once, at random (50/50), and keeps it. Assignment is stored in the browser.
 
 ## Experiments
 
@@ -9,6 +9,7 @@ Three experiments run on the chat list, the conversation and group navigation. E
 | `chat_list` | Chat list | Plain list, newest first | Filter chips (All, Unread, Groups, Direct) and a pinned announcements card | B gets people to their first chat faster when unread counts are high |
 | `conversation` | Conversation | Time and ticks inside every bubble | Consecutive messages with squarer joins, time shown on tap | B feels calmer and more messages are sent per visitor |
 | `group_nav` | Groups | Nested tree you open level by level | One flat list with the path under each name and a find field | B gets people to a group faster; A may feel more orderly for big organizations |
+| `motion_style` | Whole app | Current springs (Material style) | Apple-style springs (Smooth, Snappy, Bouncy), instant press feedback and haptics (`docs/MOTION_PLAN.md`) | B feels more native and more responsive; watch time to first chat and messages per visitor, and read the feedback of testers |
 
 Metrics per variant: visitors, chats opened per visitor, messages sent per visitor, average time from the list appearing to the first chat opened. For `group_nav` the metric is groups opened per visitor and time to the first group opened.
 
@@ -20,7 +21,7 @@ No names, emails or message text are ever sent.
 
 ## Reviewing a variant without polluting results
 
-- Open a link with `?v_chat_list=B` `?v_conversation=A` or `?v_group_nav=B`, or use the review tools (bug icon, top right).
+- Open a link with `?v_chat_list=B`, `?v_conversation=A`, `?v_group_nav=B` or `?v_motion_style=B`, or use the review tools (bug icon, top right).
 - Sessions that force a variant are marked and left out of the results, in the app and in the database.
 
 ## Where results go

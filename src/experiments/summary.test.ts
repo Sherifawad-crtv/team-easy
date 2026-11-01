@@ -4,7 +4,7 @@ import { summarize, type TrackedEvent } from './summary'
 let n = 0
 const ev = (visitor: string, event: string, variant: 'A' | 'B', props: Record<string, unknown> = {}, forced = false): TrackedEvent => ({
   id: String(n++), at: n, visitor_id: visitor, session_id: 's', event, forced, props,
-  variants: { chat_list: variant, conversation: 'A', group_nav: variant },
+  variants: { chat_list: variant, conversation: 'A', group_nav: variant, motion_style: variant },
 })
 
 describe('summarize', () => {
@@ -42,5 +42,10 @@ describe('summarize', () => {
     ])
     expect(rows.find((r) => r.experiment === 'group_nav' && r.variant === 'B')).toMatchObject({ opens: 1, avgMsToFirstOpen: 1500 })
     expect(rows.find((r) => r.experiment === 'chat_list' && r.variant === 'B')).toMatchObject({ opens: 1, avgMsToFirstOpen: 100 })
+  })
+
+  it('measures the motion style experiment by chats opened, like the chat experiments', () => {
+    const rows = summarize([ev('v1', 'chat_opened', 'B', { first: true, ms_since_list: 1200 }), ev('v1', 'message_sent', 'B')])
+    expect(rows.find((r) => r.experiment === 'motion_style' && r.variant === 'B')).toMatchObject({ visitors: 1, opens: 1, messages: 1, avgMsToFirstOpen: 1200 })
   })
 })

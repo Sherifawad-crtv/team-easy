@@ -8,6 +8,7 @@ export type Connection = 'wifi' | 'cellular'
 const POLICY_KEY = 'te.media.policy'
 const CONNECTION_KEY = 'te.connection'
 const CACHE_KEY = 'te.media.cache'
+const HAPTICS_KEY = 'te.haptics'
 
 const listeners = new Set<() => void>()
 const emit = () => listeners.forEach((l) => l())
@@ -45,6 +46,13 @@ function readCache(): Set<string> {
     return new Set()
   }
 }
+let hapticsOn = (() => {
+  try {
+    return localStorage.getItem(HAPTICS_KEY) !== 'off'
+  } catch {
+    return true
+  }
+})()
 let cache = readCache()
 let cacheVersion = 0
 
@@ -59,6 +67,12 @@ export const settings = {
   setConnection(next: Connection) {
     connection = next
     write(CONNECTION_KEY, next)
+    emit()
+  },
+  haptics: () => hapticsOn,
+  setHaptics(on: boolean) {
+    hapticsOn = on
+    write(HAPTICS_KEY, on ? 'on' : 'off')
     emit()
   },
   /** DAT-03: media that was opened or downloaded stays on the device. */
@@ -79,6 +93,7 @@ export const settings = {
 }
 
 export const useMediaPolicy = () => useSyncExternalStore(subscribe, settings.policy)
+export const useHaptics = () => useSyncExternalStore(subscribe, settings.haptics)
 export const useConnection = () => useSyncExternalStore(subscribe, settings.connection)
 /** Re-renders when the cached set changes; read `settings.isCached(id)` with it. */
 export const useCacheVersion = () => useSyncExternalStore(subscribe, () => cacheVersion)

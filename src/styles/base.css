@@ -45,3 +45,6 @@ a { color: var(--primary); }
 
 .fade-in { animation: fade var(--spring-effects-dur) var(--spring-effects); }
 @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* No 300 ms tap delay and no double-tap zoom on controls. */
+button, a, [role='button'], [role='checkbox'], [role='radio'], [role='switch'], input, select, textarea, label { touch-action: manipulation; }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Avatar, Banner, BottomSheet, Button } from '../../design/ui'
-import { useMediaPolicy, settings, type MediaPolicy } from '../../state/settings'
+import { Avatar, Banner, BottomSheet, Button, Switch } from '../../design/ui'
+import { useHaptics, useMediaPolicy, settings, type MediaPolicy } from '../../state/settings'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { useReviewRole } from '../../state/useReviewRole'
 import { useSession } from '../../state/session'
@@ -24,6 +24,7 @@ export function AccountScreen() {
   const org = account.organization
   const policy = useMediaPolicy()
   const role = useReviewRole()
+  const haptics = useHaptics()
 
   const choices: { kind: IdentityKind; title: string; sub: string }[] = org
     ? [
@@ -78,6 +79,18 @@ export function AccountScreen() {
                 </span>
               </button>
             ))}
+          </div>
+        </section>
+
+        <section>
+          <div className="card">
+            <div className="setting-row">
+              <span>
+                <span className="t-title-sm" style={{ display: 'block' }}>Haptics</span>
+                <span className="t-body-sm muted">A small tap you can feel for tabs, switches, sending and results, on phones that support it.</span>
+              </span>
+              <Switch checked={haptics} label="Haptics" onChange={(v) => settings.setHaptics(v)} />
+            </div>
           </div>
         </section>
 

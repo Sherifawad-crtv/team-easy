@@ -15,6 +15,11 @@ export const EXPERIMENTS = {
     A: 'A time inside every message',
     B: 'Messages grouped, time on tap',
   },
+  motion_style: {
+    label: 'Motion style',
+    A: 'Current springs (Material style)',
+    B: 'Apple-style springs, instant press feedback and haptics',
+  },
   group_nav: {
     label: 'Group navigation',
     A: 'Nested tree you open and close',

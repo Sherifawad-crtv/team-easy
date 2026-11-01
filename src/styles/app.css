@@ -483,3 +483,10 @@ ul.card > li + li { border-top: 1px solid var(--outline-variant); }
   .admin__back { margin-top: auto; }
   .admin__page { padding: var(--s-8) var(--s-8) var(--s-9); }
 }
+
+/* Reduce Motion: things that slid or grew now only fade in, shortly. */
+@keyframes fade-soft { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .sheet-backdrop, .snackbar, .push, .call, .fade-in, .viewer__img { animation: fade-soft 140ms linear both; }
+  .call__pulse { animation: none; }
+}

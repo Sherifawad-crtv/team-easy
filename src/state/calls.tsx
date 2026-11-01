@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { api } from '../data'
 import { LIMITS } from '../config/limits'
 import type { CallEndReason, CallEvent, CallMode, CallParticipant, CallSession } from '../data/types'
+import { haptic } from '../design/haptics'
 import { track } from '../experiments/analytics'
 
 export interface EndedCall {
@@ -143,6 +144,7 @@ export function CallsProvider({ children }: { children: ReactNode }) {
         const s = await api.calls.answer(cur.id)
         setCall(s)
         setIncoming(false)
+        haptic('success')
         track('call_answered', { mode: s.mode, group: s.group })
       },
       decline: async () => {
@@ -155,6 +157,7 @@ export function CallsProvider({ children }: { children: ReactNode }) {
         if (!cur) return
         try {
           await api.calls.end(cur.id)
+          haptic('light')
         } catch {
           setCall(null)
         }

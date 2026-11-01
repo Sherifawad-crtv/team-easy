@@ -5,6 +5,10 @@ import './styles/tokens.css'
 import './styles/base.css'
 import './styles/components.css'
 import './styles/app.css'
+import './styles/motion-ios.css'
+
+// Safari on iPhone only shows :active when something listens for touches.
+document.addEventListener('touchstart', () => {}, { passive: true })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

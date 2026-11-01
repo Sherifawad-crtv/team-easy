@@ -5,6 +5,7 @@ import { formatBytes } from '../../config/limits'
 import type { BackupStatus, TransferCode } from '../../data/types'
 import { Banner, BackButton, Button, Skeleton } from '../../design/ui'
 import { IconBackup, IconCheck, IconClock, IconCopy, IconPhone } from '../../design/icons'
+import { haptic } from '../../design/haptics'
 import { track } from '../../experiments/analytics'
 import { settings, useCacheVersion } from '../../state/settings'
 import { useAsync } from '../../state/useAsync'
@@ -95,7 +96,7 @@ function BackupCard({ status }: { status: ReturnType<typeof useAsync<BackupStatu
         {current && !run.busy && done && <p className="t-body-sm row-flex" style={{ gap: 'var(--s-2)', color: 'var(--success)' }} role="status"><IconCheck size={18} /> Backup finished</p>}
         <Button variant="secondary" loading={run.busy} disabled={!current} onClick={async () => {
           let result: BackupStatus | undefined
-          if (await run.run(async () => { result = await api.data.startBackup() }) && result) { setDone(result); track('backup_completed') }
+          if (await run.run(async () => { result = await api.data.startBackup() }) && result) { setDone(result); haptic('success'); track('backup_completed') }
         }}>Back up now</Button>
       </div>
     </section>

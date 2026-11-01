@@ -1,6 +1,6 @@
 # Motion and micro-interaction plan (Apple HIG direction)
 
-Status: **plan, not built yet.** Mobile only. Written 2026-11-02.
+Status: **M1 built as the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M2 to M6 not started. Mobile only. Written 2026-11-02.
 
 ## How this was researched, and what is uncertain
 
@@ -103,3 +103,11 @@ Suggested order: M1, M2, M3, M4, M5, M6. M1 and M2 change how the whole app feel
 2. Haptics: try the iPhone trick, knowing it may stop working with a system update?
 3. Chat row swipe actions: are Mute and Mark as unread the right two?
 4. Should the Calls and admin screens get the same treatment, or only the main app flows?
+
+## M1 as built
+
+- Experiment `motion_style` (A: current springs, B: Apple-style). Open `?v_motion_style=B` or use the review tools to force one.
+- B springs live in `src/styles/motion-ios.css`: Smooth (response 0.32, damping 1, about 410 ms), Snappy (response 0.26, damping 0.85, about 310 ms), Bouncy (response 0.5, damping 0.6, about 760 ms, not used on any screen yet). They replace the old spring variables, so every existing animation takes the new feel.
+- B press feedback: rows highlight instantly, buttons shrink to 95% and dim, release springs back.
+- Both variants: no tap delay on controls, and Reduce Motion now turns slides and grows into a 140 ms fade.
+- Haptics (B only, with a Haptics switch in Account, off under Reduce Motion): tabs, switches, filter chips (selection); send, hang up (light); purchase, backup, answering a call (success); deleting a message or group (warning); failed send or payment (error). The unofficial iPhone trick is in, so it needs a real-phone check.

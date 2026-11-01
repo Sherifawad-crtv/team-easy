@@ -25,6 +25,7 @@ export const OPEN_EVENT: Record<ExperimentId, 'chat_opened' | 'group_opened'> = 
   chat_list: 'chat_opened',
   conversation: 'chat_opened',
   group_nav: 'group_opened',
+  motion_style: 'chat_opened',
 }
 
 /**

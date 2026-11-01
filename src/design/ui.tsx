@@ -208,9 +208,11 @@ export function Snackbar({ message, actionLabel, onAction, durationMs, onDone }:
 /* ---------- Switch ---------- */
 
 /** An on/off setting row control. The label comes from `label` for screen readers. */
+import { haptic } from './haptics'
+
 export function Switch({ checked, onChange, label, disabled }: { checked: boolean; onChange: (next: boolean) => void; label: string; disabled?: boolean }) {
   return (
-    <button type="button" role="switch" aria-checked={checked} aria-label={label} disabled={disabled} className="switch" onClick={() => onChange(!checked)}>
+    <button type="button" role="switch" aria-checked={checked} aria-label={label} disabled={disabled} className="switch" onClick={() => { haptic('selection'); onChange(!checked) }}>
       <span className="switch__thumb" />
     </button>
   )

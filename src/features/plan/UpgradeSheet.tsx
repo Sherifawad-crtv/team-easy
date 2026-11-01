@@ -3,6 +3,7 @@ import { api } from '../../data'
 import type { Entitlements, Product, ProductId } from '../../data/types'
 import { Banner, BottomSheet, Button, Skeleton } from '../../design/ui'
 import { IconCheck } from '../../design/icons'
+import { haptic } from '../../design/haptics'
 import { track } from '../../experiments/analytics'
 import { useAsync } from '../../state/useAsync'
 import { useReviewRole } from '../../state/useReviewRole'
@@ -61,9 +62,10 @@ export function UpgradeSheet({ focus, onClose, onChanged }: { focus?: ProductId;
           <Button loading={buy.busy} disabled={!canBuy} onClick={async () => {
             let result: Entitlements | undefined
             if (await buy.run(async () => { result = await api.purchases.purchase(picked.id) }) && result) {
+              haptic('success')
               track('purchase_completed', { product: picked.id })
               setDone({ product: picked, entitlements: result })
-            } else track('purchase_failed', { product: picked.id })
+            } else { haptic('error'); track('purchase_failed', { product: picked.id }) }
           }}>{buy.error != null ? 'Try again' : 'Subscribe'}</Button>
           <Button variant="tertiary" onClick={() => { buy.reset(); setPicked(null) }}>Back</Button>
         </div>

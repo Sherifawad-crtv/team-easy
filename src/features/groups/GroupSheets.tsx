@@ -4,6 +4,7 @@ import { LIMITS } from '../../config/limits'
 import type { DeletedGroup, Group, GroupMember, LeaveMode } from '../../data/types'
 import { Avatar, Banner, BottomSheet, Button, Skeleton, TextField } from '../../design/ui'
 import { IconCheck, IconCopy, IconSearch } from '../../design/icons'
+import { haptic } from '../../design/haptics'
 import { track } from '../../experiments/analytics'
 import { useAsync } from '../../state/useAsync'
 import { useSubmit } from '../../state/useSubmit'
@@ -273,7 +274,7 @@ export function DeleteSheet({ group, hasSubgroups, onClose, onDeleted }: { group
         </Banner>
         <Button variant="destructive" loading={busy} onClick={async () => {
           let deleted: DeletedGroup | undefined
-          if (await run(async () => { deleted = await api.groups.remove(group.id) }) && deleted) { track('group_deleted'); onDeleted(deleted) }
+          if (await run(async () => { deleted = await api.groups.remove(group.id) }) && deleted) { haptic('warning'); track('group_deleted'); onDeleted(deleted) }
         }}>Delete group</Button>
         <Button variant="tertiary" onClick={onClose}>Keep it</Button>
       </div>

@@ -5,6 +5,7 @@ import { ErrorBanner } from '../auth/AuthFrame'
 import { Banner } from '../../design/ui'
 import type { Conversation } from '../../data/types'
 import { useVariant } from '../../experiments/experiments'
+import { haptic } from '../../design/haptics'
 import { AdRow } from '../ads/AdSlot'
 import { LIMITS } from '../../config/limits'
 import { SearchPanel } from '../search/SearchPanel'
@@ -111,7 +112,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, 
       {!searching && variant === 'B' && state.status === 'ready' && all.length > 0 && (
         <div className="chips" role="group" aria-label="Filter chats">
           {FILTERS.map((f) => (
-            <button key={f.id} type="button" className="chip" aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}>
+            <button key={f.id} type="button" className="chip" aria-pressed={filter === f.id} onClick={() => { haptic('selection'); setFilter(f.id) }}>
               {f.label}
               {f.id === 'unread' && all.some((c) => c.unread) && <span className="chip__count">{all.filter((c) => c.unread).length}</span>}
             </button>

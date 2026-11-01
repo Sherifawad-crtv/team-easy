@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../data'
+import { haptic } from '../../design/haptics'
 import type { Conversation as Conv, Message, MessageDraft } from '../../data/types'
 import { Avatar, BackButton, Banner, BottomSheet, Button, Skeleton, toneFor } from '../../design/ui'
 import { IconAttach, IconClock, IconDoubleTick, IconMegaphone, IconRetry, IconSend, IconTrash } from '../../design/icons'
@@ -103,6 +104,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
           : undefined,
       }
       patch((prev) => (retryId ? prev.map((m) => (m.id === retryId ? pending : m)) : [...prev, pending]))
+      haptic('light')
       try {
         const saved = await api.chat.sendMessage(id, draft)
         patch((prev) => prev.map((m) => (m.id === tmpId ? saved : m)))
@@ -110,6 +112,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
         track('message_sent', { conversation_id: id, kind: conversation.kind, retry: Boolean(retryId), attachment: file ? (file.type.startsWith('image/') ? 'image' : 'document') : null })
       } catch {
         patch((prev) => prev.map((m) => (m.id === tmpId ? { ...m, status: 'failed' as const } : m)))
+        haptic('error')
         track('message_failed', { conversation_id: id })
       }
     },
@@ -136,6 +139,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
     if (m.status === 'failed') return // never reached the server
     try {
       await api.chat.deleteMessage(id, m.id)
+      haptic('warning')
       track('message_deleted', { conversation_id: id })
     } catch {
       history.reload()

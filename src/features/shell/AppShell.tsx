@@ -2,6 +2,7 @@ import { NavLink, Outlet, matchPath, useLocation } from 'react-router-dom'
 import { Avatar, Logo } from '../../design/ui'
 import { IconCalendar, IconChart, IconChat, IconPeople, IconUser } from '../../design/icons'
 import { useSession } from '../../state/session'
+import { haptic } from '../../design/haptics'
 import { CallsProvider } from '../../state/calls'
 import { CallOverlay } from '../calls/CallOverlay'
 import { PushHost } from '../notifications/PushHost'
@@ -45,7 +46,7 @@ export function AppShell() {
       <div className="dock">
         <nav className="pill" aria-label="Main">
           {NAV.map(({ to, label, icon: Icon }) => (
-            <NavLink key={to} to={to} className={({ isActive }) => `pill__link${isActive ? ' is-active' : ''}`}>
+            <NavLink key={to} to={to} className={({ isActive }) => `pill__link${isActive ? ' is-active' : ''}`} onClick={() => { if (pathname !== to && !pathname.startsWith(`${to}/`)) haptic('selection') }}>
               <Icon size={22} /><span>{label}</span>
             </NavLink>
           ))}
