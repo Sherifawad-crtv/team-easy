@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import type { Group } from '../../data/types'
 import { buildTree, childSlots, pathOf } from './tree'
 
+const LIMITS = { memberCap: 300, mainGroups: 5, subgroups: 5, subSubgroups: 5, groupsPerUser: 12 }
+
 const g = (id: string, parentId: string | null, level: 1 | 2 | 3, over: Partial<Group> = {}): Group => ({
   id, name: id, parentId, level, memberCount: 3, rootMemberCount: 3, myRole: 'admin', archived: false, left: false, unread: 0, ...over,
 })
@@ -21,11 +23,17 @@ describe('group tree', () => {
 
   it('counts free slots and ignores archived groups', () => {
     const many = [g('p', null, 1), ...['1', '2', '3', '4'].map((i) => g(`c${i}`, 'p', 2)), g('old', 'p', 2, { archived: true })]
-    expect(childSlots(many, many[0])).toEqual({ used: 4, max: 5, full: false, tooDeep: false })
-    expect(childSlots([...many, g('c5', 'p', 2)], many[0]).full).toBe(true)
+    expect(childSlots(many, many[0], LIMITS)).toEqual({ used: 4, max: 5, full: false, tooDeep: false })
+    expect(childSlots([...many, g('c5', 'p', 2)], many[0], LIMITS).full).toBe(true)
   })
 
   it('has no room below the third level', () => {
-    expect(childSlots(GROUPS, GROUPS[3]).tooDeep).toBe(true)
+    expect(childSlots(GROUPS, GROUPS[3], LIMITS).tooDeep).toBe(true)
+  })
+
+  it('has more room once sub-groups were bought', () => {
+    const many = [g('p', null, 1), ...['1', '2', '3', '4', '5'].map((i) => g(`c${i}`, 'p', 2))]
+    expect(childSlots(many, many[0], LIMITS).full).toBe(true)
+    expect(childSlots(many, many[0], { ...LIMITS, subgroups: 10 })).toMatchObject({ used: 5, max: 10, full: false })
   })
 })

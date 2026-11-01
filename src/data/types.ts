@@ -176,7 +176,18 @@ export interface GroupMember {
   isMe: boolean
 }
 
+/** What the organization may have right now: the free limits plus anything bought (PRD §16, MON-03). */
+export interface GroupLimits {
+  /** Members of one main group, counting all its sub-groups. */
+  memberCap: number
+  mainGroups: number
+  subgroups: number
+  subSubgroups: number
+  groupsPerUser: number
+}
+
 export interface GroupTree {
+  limits: GroupLimits
   groups: Group[]
   /** How many groups the signed-in user belongs to, against the per-user limit. */
   myGroupCount: number
@@ -348,4 +359,36 @@ export interface CallRecord {
   direction: 'outgoing' | 'incoming' | 'missed'
   startedAt: number
   seconds: number
+}
+
+// ---- Monetization (MON-*) ----
+
+export type ProductId = 'members_100' | 'main_groups_3' | 'subgroups_5'
+
+export interface Product {
+  id: ProductId
+  title: string
+  description: string
+  /** Shown as given by the store. The app never works out prices. */
+  priceLabel: string
+  /** Set when the organization has it. `endsAt` is set once it was cancelled and runs to the end of the period. */
+  owned: { renewsAt: number; endsAt?: number } | null
+}
+
+export interface Entitlements {
+  plan: 'free' | 'paid'
+  limits: GroupLimits
+}
+
+export type AdSlot = 'chat_list' | 'conversation'
+
+export interface Ad {
+  id: string
+  advertiser: string
+  headline: string
+  body: string
+  cta: string
+  url: string
+  /** Colour tone 0 to 4 for the artwork. */
+  tone: number
 }

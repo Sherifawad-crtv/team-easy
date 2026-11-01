@@ -79,10 +79,10 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 | DAT-02 | Attachment retention (6 d / 15 d) | UI | `data.retention` | | |
 | DAT-03 | Opened media cached locally | UI | `media.download-policy` | | |
 | DAT-04 | Archived chat retention (configurable) | UI | `data.retention` | | Archived groups only; archived single chats not built |
-| MON-01 | Ads for free users | TODO | `monetization.ads` | | |
-| MON-02 | Ads in private chats outside the organization | TODO | `monetization.ads` | | PRD open question 6 |
-| MON-03 | Paid additions (members > 300, extra groups) | TODO | `monetization.purchases` | | |
-| MON-04 | RevenueCat integration | TODO | `monetization.purchases` | | |
+| MON-01 | Ads for free users | UI | `monetization.ads` | | |
+| MON-02 | Ads in private chats outside the organization | UI | `monetization.ads` | | PRD open question 6 |
+| MON-03 | Paid additions (members > 300, extra groups) | UI | `monetization.purchases` | | |
+| MON-04 | RevenueCat integration | UI | `monetization.purchases` | | |
 | NFR-01 | Realtime by default | UI | `chat.messages` | | |
 | NFR-02 | Load tolerance | TODO | | | PRD open question 8 (no numbers) |
 | NFR-03 | Notifications live at launch | TODO | `notifications.push` | | |
@@ -113,3 +113,4 @@ See `docs/decisions/README.md` and the PRD "Open questions".
 - 2026-10-28: Phase 2 built on mocks. Groups tab with the 5/5/5 tree (A/B `group_nav`: tree vs flat list), group page with chat, invite link, sub-groups, members, member limit counter (admin), per-user group limit, create, archive, delete with undo, leave (keep or delete for me), add people, block, title tags, join-by-link screen. Review tools can view as Admin or Member. Not built: Flights (GRP-03, 04) wait for product answers; GRP-07 store fallback is native; archiving a single chat (GRP-11) is groups only. Next: Phase 3 or review.
 - 2026-10-30: Phase 3 built on mocks. Calendar tab (month, agenda, event details, calendar filter, admin assigns calendars). In-app notice banner on the chat list and a What's new log (NTF-01). Notification settings, per-group mute, own permission sheet, and push banners that open the chat or the release/update/offer page (NTF-02, 03). Data and storage: retention rules, files about to be deleted (with notes in chats), backup, and a transfer code for a new phone (DAT-01, 02, 04). Archived groups show their deletion date. Not built: real push (OS), retention of single archived chats. Next: Phase 4 calls or review.
 - 2026-10-30: Phase 4 built as a working simulated prototype. Audio and video call buttons in every chat except announcements, microphone and camera permission sheet, ringing, in-call screen (1-to-1 and group up to 5, mute, camera, speaker, minimize to a bar, who is speaking), incoming call screen, call summary with Call again, daily 1-hour cap with warnings at 5 and 1 minute and a hard stop, Account, Calls with today's usage and history. Nothing carries real audio or video: people answer on a timer by presence (online answers, away declines, offline does not answer). Review tools: incoming calls, calling time left, microphone access. Next: Phase 5 monetization.
+- 2026-11-01: Phase 5 built as a working simulation. Ads for free users (a sponsored row in the chat list, a slim banner in chats, a Why this ad sheet with hide) that never show in organization chats or on a paid plan. Plan and add-ons screen (limits, add-ons, cancel to end of period, restore purchases), add-ons for more members, main groups and sub-groups with a confirm, success and failed-payment flow, and upgrade buttons where a limit is reached. The group limits now come from the server and grow with purchases. No money moves; prices are examples. Next: Phase 6 admin web app (not started) or review.

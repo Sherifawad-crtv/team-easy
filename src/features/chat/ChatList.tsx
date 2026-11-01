@@ -5,6 +5,8 @@ import { ErrorBanner } from '../auth/AuthFrame'
 import { Banner } from '../../design/ui'
 import type { Conversation } from '../../data/types'
 import { useVariant } from '../../experiments/experiments'
+import { AdRow } from '../ads/AdSlot'
+import { LIMITS } from '../../config/limits'
 import { SearchPanel } from '../search/SearchPanel'
 import { listTime } from './format'
 
@@ -173,9 +175,10 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, 
             </button>
           )}
           <div role="list">
-            {rest.map((c) => (
+            {rest.map((c, i) => (
               <div role="listitem" key={c.id}>
                 <Row c={c} active={c.id === activeId} onOpen={onOpen} lines={lines} />
+                {i === LIMITS.adAfterChats - 1 && <AdRow />}
               </div>
             ))}
           </div>

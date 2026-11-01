@@ -83,8 +83,8 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `permissions.runtime` | NFR-04 | `PermissionService` | Request/check OS permissions per feature with rationale | n/a | MOCKED |
 | `data.backup` | DAT-01 | `BackupService` | Backups for chat transfers | Storage, access | MOCKED |
 | `data.retention` | DAT-02, DAT-04 | server job + `RetentionConfig` | Delete unopened attachments after 6d (standard) / 15d (business); delete archived chats after configured period | All deletion (server job) | MOCKED |
-| `monetization.ads` | MON-01, MON-02 | `AdService` | Serve ads to free users per placement rules | Eligibility | PLANNED |
-| `monetization.purchases` | MON-03, MON-04 | `PurchaseService` | RevenueCat: subscriptions and purchases for members beyond 300, extra groups and sub-groups | Entitlements | PLANNED |
+| `monetization.ads` | MON-01, MON-02 | `AdService` | Serve ads to free users per placement rules | Eligibility | MOCKED |
+| `monetization.purchases` | MON-03, MON-04 | `PurchaseService` | RevenueCat: subscriptions and purchases for members beyond 300, extra groups and sub-groups | Entitlements | MOCKED |
 | `config.limits` | Part B §16 | `AppConfigRepository` | Limits, quotas, undo window, retention values served from config/DB, not hardcoded | Source of truth | PLANNED |
 
 ## How an engineer (or their AI) wires a point

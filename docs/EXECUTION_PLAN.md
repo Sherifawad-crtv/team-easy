@@ -107,6 +107,8 @@ The PWA can only show these screens with simulated calls. Real audio and video, 
 | MON-01, 02 | Ad slots for free users | Q6: where ads appear, in which chats |
 | MON-03, 04 | Upgrade flow past 300 members, extra groups and sub-groups, purchase screens | Pricing and plan structure, RevenueCat product names |
 
+**Status (2026-11-01): built as a working simulation.** Real payments (RevenueCat, the stores) and an ad network are engineering work. Assumptions are in PRD open question 19.
+
 ### Phase 6: admin web app (size L, not started)
 
 The PRD's admin surface: issue invites (ACC-05, ROL-01), assign calendars (CAL-02), manage teams (GRP-08, 09), member counter (GRP-05). Needs the admin stack decision (open decision 4) before any build. May share this codebase.

@@ -17,6 +17,8 @@ export type ApiErrorCode =
   | 'call_full'
   | 'call_active'
   | 'call_unavailable'
+  | 'purchase_failed'
+  | 'purchase_cancelled'
 
 export class ApiError extends Error {
   code: ApiErrorCode
@@ -48,7 +50,7 @@ export function describeError(error: unknown): UserMessage {
     case 'invite_expired':
       return { title: 'This invite has expired', body: 'Ask your admin to send a new one.', offline: false }
     case 'limit_children':
-      return { title: 'This is full', body: 'A group can hold up to 5 sub-groups, and a sub-group up to 5 more. Archive or delete one to make room.', offline: false }
+      return { title: 'This is full', body: 'Groups can only hold so many sub-groups. Archive or delete one to make room, or add more in Plan and add-ons.', offline: false }
     case 'limit_depth':
       return { title: "Groups can't go any deeper", body: 'Groups nest three levels: group, sub-group and sub-sub-group.', offline: false }
     case 'limit_user_groups':
@@ -63,6 +65,10 @@ export function describeError(error: unknown): UserMessage {
       return { title: "This link isn't valid", body: 'It may have been turned off. Ask for a new one.', offline: false }
     case 'name_taken':
       return { title: 'That name is already used here', body: 'Pick a different name for this group.', offline: false }
+    case 'purchase_failed':
+      return { title: "The payment didn't go through", body: 'You were not charged. Check your payment method in your store settings and try again.', offline: false }
+    case 'purchase_cancelled':
+      return { title: 'Purchase cancelled', body: 'You were not charged.', offline: false }
     case 'call_cap_reached':
       return { title: "You've used today's calling time", body: 'Calls are limited to 1 hour a day. Your time starts again at midnight.', offline: false }
     case 'call_full':

@@ -50,12 +50,12 @@ export function CreateGroupSheet({ parent, onClose, onCreated }: { parent: Group
 
 /* ---------- Add people (ROL-01) ---------- */
 
-export function AddMembersSheet({ group, onClose, onAdded }: { group: Group; onClose: () => void; onAdded: (n: number) => void }) {
+export function AddMembersSheet({ group, memberCap, onClose, onAdded, onUpgrade }: { group: Group; memberCap: number; onClose: () => void; onAdded: (n: number) => void; onUpgrade?: () => void }) {
   const [query, setQuery] = useState('')
   const [debounced, setDebounced] = useState('')
   const [picked, setPicked] = useState<string[]>([])
   const { busy, error, run } = useSubmit()
-  const room = Math.max(0, LIMITS.maxMembers - group.rootMemberCount)
+  const room = Math.max(0, memberCap - group.rootMemberCount)
 
   useEffect(() => {
     const t = window.setTimeout(() => setDebounced(query), 200)
@@ -76,14 +76,14 @@ export function AddMembersSheet({ group, onClose, onAdded }: { group: Group; onC
   return (
     <BottomSheet title="Add people" onClose={onClose}>
       <p className="t-body-sm muted" style={{ marginBottom: 'var(--s-4)' }}>
-        {room === 0 ? 'This group is full.' : `Room for ${room} more ${room === 1 ? 'person' : 'people'} (limit ${LIMITS.maxMembers}).`}
+        {room === 0 ? 'This group is full.' : `Room for ${room} more ${room === 1 ? 'person' : 'people'} (limit ${memberCap}).`}
       </p>
       <div className="search" style={{ margin: '0 0 var(--s-4)' }}>
         <IconSearch size={20} />
         <input type="search" placeholder="Search people by name" aria-label="Search people by name" value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
       {error != null && <div style={{ marginBottom: 'var(--s-4)' }}><ErrorBanner error={error} /></div>}
-      {over && <div style={{ marginBottom: 'var(--s-4)' }}><Banner kind="error" title="That's more than fits">Pick {room} or fewer. Adding people past {LIMITS.maxMembers} needs a paid plan.</Banner></div>}
+      {over && <div style={{ marginBottom: 'var(--s-4)' }}><Banner kind="error" title="That's more than fits">Pick {room} or fewer. Adding people past {memberCap} needs more members.</Banner>{onUpgrade && <Button variant="secondary" onClick={onUpgrade} className="mt">Get more members</Button>}</div>}
       {people.status === 'loading' && <div aria-busy="true">{[0, 1, 2].map((i) => <div key={i} className="list-row"><Skeleton width={40} height={40} radius="50%" /><Skeleton width="50%" height={14} /></div>)}</div>}
       {people.status === 'error' && <ErrorBanner error={people.error} onRetry={people.reload} />}
       {people.status === 'ready' && people.data.length === 0 && (

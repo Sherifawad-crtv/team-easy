@@ -27,6 +27,8 @@ export const LIMITS = {
   callCapSeconds: 3600,
   /** Warn when this much calling time is left in a call (assumed, open question 18). */
   callWarnSeconds: [300, 60],
+  /** Free-plan ad pacing: one ad in the chat list after this many chats (assumed, open question 19). */
+  adAfterChats: 3,
   groupNameMax: 40,
   /** ROL-04: length of a title tag. */
   titleTagMax: 24,

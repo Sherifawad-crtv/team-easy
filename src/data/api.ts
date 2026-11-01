@@ -1,5 +1,7 @@
 import type {
   Account,
+  Ad,
+  AdSlot,
   BackupStatus,
   CallEvent,
   CallMode,
@@ -12,12 +14,15 @@ import type {
   ChatEvent,
   Conversation,
   DeletedGroup,
+  Entitlements,
   Group,
   GroupLinkInfo,
   GroupMember,
   GroupTree,
   LeaveMode,
   NewGroup,
+  Product,
+  ProductId,
   IdentityKind,
   Member,
   Message,
@@ -159,6 +164,25 @@ export interface CallsApi {
   subscribe(listener: (event: CallEvent) => void): () => void
 }
 
+export interface PurchasesApi {
+  /** MON-04: what can be bought, with prices as the store reports them. */
+  offerings(): Promise<Product[]>
+  /** What the organization has and the limits that follow. */
+  entitlements(): Promise<Entitlements>
+  /** Admin only. Rejects with `purchase_failed` or `purchase_cancelled`. */
+  purchase(productId: ProductId): Promise<Entitlements>
+  /** Admin only. The add-on runs to the end of the period it was paid for. */
+  cancel(productId: ProductId): Promise<Entitlements>
+  /** Brings back purchases made with the same store account. */
+  restore(): Promise<Entitlements>
+}
+
+export interface AdsApi {
+  /** MON-01, 02: an ad for this place, or null when none should show (paid plan, work chats). */
+  forSlot(slot: AdSlot): Promise<Ad | null>
+  report(adId: string, event: 'impression' | 'click' | 'hide'): Promise<void>
+}
+
 export interface Api {
   auth: AuthApi
   chat: ChatApi
@@ -168,5 +192,7 @@ export interface Api {
   notifications: NotificationsApi
   data: DataApi
   calls: CallsApi
+  purchases: PurchasesApi
+  ads: AdsApi
   permissions: PermissionsApi
 }

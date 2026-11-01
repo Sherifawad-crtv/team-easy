@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { ApiError } from '../errors'
-import { mockApi, simulateCallTimeLeft } from './mockApi'
+import { mockApi, simulateCallTimeLeft, simulatePurchaseFailure } from './mockApi'
 import { roleStore } from './role'
 import { scenarioStore } from './scenario'
 
@@ -303,5 +303,57 @@ describe('mock calls', () => {
     simulateCallTimeLeft(1)
     await wait(2300)
     expect(events.find((e) => e.type === 'ended')).toMatchObject({ reason: 'cap_reached' })
+  }, 15000)
+})
+
+describe('mock purchases and ads', () => {
+  beforeEach(() => { roleStore.set('admin') })
+
+  it('starts on the free limits and raises them with each add-on', async () => {
+    expect((await mockApi.purchases.entitlements())).toMatchObject({ plan: 'free', limits: { memberCap: 300, mainGroups: 5, subgroups: 5 } })
+    await mockApi.purchases.purchase('members_100')
+    await mockApi.purchases.purchase('subgroups_5')
+    expect(await mockApi.purchases.entitlements()).toMatchObject({ plan: 'paid', limits: { memberCap: 400, subgroups: 10, subSubgroups: 10, mainGroups: 5 } })
+  }, 15000)
+
+  it('lets a full parent take more sub-groups once they are bought', async () => {
+    const eng = (await mockApi.groups.list()).groups.find((g) => g.name === 'Engineering')!
+    expect(await code(mockApi.groups.create({ name: 'Sixth', parentId: eng.id }))).toBe('limit_children')
+    await mockApi.purchases.purchase('subgroups_5')
+    expect(await code(mockApi.groups.create({ name: 'Sixth', parentId: eng.id }))).toBeNull()
+    expect((await mockApi.groups.list()).limits.subgroups).toBe(10)
+  }, 15000)
+
+  it('lets a group past 300 once members are bought', async () => {
+    const launch = (await mockApi.groups.list()).groups.find((g) => g.name.startsWith('Q4 Launch'))!
+    const people = await mockApi.groups.candidates(launch.id, '')
+    expect(await code(mockApi.groups.addMembers(launch.id, people.slice(0, 6).map((p) => p.id)))).toBe('limit_members')
+    await mockApi.purchases.purchase('members_100')
+    expect(await code(mockApi.groups.addMembers(launch.id, people.slice(0, 6).map((p) => p.id)))).toBeNull()
+  }, 15000)
+
+  it('refuses members, fails on demand, cancels to the end of the period and restores', async () => {
+    roleStore.set('member')
+    expect(await code(mockApi.purchases.purchase('members_100'))).toBe('not_allowed')
+    roleStore.set('admin')
+    simulatePurchaseFailure(true)
+    expect(await code(mockApi.purchases.purchase('members_100'))).toBe('purchase_failed')
+    expect((await mockApi.purchases.entitlements()).plan).toBe('free')
+    await mockApi.purchases.purchase('members_100')
+    await mockApi.purchases.cancel('members_100')
+    const owned = (await mockApi.purchases.offerings()).find((p) => p.id === 'members_100')!.owned!
+    expect(owned.endsAt).toBe(owned.renewsAt)
+    expect((await mockApi.purchases.entitlements()).limits.memberCap).toBe(400)
+    expect((await mockApi.purchases.restore()).plan).toBe('paid')
+  }, 20000)
+
+  it('shows ads only on the free plan outside the organization', async () => {
+    await mockApi.auth.signIn('a@b.co', 'longpass1')
+    expect(await mockApi.ads.forSlot('chat_list')).not.toBeNull()
+    await mockApi.auth.switchIdentity('organization')
+    expect(await mockApi.ads.forSlot('chat_list')).toBeNull()
+    await mockApi.auth.switchIdentity('individual')
+    await mockApi.purchases.purchase('subgroups_5')
+    expect(await mockApi.ads.forSlot('conversation')).toBeNull()
   }, 15000)
 })

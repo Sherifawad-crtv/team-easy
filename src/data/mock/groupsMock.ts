@@ -6,6 +6,7 @@ import { LIMITS } from '../../config/limits'
 import { ApiError } from '../errors'
 import type {
   ChatEvent,
+  GroupLimits,
   Conversation,
   Group,
   GroupLevel,
@@ -74,10 +75,13 @@ export interface GroupDeps {
   history: Map<string, Message[]>
   emit: (e: ChatEvent) => void
   gate: (base?: number) => Promise<void>
+  /** The limits right now, which grow with purchases. */
+  limits: () => GroupLimits
 }
 
 export function createGroups(deps: GroupDeps) {
-  const { conversations, history, emit, gate } = deps
+  const { conversations, history, emit, gate, limits } = deps
+  const maxChildren = (level: number) => (level === 1 ? limits().mainGroups : level === 2 ? limits().subgroups : limits().subSubgroups)
   let rows = seed()
   let nextGroup = 1
   const blocked = new Set<string>() // `${groupId}:${memberId}`
@@ -170,8 +174,8 @@ export function createGroups(deps: GroupDeps) {
   const api: GroupApi = {
     async list() {
       await gate()
-      if (scenarioStore.get() === 'empty') return { groups: [], myGroupCount: 0 }
-      return { groups: rows.filter(visible).map(toGroup), myGroupCount: myCount() }
+      if (scenarioStore.get() === 'empty') return { limits: limits(), groups: [], myGroupCount: 0 }
+      return { limits: limits(), groups: rows.filter(visible).map(toGroup), myGroupCount: myCount() }
     },
     async get(id) {
       await gate(300)
@@ -186,8 +190,8 @@ export function createGroups(deps: GroupDeps) {
       if (level > 3) throw new ApiError('limit_depth')
       const siblings = rows.filter((r) => r.parentId === parentId && !r.deletedAt)
       if (siblings.some((r) => r.name.toLowerCase() === clean.toLowerCase())) throw new ApiError('name_taken')
-      if (childrenOf(parentId).length >= LIMITS.maxChildren[level as GroupLevel]) throw new ApiError('limit_children')
-      if (myCount() >= LIMITS.maxGroupsPerUser) throw new ApiError('limit_user_groups')
+      if (childrenOf(parentId).length >= maxChildren(level)) throw new ApiError('limit_children')
+      if (myCount() >= limits().groupsPerUser) throw new ApiError('limit_user_groups')
       const row: Row = { id: `g-new-${nextGroup++}`, name: clean, parentId, count: 1, roster: [ME.id], joined: true }
       rows.push(row)
       const conv = ensureConv(row)
@@ -198,7 +202,7 @@ export function createGroups(deps: GroupDeps) {
       await gate(400)
       requireAdmin()
       const row = byId(id)
-      if (!archived && childrenOf(row.parentId).length >= LIMITS.maxChildren[levelOf(row)]) {
+      if (!archived && childrenOf(row.parentId).length >= maxChildren(levelOf(row))) {
         throw new ApiError('limit_children')
       }
       for (const r of [row, ...descendants(id)]) {
@@ -268,7 +272,7 @@ export function createGroups(deps: GroupDeps) {
       requireAdmin()
       const row = byId(id)
       const fresh = memberIds.filter((m) => !row.roster.includes(m))
-      if (rootOf(row).count + fresh.length > LIMITS.maxMembers) throw new ApiError('limit_members')
+      if (rootOf(row).count + fresh.length > limits().memberCap) throw new ApiError('limit_members')
       for (const m of fresh) addToChain(row, m)
     },
     async setBlocked(id, memberId, value) {
@@ -318,8 +322,8 @@ export function createGroups(deps: GroupDeps) {
       const info = linkInfo(token)
       const row = byId(info.groupId)
       if (mine(row) && !row.left) return toGroup(row)
-      if (myCount() >= LIMITS.maxGroupsPerUser) throw new ApiError('limit_user_groups')
-      if (rootOf(row).count + 1 > LIMITS.maxMembers) throw new ApiError('limit_members')
+      if (myCount() >= limits().groupsPerUser) throw new ApiError('limit_user_groups')
+      if (rootOf(row).count + 1 > limits().memberCap) throw new ApiError('limit_members')
       row.left = false
       row.hidden = false
       const conv = conversations.find((c) => c.id === convIdOf(row))

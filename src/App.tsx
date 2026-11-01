@@ -10,6 +10,7 @@ import { SignUpScreen } from './features/auth/SignUpScreen'
 import { WelcomeScreen } from './features/auth/WelcomeScreen'
 import { GroupsScreen } from './features/groups/GroupsScreen'
 import { JoinScreen, pendingJoin } from './features/groups/JoinScreen'
+import { PlanScreen } from './features/plan/PlanScreen'
 import { CallsScreen } from './features/calls/CallsScreen'
 import { CalendarScreen } from './features/calendar/CalendarScreen'
 import { DataScreen } from './features/data/DataScreen'
@@ -59,6 +60,7 @@ export function App() {
             <Route path="/calendar" element={<CalendarScreen />} />
             <Route path="/updates/:id?" element={<UpdatesScreen />} />
             <Route path="/account/notifications" element={<NotificationSettingsScreen />} />
+            <Route path="/account/plan" element={<PlanScreen />} />
             <Route path="/account/calls" element={<CallsScreen />} />
             <Route path="/account/data" element={<DataScreen />} />
             <Route path="/account" element={<AccountScreen />} />

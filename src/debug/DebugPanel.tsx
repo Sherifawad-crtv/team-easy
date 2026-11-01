@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { simulateCallTimeLeft, simulateIncomingCall, simulatePermission, simulatePush } from '../data/mock/mockApi'
+import { resetPurchases, simulateCallTimeLeft, simulateIncomingCall, simulatePermission, simulatePurchaseFailure, simulatePush } from '../data/mock/mockApi'
 import { roleStore } from '../data/mock/role'
 import { SCENARIOS, scenarioStore } from '../data/mock/scenario'
 import { settings, useConnection } from '../state/settings'
@@ -52,6 +52,11 @@ export function DebugPanel() {
             {([['ask', 'Ask first', null], ['denied', 'Denied', 'denied']] as const).map(([id, label, value]) => (
               <button key={id} type="button" aria-pressed={photoAccess === id || (id === 'ask' && photoAccess === 'granted')} onClick={() => { simulatePermission('photos', value); setPhotoAccess(id) }}>{label}</button>
             ))}
+          </div>
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Purchases</p>
+          <div className="seg seg--wrap" role="group" aria-label="Purchases">
+            <button type="button" onClick={() => simulatePurchaseFailure(true)}>Next purchase fails</button>
+            <button type="button" onClick={() => { resetPurchases(); window.location.reload() }}>Back to free plan</button>
           </div>
           <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Calls</p>
           <div className="seg seg--wrap" role="group" aria-label="Calls">

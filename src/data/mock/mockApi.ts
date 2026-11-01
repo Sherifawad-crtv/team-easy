@@ -118,6 +118,16 @@
 // Real: Zeego Cloud (name to confirm, open question 11) audio and video: 1-to-1 and group and sub-group calls of up to 5 people, ringing and incoming calls (also when the app is closed, with the native call screen), call state stream, microphone and camera access, daily 1-hour usage metering
 // Server must enforce: 5-participant cap, 1 hour per user per day across audio and video (end the call at the cap), who may call whom (membership, blocked and departed members), no call in announcement chats
 //
+// WIRE: monetization.ads
+// Req: MON-01, MON-02 | Contract: AdsApi.forSlot/report | Mock: mockApi.ads
+// Real: an ad network or own ad server; show ads only to free-plan users and only in chats outside the organization (assumed reading, open question 19); report impressions, clicks and hides
+// Server must enforce: eligibility (plan and identity), no ads in work chats, frequency
+//
+// WIRE: monetization.purchases
+// Req: MON-03, MON-04 | Contract: PurchasesApi + GroupTree.limits | Mock: mockApi.purchases
+// Real: RevenueCat (offerings, purchase, restore, entitlements) over the App Store and Google Play; products and prices are the store's; entitlements raise the limits the group APIs enforce
+// Server must enforce: admin-only purchase, entitlement check on every limit (members past 300, main groups, sub-groups), what happens when an add-on ends
+//
 // Demo data: any email with a password of 8+ characters signs in, except the
 // password "wrongpass1". Emails starting "taken@" are already registered.
 // Invites: ORG-ACME valid, ORG-OLD expired, anything else invalid. A message
@@ -139,6 +149,7 @@ import type {
   SearchFilters,
   SearchResults,
 } from '../types'
+import { createPurchases, currentLimits, failNextPurchase } from './purchasesMock'
 import { createCalls } from './callsMock'
 import { createCalendar } from './calendarMock'
 import { createData } from './dataMock'
@@ -206,8 +217,9 @@ const messagesFor = (id: string): Message[] => {
 
 const emit = (e: ChatEvent) => listeners.forEach((l) => l(e))
 
-const groupsMock = createGroups({ conversations, history, emit, gate })
+const groupsMock = createGroups({ conversations, history, emit, gate, limits: currentLimits })
 const calendarMock = createCalendar({ gate })
+const shop = createPurchases({ gate, identity: () => current?.activeIdentity ?? 'individual' })
 const notificationsMock = createNotifications({ gate })
 const callsMock = createCalls({
   gate, conversations,
@@ -308,6 +320,10 @@ export function simulatePermission(kind: PermissionKind, status: PermissionStatu
 
 /** Review tool: pretend the server sent a push about a release or an offer. */
 export const simulatePush = (kind: 'release' | 'offer') => notificationsMock.sendTest(kind)
+
+/** Review tools for purchases. */
+export const simulatePurchaseFailure = failNextPurchase
+export const resetPurchases = () => shop.reset()
 
 /** Review tools for calls. */
 export const simulateIncomingCall = (kind: 'direct' | 'group', mode: 'audio' | 'video') => callsMock.simulateIncoming(kind, mode)
@@ -480,6 +496,8 @@ export const mockApi: Api = {
   notifications: notificationsMock.api,
   data: dataApi,
   calls: callsMock.api,
+  purchases: shop.purchases,
+  ads: shop.ads,
 
   permissions: {
     async status(kind: PermissionKind): Promise<PermissionStatus> {

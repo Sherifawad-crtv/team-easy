@@ -1,21 +1,22 @@
 import { useState } from 'react'
 import { api } from '../../data'
-import { LIMITS } from '../../config/limits'
-import type { DeletedGroup, Group, GroupMember, LeaveMode } from '../../data/types'
+import type { DeletedGroup, Group, GroupLimits, GroupMember, LeaveMode, ProductId } from '../../data/types'
 import { Avatar, Banner, BackButton, Button, Skeleton, Switch } from '../../design/ui'
 import { IconArchive, IconChat, IconChevronRight, IconLeave, IconLink, IconMore, IconPeople, IconPlus, IconTrash } from '../../design/icons'
 import { useAsync } from '../../state/useAsync'
 import { useSubmit } from '../../state/useSubmit'
 import { daysLeftLabel } from '../data/retention'
 import { ErrorBanner } from '../auth/AuthFrame'
+import { UpgradeSheet } from '../plan/UpgradeSheet'
 import { AddMembersSheet, ArchiveSheet, CreateGroupSheet, DeleteSheet, InviteSheet, LeaveSheet, MemberSheet } from './GroupSheets'
 import { LEVEL_NAME, childSlots, memberLabel, pathOf } from './tree'
 
-type Sheet = 'create' | 'add' | 'invite' | 'leave' | 'archive' | 'delete' | null
+type Sheet = 'create' | 'add' | 'invite' | 'leave' | 'archive' | 'delete' | 'upgrade' | null
 
 interface Props {
   group: Group
   all: Group[]
+  limits: GroupLimits
   onBack: () => void
   onOpenGroup: (id: string) => void
   onOpenChat: (conversationId: string) => void
@@ -26,7 +27,7 @@ interface Props {
 }
 
 /** One group: its chat, invite link, sub-groups, members and the admin tools (GRP-*, ROL-*). */
-export function GroupDetail({ group, all, onBack, onOpenGroup, onOpenChat, onChanged, onDeleted, onLeft }: Props) {
+export function GroupDetail({ group, all, limits, onBack, onOpenGroup, onOpenChat, onChanged, onDeleted, onLeft }: Props) {
   const members = useAsync(() => api.groups.members(group.id), [group.id])
   const [sheet, setSheet] = useState<Sheet>(null)
   const [memberFor, setMemberFor] = useState<GroupMember | null>(null)
@@ -38,9 +39,11 @@ export function GroupDetail({ group, all, onBack, onOpenGroup, onOpenChat, onCha
   const admin = group.myRole === 'admin'
   const path = pathOf(group, all)
   const kids = all.filter((g) => g.parentId === group.id && !g.archived).sort((a, b) => a.name.localeCompare(b.name))
-  const slots = childSlots(all, group)
+  const slots = childSlots(all, group, limits)
+  const [focus, setFocus] = useState<ProductId | undefined>()
+  const upgrade = (id: ProductId) => { setFocus(id); setSheet('upgrade') }
   const active = !group.archived && !group.left
-  const capLeft = Math.max(0, LIMITS.maxMembers - group.rootMemberCount)
+  const capLeft = Math.max(0, limits.memberCap - group.rootMemberCount)
   const rootName = path[0] ?? group.name
 
   const openChat = async () => {
@@ -95,15 +98,16 @@ export function GroupDetail({ group, all, onBack, onOpenGroup, onOpenChat, onCha
           <section aria-label="Member limit">
             <div className="meter-head">
               <h2 className="t-title-sm">Member limit</h2>
-              <span className="t-body-sm muted">{group.rootMemberCount} of {LIMITS.maxMembers}</span>
+              <span className="t-body-sm muted">{group.rootMemberCount} of {limits.memberCap}</span>
             </div>
-            <div className="meter" role="progressbar" aria-valuemin={0} aria-valuemax={LIMITS.maxMembers} aria-valuenow={group.rootMemberCount} aria-label="Members used">
-              <span className={`meter__fill${capLeft <= 10 ? ' is-low' : ''}`} style={{ width: `${Math.min(100, (group.rootMemberCount / LIMITS.maxMembers) * 100)}%` }} />
+            <div className="meter" role="progressbar" aria-valuemin={0} aria-valuemax={limits.memberCap} aria-valuenow={group.rootMemberCount} aria-label="Members used">
+              <span className={`meter__fill${capLeft <= 10 ? ' is-low' : ''}`} style={{ width: `${Math.min(100, (group.rootMemberCount / limits.memberCap) * 100)}%` }} />
             </div>
             <p className="t-body-sm muted" style={{ marginTop: 'var(--s-3)' }}>
-              {capLeft === 0 ? 'Full. Adding more people needs a paid plan.' : `${capLeft} ${capLeft === 1 ? 'spot' : 'spots'} left.`}{' '}
+              {capLeft === 0 ? 'Full. Adding more people needs more members.' : `${capLeft} ${capLeft === 1 ? 'spot' : 'spots'} left.`}{' '}
               {group.level > 1 ? `Counted across ${rootName} and all its sub-groups.` : 'Counted across this group and all its sub-groups.'}
             </p>
+            {capLeft <= 10 && <div style={{ marginTop: 'var(--s-3)' }}><Button variant="secondary" onClick={() => upgrade('members_100')}>Get more members</Button></div>}
           </section>
         )}
 
@@ -131,7 +135,8 @@ export function GroupDetail({ group, all, onBack, onOpenGroup, onOpenChat, onCha
             {admin && active && (
               <div style={{ marginTop: 'var(--s-3)' }}>
                 <Button variant="outlined" disabled={slots.full} onClick={() => setSheet('create')}><IconPlus size={18} /> Add {group.level === 1 ? 'sub-group' : 'sub-sub-group'}</Button>
-                {slots.full && <p className="t-body-sm muted" style={{ marginTop: 'var(--s-3)' }}>This group has {slots.max} {group.level === 1 ? 'sub-groups' : 'sub-sub-groups'}, the most it can hold. Archive or delete one to make room.</p>}
+                {slots.full && <p className="t-body-sm muted" style={{ marginTop: 'var(--s-3)' }}>This group has {slots.max} {group.level === 1 ? 'sub-groups' : 'sub-sub-groups'}, the most it can hold. Archive or delete one to make room, or add more.</p>}
+                {slots.full && <div style={{ marginTop: 'var(--s-3)' }}><Button variant="secondary" onClick={() => upgrade('subgroups_5')}>Get more sub-groups</Button></div>}
               </div>
             )}
           </section>
@@ -191,11 +196,12 @@ export function GroupDetail({ group, all, onBack, onOpenGroup, onOpenChat, onCha
       </div>
 
       {sheet === 'create' && <CreateGroupSheet parent={group} onClose={close} onCreated={() => { close(); setNotice('Sub-group created'); onChanged() }} />}
-      {sheet === 'add' && <AddMembersSheet group={group} onClose={close} onAdded={(n) => { close(); setNotice(`${n} ${n === 1 ? 'person' : 'people'} added`); members.reload(); onChanged() }} />}
+      {sheet === 'add' && <AddMembersSheet group={group} memberCap={limits.memberCap} onUpgrade={() => upgrade('members_100')} onClose={close} onAdded={(n) => { close(); setNotice(`${n} ${n === 1 ? 'person' : 'people'} added`); members.reload(); onChanged() }} />}
       {sheet === 'invite' && <InviteSheet group={group} onClose={close} />}
       {sheet === 'leave' && <LeaveSheet group={group} onClose={close} onDone={(mode) => { close(); onLeft(mode) }} />}
       {sheet === 'archive' && <ArchiveSheet group={group} onClose={close} onDone={() => { close(); onChanged() }} />}
       {sheet === 'delete' && <DeleteSheet group={group} hasSubgroups={all.some((g) => g.parentId === group.id)} onClose={close} onDeleted={(d) => { close(); onDeleted(d) }} />}
+      {sheet === 'upgrade' && <UpgradeSheet focus={focus} onClose={close} onChanged={onChanged} />}
       {memberFor && <MemberSheet group={group} member={memberFor} onClose={() => setMemberFor(null)} onChanged={() => { setMemberFor(null); members.reload() }} />}
     </main>
   )

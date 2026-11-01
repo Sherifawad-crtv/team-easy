@@ -410,3 +410,22 @@ ul.card > li + li { border-top: 1px solid var(--outline-variant); }
 .crow__ic--missed { background: var(--error-container); color: var(--on-error-container); }
 @media (prefers-reduced-motion: reduce) { .call__pulse { animation: none; opacity: 0.4; } }
 @media (min-width: 1024px) { .call-wait { bottom: var(--s-7); } .call { padding-left: calc(88px + var(--s-5)); } .callbar { left: 88px; } }
+
+/* ---------- Plan, add-ons and ads ---------- */
+.offer { display: flex; align-items: center; gap: var(--s-4); width: 100%; padding: var(--s-4) var(--s-5); border: 0; border-radius: var(--shape-lg); background: var(--surface-container-low); text-align: left; }
+.offer--focus { background: var(--primary-container); }
+.offer:disabled { opacity: 0.6; }
+.offer__price { flex: none; font-size: 14px; font-weight: 700; color: var(--primary); }
+.plan { padding: var(--s-5); }
+.plan__limits { margin-top: var(--s-3); padding: 0; list-style: none; }
+.plan__limits li { display: flex; justify-content: space-between; gap: var(--s-4); padding: var(--s-3) 0; font-size: 14px; line-height: 20px; }
+.plan__limits li + li { border-top: 1px solid var(--outline-variant); }
+.mt { margin-top: var(--s-3); }
+.ad-tag { flex: none; display: inline-flex; align-items: center; min-height: 18px; padding: 0 var(--s-3); border-radius: var(--shape-xs); background: var(--highlight); color: #3d3a14; font-size: 11px; line-height: 16px; font-weight: 700; letter-spacing: 0.3px; }
+.ad-row { display: flex; align-items: center; background: var(--highlight); }
+.ad-row__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--s-4); padding: var(--s-3) var(--s-5); border: 0; background: transparent; text-align: left; }
+.ad-row__head { font-size: 14px; line-height: 20px; color: var(--on-surface); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
+.ad-row__cta { font-size: 13px; line-height: 18px; font-weight: 700; color: var(--primary); }
+.ad-banner { display: flex; align-items: center; background: var(--highlight); }
+.ad-banner__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--s-3); padding: var(--s-2) var(--s-4); min-height: 40px; border: 0; background: transparent; text-align: left; font-size: 13px; line-height: 18px; color: #3d3a14; }
+.ad-banner__text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

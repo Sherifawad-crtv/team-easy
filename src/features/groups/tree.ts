@@ -1,5 +1,4 @@
-import { LIMITS } from '../../config/limits'
-import type { Group } from '../../data/types'
+import type { Group, GroupLimits } from '../../data/types'
 
 export interface TreeNode {
   group: Group
@@ -34,11 +33,11 @@ export function pathOf(group: Group, groups: Group[]): string[] {
 export const LEVEL_NAME = { 1: 'Group', 2: 'Sub-group', 3: 'Sub-sub-group' } as const
 
 /** How full a parent is. `parent` null means the top level. Archived groups don't count. */
-export function childSlots(groups: Group[], parent: Group | null) {
+export function childSlots(groups: Group[], parent: Group | null, limits: GroupLimits) {
   const level = ((parent?.level ?? 0) + 1) as 1 | 2 | 3 | 4
   if (level === 4) return { used: 0, max: 0, full: true, tooDeep: true }
   const used = groups.filter((g) => g.parentId === (parent?.id ?? null) && !g.archived).length
-  const max = LIMITS.maxChildren[level]
+  const max = level === 1 ? limits.mainGroups : level === 2 ? limits.subgroups : limits.subSubgroups
   return { used, max, full: used >= max, tooDeep: false }
 }
 

@@ -13,6 +13,7 @@ import { useSubmit } from '../../state/useSubmit'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { groupTiming } from '../chat/timing'
 import { daysLeftLabel } from '../data/retention'
+import { UpgradeSheet } from '../plan/UpgradeSheet'
 import { GroupDetail } from './GroupDetail'
 import { CreateGroupSheet } from './GroupSheets'
 import { LEVEL_NAME, buildTree, childSlots, memberLabel, pathOf, type TreeNode } from './tree'
@@ -128,7 +129,8 @@ export function GroupsScreen() {
   const tree = useMemo(() => buildTree(activeGroups), [activeGroups])
   const q = query.trim().toLowerCase()
   const flat = activeGroups.filter((g) => !q || g.name.toLowerCase().includes(q)).sort((a, b) => b.unread - a.unread || a.name.localeCompare(b.name))
-  const rootSlots = childSlots(groups, null)
+  const rootSlots = known ? childSlots(groups, null, known.limits) : { used: 0, max: 0, full: false, tooDeep: false }
+  const [upgrading, setUpgrading] = useState(false)
 
   const onDeleted = (d: DeletedGroup) => {
     setUndo(d)
@@ -161,7 +163,7 @@ export function GroupsScreen() {
         <div className="chats__scroll">
           {known && (
             <p className="t-body-sm muted gcount">
-              You're in {known.myGroupCount} of {LIMITS.maxGroupsPerUser} groups you can join.
+              You're in {known.myGroupCount} of {known.limits.groupsPerUser} groups you can join.
             </p>
           )}
 
@@ -211,7 +213,10 @@ export function GroupsScreen() {
                 </div>
               )}
               {admin && rootSlots.full && (
-                <p className="t-body-sm muted" style={{ padding: 'var(--s-4) var(--s-5)' }}>You have {rootSlots.max} main groups, the most allowed. Archive one to make room.</p>
+                <div style={{ padding: 'var(--s-4) var(--s-5)' }}>
+                  <p className="t-body-sm muted">You have {rootSlots.max} main groups, the most allowed. Archive one to make room, or add more.</p>
+                  <div style={{ marginTop: 'var(--s-3)' }}><Button variant="secondary" onClick={() => setUpgrading(true)}>Get more main groups</Button></div>
+                </div>
               )}
             </>
           )}
@@ -220,7 +225,7 @@ export function GroupsScreen() {
 
       <section className="chats__pane" aria-label="Group">
         {current ? (
-          <GroupDetail key={current.id} group={current} all={groups} onBack={() => navigate('/groups')} onOpenGroup={openGroup}
+          <GroupDetail key={current.id} group={current} all={groups} limits={known!.limits} onBack={() => navigate('/groups')} onOpenGroup={openGroup}
             onOpenChat={(cid) => navigate(`/chats/${cid}`)} onChanged={reload} onDeleted={onDeleted} onLeft={onLeft} />
         ) : id && settled ? (
           <div className="empty"><h2 className="t-title">That group isn't available</h2><p className="t-body-sm muted">It may have been deleted, or you may not have access.</p></div>
@@ -236,6 +241,7 @@ export function GroupsScreen() {
       </section>
 
       {creating && <CreateGroupSheet parent={null} onClose={() => setCreating(false)} onCreated={(g) => { setCreating(false); reload(); navigate(`/groups/${g.id}`) }} />}
+      {upgrading && <UpgradeSheet focus="main_groups_3" onClose={() => setUpgrading(false)} onChanged={reload} />}
       {undo && (
         <Snackbar message={`“${undo.name}” deleted`} actionLabel={undoAction.busy ? 'Undoing…' : 'Undo'} onAction={() => void doUndo()}
           durationMs={LIMITS.undoWindowSeconds * 1000} onDone={() => setUndo(null)} />

@@ -8,6 +8,7 @@ import { track, trackExposure } from '../../experiments/analytics'
 import { useVariant } from '../../experiments/experiments'
 import { useAsync } from '../../state/useAsync'
 import { ErrorBanner } from '../auth/AuthFrame'
+import { AdBanner } from '../ads/AdSlot'
 import { CallButtons } from '../calls/CallButtons'
 import { AttachSheet } from '../media/AttachSheet'
 import { MessageAttachment } from '../media/MessageAttachment'
@@ -169,6 +170,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
         )}
         <CallButtons conversation={conversation} />
       </header>
+      <AdBanner />
 
       <div className="convo__scroll" ref={scrollRef} role="log" aria-live="polite" aria-label={`Messages with ${conversation.title}`}>
         {history.status === 'loading' && (
