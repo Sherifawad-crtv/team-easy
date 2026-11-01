@@ -4,6 +4,8 @@ import { Avatar, Banner, BottomSheet, Button, Switch } from '../../design/ui'
 import { useHaptics, useMediaPolicy, settings, type MediaPolicy } from '../../state/settings'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { useReviewRole } from '../../state/useReviewRole'
+import { InstallSheet } from '../install/InstallSheet'
+import { useInstall } from '../../state/install'
 import { useSession } from '../../state/session'
 import { useSubmit } from '../../state/useSubmit'
 import type { IdentityKind } from '../../data/types'
@@ -25,6 +27,8 @@ export function AccountScreen() {
   const policy = useMediaPolicy()
   const role = useReviewRole()
   const haptics = useHaptics()
+  const install = useInstall()
+  const [installing, setInstalling] = useState(false)
 
   const choices: { kind: IdentityKind; title: string; sub: string }[] = org
     ? [
@@ -95,6 +99,7 @@ export function AccountScreen() {
         </section>
 
         <div className="stack">
+          {!install.installed && <Button variant="secondary" onClick={() => setInstalling(true)}>Add to home screen</Button>}
           <Button variant="secondary" onClick={() => navigate('/account/edit')}>Edit profile</Button>
           {role === 'admin' && <Button variant="secondary" onClick={() => navigate('/admin')}>Admin console</Button>}
           <Button variant="secondary" onClick={() => navigate('/account/plan')}>Plan and add-ons</Button>
@@ -107,6 +112,8 @@ export function AccountScreen() {
           <Button variant="tertiary" onClick={() => setConfirmDelete(true)} disabled={action.busy}>Delete account</Button>
         </div>
       </div>
+
+      {installing && <InstallSheet mode={install.mode} onClose={() => setInstalling(false)} />}
 
       {confirmDelete && (
         <BottomSheet title="Delete your account?" onClose={() => setConfirmDelete(false)}>

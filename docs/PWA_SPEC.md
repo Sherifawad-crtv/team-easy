@@ -31,3 +31,17 @@ Defined in `docs/DESIGN.md` sections 3 and 3b: tokens and components (Material 3
 
 `src/data/api.ts` (`AuthApi`, `ChatApi`) and `src/data/types.ts` are the contract. `src/data/mock/mockApi.ts` implements it with 450 ms latency, the five scenarios (`normal`, `empty`, `error`, `slow`, `offline`), seeded long names, emoji, links, 300-member and 214-unread conversations, a nested sub-group, and simulated incoming messages every 25 s. Demo credentials and invite codes are listed at the top of that file.
 Going live: return a real implementation from `src/data/index.ts`. No screen changes.
+
+## Adding the app to the home screen
+
+The app is installable (manifest, icons, standalone display). How people add it depends on the browser, so the app works that out and shows the right steps (`src/state/install.ts`, `src/features/install/`):
+
+| Browser | What happens |
+|---|---|
+| Chrome or Edge on Android | The browser's own install prompt, started from our button |
+| Safari on iPhone | No prompt exists, so a three-step picture teaches Share, Add to Home Screen, Add, with a pointer to the Share button |
+| Chrome, Edge or Firefox on iPhone | The same steps, mentioning the ⋯ menu and Safari as a fallback |
+| A browser inside another app (Instagram, Facebook and so on) | Cannot install. We say to open the link in a browser and offer to copy it |
+| Already on the home screen | Nothing is shown |
+
+Where it appears: a dismissible card under the notice on the chat list (phones only, back after a week), and Account, Add to home screen. The review tools can show the steps for each browser. Limits: the iPhone steps cannot be automated, and the wording of Apple's Share menu changes between iOS versions.

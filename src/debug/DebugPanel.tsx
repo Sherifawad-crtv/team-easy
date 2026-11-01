@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { resetPurchases, simulateCallTimeLeft, simulateIncomingCall, simulatePermission, simulatePurchaseFailure, simulatePush } from '../data/mock/mockApi'
 import { roleStore } from '../data/mock/role'
 import { SCENARIOS, scenarioStore } from '../data/mock/scenario'
+import { forceInstallMode, forcedInstallMode, type InstallMode } from '../state/install'
 import { settings, useConnection } from '../state/settings'
 import { IconBug, IconClose } from '../design/icons'
 import { EXPERIMENTS, EXPERIMENT_IDS, useVariant, variants, type ExperimentId } from '../experiments/experiments'
@@ -51,6 +52,12 @@ export function DebugPanel() {
           <div className="seg" role="group" aria-label="Photo access">
             {([['ask', 'Ask first', null], ['denied', 'Denied', 'denied']] as const).map(([id, label, value]) => (
               <button key={id} type="button" aria-pressed={photoAccess === id || (id === 'ask' && photoAccess === 'granted')} onClick={() => { simulatePermission('photos', value); setPhotoAccess(id) }}>{label}</button>
+            ))}
+          </div>
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Add to home screen shows the steps for</p>
+          <div className="seg seg--wrap" role="group" aria-label="Install steps for">
+            {([['auto', 'This browser', null], ['ios-safari', 'iPhone Safari', 'ios-safari'], ['ios-other', 'iPhone Chrome', 'ios-other'], ['in-app', 'In-app browser', 'in-app'], ['prompt', 'Android', 'prompt']] as const).map(([id, label, value]) => (
+              <button key={id} type="button" aria-pressed={(forcedInstallMode() ?? 'auto') === id} onClick={() => forceInstallMode(value as InstallMode | null)}>{label}</button>
             ))}
           </div>
           <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Purchases</p>

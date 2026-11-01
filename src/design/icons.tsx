@@ -45,6 +45,7 @@ import {
   SmartphoneIcon,
   TagIcon,
   TrashBinMinimalisticIcon,
+  UploadSquareIcon,
   UserRoundedIcon,
   UsersGroupRoundedIcon,
   VideocameraIcon,
@@ -109,3 +110,4 @@ export const IconSpeaker = make(VolumeLoudIcon)
 export const IconCallIn = make(IncomingCallRoundedIcon)
 export const IconCallOut = make(OutgoingCallRoundedIcon)
 export const IconCallMissed = make(CallDroppedRoundedIcon)
+export const IconUpload = make(UploadSquareIcon)
