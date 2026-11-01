@@ -19,6 +19,7 @@ export type ApiErrorCode =
   | 'call_unavailable'
   | 'purchase_failed'
   | 'purchase_cancelled'
+  | 'member_exists'
 
 export class ApiError extends Error {
   code: ApiErrorCode
@@ -65,6 +66,8 @@ export function describeError(error: unknown): UserMessage {
       return { title: "This link isn't valid", body: 'It may have been turned off. Ask for a new one.', offline: false }
     case 'name_taken':
       return { title: 'That name is already used here', body: 'Pick a different name for this group.', offline: false }
+    case 'member_exists':
+      return { title: 'That person is already in the organization', body: 'Use a different email, or find them in Members.', offline: false }
     case 'purchase_failed':
       return { title: "The payment didn't go through", body: 'You were not charged. Check your payment method in your store settings and try again.', offline: false }
     case 'purchase_cancelled':

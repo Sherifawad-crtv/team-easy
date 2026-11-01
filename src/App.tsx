@@ -10,6 +10,12 @@ import { SignUpScreen } from './features/auth/SignUpScreen'
 import { WelcomeScreen } from './features/auth/WelcomeScreen'
 import { GroupsScreen } from './features/groups/GroupsScreen'
 import { JoinScreen, pendingJoin } from './features/groups/JoinScreen'
+import { AdminShell } from './features/admin/AdminShell'
+import { CalendarsPage } from './features/admin/CalendarsPage'
+import { InvitesPage } from './features/admin/InvitesPage'
+import { MembersPage } from './features/admin/MembersPage'
+import { OverviewPage } from './features/admin/OverviewPage'
+import { TeamsPage } from './features/admin/TeamsPage'
 import { PlanScreen } from './features/plan/PlanScreen'
 import { CallsScreen } from './features/calls/CallsScreen'
 import { CalendarScreen } from './features/calendar/CalendarScreen'
@@ -54,6 +60,13 @@ export function App() {
           <Route path="/invite" element={<InviteScreen />} />
           <Route path="/invite/:token" element={<InviteScreen />} />
           <Route path="/join/:token" element={<JoinScreen />} />
+          <Route path="/admin" element={<AdminShell />}>
+            <Route index element={<OverviewPage />} />
+            <Route path="members" element={<MembersPage />} />
+            <Route path="invites" element={<InvitesPage />} />
+            <Route path="teams" element={<TeamsPage />} />
+            <Route path="calendars" element={<CalendarsPage />} />
+          </Route>
           <Route element={<Private />}>
             <Route path="/chats/:id?" element={<ChatsScreen />} />
             <Route path="/groups/:id?" element={<GroupsScreen />} />

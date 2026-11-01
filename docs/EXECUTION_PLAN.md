@@ -113,6 +113,8 @@ The PWA can only show these screens with simulated calls. Real audio and video, 
 
 The PRD's admin surface: issue invites (ACC-05, ROL-01), assign calendars (CAL-02), manage teams (GRP-08, 09), member counter (GRP-05). Needs the admin stack decision (open decision 4) before any build. May share this codebase.
 
+**Status (2026-11-01): built as a prototype at `/admin`, on mocks.** The production admin stack is still an engineer decision. Assumptions are in PRD open question 20.
+
 ## Engineering track (not testable in the PWA)
 
 | Work | PRD IDs | Notes |

@@ -239,6 +239,8 @@ export interface CalendarEvent {
   allDay: boolean
   location?: string
   description?: string
+  /** Added by an admin, so it can be deleted. Recurring events come from the calendar. */
+  oneOff?: boolean
 }
 
 export interface CalendarAssignee {
@@ -391,4 +393,71 @@ export interface Ad {
   url: string
   /** Colour tone 0 to 4 for the artwork. */
   tone: number
+}
+
+// ---- Admin console ----
+
+export interface AdminOverview {
+  organization: Organization
+  members: number
+  /** People added or invited by email who have not signed in yet. */
+  pendingMembers: number
+  mainGroups: number
+  activeInvites: number
+  calendars: number
+  /** Main groups close to their member cap (GRP-05). */
+  nearCap: { id: string; name: string; members: number; cap: number }[]
+  limits: GroupLimits
+}
+
+export interface AdminMember {
+  id: string
+  name: string
+  email: string
+  jobTitle?: string
+  titleTag?: string
+  groups: number
+  status: 'active' | 'pending'
+  isMe: boolean
+}
+
+export interface NewAdminMember {
+  name: string
+  email: string
+  jobTitle?: string
+}
+
+export type InviteStatus = 'active' | 'used' | 'expired' | 'revoked'
+
+export interface AdminInvite {
+  code: string
+  link: string
+  /** Set when the invite was made for one person. Those can be used once. */
+  email?: string
+  createdAt: number
+  expiresAt: number
+  uses: number
+  status: InviteStatus
+}
+
+export interface NewInvite {
+  email?: string
+  /** How long it works. */
+  days: 7 | 30
+}
+
+export interface NewCalendar {
+  name: string
+  description: string
+  tone: number
+}
+
+export interface NewEvent {
+  calendarId: string
+  title: string
+  start: number
+  end: number
+  allDay: boolean
+  location?: string
+  description?: string
 }

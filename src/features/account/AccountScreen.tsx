@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Avatar, Banner, BottomSheet, Button } from '../../design/ui'
 import { useMediaPolicy, settings, type MediaPolicy } from '../../state/settings'
 import { ErrorBanner } from '../auth/AuthFrame'
+import { useReviewRole } from '../../state/useReviewRole'
 import { useSession } from '../../state/session'
 import { useSubmit } from '../../state/useSubmit'
 import type { IdentityKind } from '../../data/types'
@@ -22,6 +23,7 @@ export function AccountScreen() {
   if (!account) return null
   const org = account.organization
   const policy = useMediaPolicy()
+  const role = useReviewRole()
 
   const choices: { kind: IdentityKind; title: string; sub: string }[] = org
     ? [
@@ -81,6 +83,7 @@ export function AccountScreen() {
 
         <div className="stack">
           <Button variant="secondary" onClick={() => navigate('/account/edit')}>Edit profile</Button>
+          {role === 'admin' && <Button variant="secondary" onClick={() => navigate('/admin')}>Admin console</Button>}
           <Button variant="secondary" onClick={() => navigate('/account/plan')}>Plan and add-ons</Button>
           <Button variant="secondary" onClick={() => navigate('/account/calls')}>Calls</Button>
           <Button variant="secondary" onClick={() => navigate('/account/notifications')}>Notifications</Button>

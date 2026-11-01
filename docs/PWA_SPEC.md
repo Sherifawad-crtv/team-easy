@@ -18,7 +18,7 @@ Four parts: A. kickoff and rules, B. persona and function spec, C. UI and HIG sp
 |---|---|---|
 | Individual | Mobile PWA | Sign up alone, chat 1-to-1 and in groups |
 | Organization member | Mobile PWA | Join by invite link or code, switch between personal and organization identity |
-| Admin | Web (not built yet) | Issues invites. Out of scope for this harness |
+| Admin | Web (prototype at `/admin` in this codebase) | Invites, members, teams, calendars. The production admin stack is still an engineer decision |
 
 Flows built: welcome, sign up (3 paths), sign in, forgot password, invite link and code, chat list, conversation (send, retry failed, delete own message in private chats only), new chat by member search, account (identity switch, sign out, delete), A/B results.
 Requirement IDs: ACC-01..08, CHT-01..05, SRC-01, NFR-01 (simulated realtime). See `docs/PROGRESS.md`.

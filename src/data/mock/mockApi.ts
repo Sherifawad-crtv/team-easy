@@ -128,6 +128,16 @@
 // Real: RevenueCat (offerings, purchase, restore, entitlements) over the App Store and Google Play; products and prices are the store's; entitlements raise the limits the group APIs enforce
 // Server must enforce: admin-only purchase, entitlement check on every limit (members past 300, main groups, sub-groups), what happens when an add-on ends
 //
+// WIRE: admin.members
+// Req: ROL-01, ACC-05 | Contract: AdminApi.members/addMember/removeMember/overview | Mock: mockApi.admin
+// Real: the organization's people for the web admin app: add directly (they get an email to finish signing up), remove, headroom counters
+// Server must enforce: admin-only, unique email per organization, removing a person takes them out of groups and calendars
+//
+// WIRE: admin.invites
+// Req: ACC-05, GRP-06 | Contract: AdminApi.invites/createInvite/revokeInvite and AuthApi.resolveInvite | Mock: mockApi.admin
+// Real: admin-issued organization invites (open link or one person by email), expiry, revoke, use counts; the invite page and sign-up check the same records
+// Server must enforce: admin-only, expiry, revoke, single use for email invites
+//
 // Demo data: any email with a password of 8+ characters signs in, except the
 // password "wrongpass1". Emails starting "taken@" are already registered.
 // Invites: ORG-ACME valid, ORG-OLD expired, anything else invalid. A message
@@ -150,6 +160,7 @@ import type {
   SearchResults,
 } from '../types'
 import { createPurchases, currentLimits, failNextPurchase } from './purchasesMock'
+import { createAdmin } from './adminMock'
 import { createCalls } from './callsMock'
 import { createCalendar } from './calendarMock'
 import { createData } from './dataMock'
@@ -190,10 +201,8 @@ function saveSession(account: Account | null) {
 }
 
 function resolveInviteToken(linkOrCode: string): OrgInvite {
-  const token = linkOrCode.trim().split('/').pop()?.toUpperCase() ?? ''
-  if (token === 'ORG-OLD') throw new ApiError('invite_expired')
-  if (token !== 'ORG-ACME') throw new ApiError('invite_invalid')
-  return { token: 'ORG-ACME', organization: ACME, invitedBy: 'Omar Al-Fayed' }
+  const token = adminMock.resolve(linkOrCode)
+  return { token, organization: ACME, invitedBy: 'Omar Al-Fayed' }
 }
 
 let current: Account | null = loadSession()
@@ -221,6 +230,14 @@ const groupsMock = createGroups({ conversations, history, emit, gate, limits: cu
 const calendarMock = createCalendar({ gate })
 const shop = createPurchases({ gate, identity: () => current?.activeIdentity ?? 'individual' })
 const notificationsMock = createNotifications({ gate })
+const adminMock = createAdmin({
+  gate, org: ACME, limits: currentLimits,
+  groups: () => groupsMock.snapshot(),
+  groupsOf: (id) => groupsMock.groupsOf(id),
+  forget: (id) => { groupsMock.forget(id); calendarMock.forget(id) },
+  titleOf: (id) => groupsMock.titleFor(id),
+  activeCalendars: () => calendarMock.count(),
+})
 const callsMock = createCalls({
   gate, conversations,
   rosterOf: (id) => groupsMock.rosterOf(id),
@@ -338,7 +355,9 @@ export const mockApi: Api = {
     async signUp(data) {
       await gate()
       if (data.email.toLowerCase().startsWith('taken@')) throw new ApiError('email_taken')
-      const org = data.inviteToken ? resolveInviteToken(data.inviteToken).organization : undefined
+      const invite = data.inviteToken ? resolveInviteToken(data.inviteToken) : undefined
+      if (invite) adminMock.use(invite.token)
+      const org = invite?.organization
       current = {
         id: `user-${data.email}`, name: data.name, email: data.email,
         jobTitle: data.jobTitle, hasPhoto: data.hasPhoto, photoUrl: data.photoUrl, organization: org,
@@ -498,6 +517,7 @@ export const mockApi: Api = {
   calls: callsMock.api,
   purchases: shop.purchases,
   ads: shop.ads,
+  admin: adminMock.api,
 
   permissions: {
     async status(kind: PermissionKind): Promise<PermissionStatus> {

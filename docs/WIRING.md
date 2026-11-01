@@ -65,6 +65,8 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `groups.join-link` | GRP-06, 07 | `InviteLinkService` | Create/resolve join links; deep link opens app or store fallback | Link validity and expiry | MOCKED |
 | `roles.permissions` | ROL-03, 05, 06 | `RoleRepository` | Block member, leave group (keep-in-list vs delete for the departing member only) | All permission checks | MOCKED |
 | `roles.title-tags` | ROL-04 | `TitleTagRepository` | Assign and display user title tags (rules need confirming, see PRD open questions) | Who may assign | MOCKED |
+| `admin.members` | ROL-01, ACC-05, GRP-05 | `AdminRepository` | People of the organization for the web admin app: list, add directly (they get an email), remove, title tags, overview counters | Admin-only; unique email per organization; removal takes the person out of groups and calendars | MOCKED |
+| `admin.invites` | ACC-05, GRP-06 | `AdminInviteRepository` | Admin-issued organization invites (open link or one person), expiry, revoke, use counts; the invite page and sign-up check the same records | Admin-only; expiry; revoke; single use for email invites | MOCKED |
 | `members.invite` | ACC-05, ROL-01, ROL-02 | `MemberRepository` | Admin adds or links members; members invite non-members; org invites from admin panel | Who may invite | MOCKED |
 | `chat.messages` | CHT-01..04, NFR-01 | `ChatApi.listConversations/listMessages/subscribe` | Realtime message streams for 1-to-1, group, general, sub-group; history paging | Membership, read access | MOCKED |
 | `chat.send-message` | CHT-01..04 | `ChatApi.sendMessage` | Send, return server-confirmed message, reject on failure so the UI can retry | Sender permission | MOCKED |

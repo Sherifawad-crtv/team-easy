@@ -1,5 +1,8 @@
 import type {
   Account,
+  AdminInvite,
+  AdminMember,
+  AdminOverview,
   Ad,
   AdSlot,
   BackupStatus,
@@ -20,7 +23,11 @@ import type {
   GroupMember,
   GroupTree,
   LeaveMode,
+  NewAdminMember,
+  NewCalendar,
+  NewEvent,
   NewGroup,
+  NewInvite,
   Product,
   ProductId,
   IdentityKind,
@@ -122,6 +129,25 @@ export interface CalendarApi {
   assignees(calendarId: string): Promise<CalendarAssignee[]>
   /** CAL-02: admin only. Sets exactly who has this calendar. */
   assign(calendarId: string, memberIds: string[]): Promise<void>
+  /** Admin only: make a calendar. */
+  createCalendar(data: NewCalendar): Promise<CalendarInfo>
+  /** Admin only: add a one-off event. */
+  createEvent(data: NewEvent): Promise<CalendarEvent>
+  /** Admin only: delete a one-off event. */
+  deleteEvent(eventId: string): Promise<void>
+}
+
+/** The admin console (ACC-05, ROL-01, GRP-05, GRP-08, GRP-09, CAL-02). Teams and calendars use their own APIs. */
+export interface AdminApi {
+  overview(): Promise<AdminOverview>
+  members(query: string): Promise<AdminMember[]>
+  /** ROL-01: add someone directly. They get an email to finish signing up. */
+  addMember(data: NewAdminMember): Promise<AdminMember>
+  removeMember(memberId: string): Promise<void>
+  /** ACC-05: invites that let people join the organization. */
+  invites(): Promise<AdminInvite[]>
+  createInvite(data: NewInvite): Promise<AdminInvite>
+  revokeInvite(code: string): Promise<void>
 }
 
 export interface NotificationsApi {
@@ -194,5 +220,6 @@ export interface Api {
   calls: CallsApi
   purchases: PurchasesApi
   ads: AdsApi
+  admin: AdminApi
   permissions: PermissionsApi
 }

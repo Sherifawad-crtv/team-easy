@@ -357,3 +357,54 @@ describe('mock purchases and ads', () => {
     expect(await mockApi.ads.forSlot('conversation')).toBeNull()
   }, 15000)
 })
+
+describe('mock admin console', () => {
+  beforeEach(() => { roleStore.set('admin') })
+
+  it('is for admins only', async () => {
+    roleStore.set('member')
+    expect(await code(mockApi.admin.overview())).toBe('not_allowed')
+    expect(await code(mockApi.admin.createInvite({ days: 7 }))).toBe('not_allowed')
+  })
+
+  it('shows headroom and who is nearly full', async () => {
+    const o = await mockApi.admin.overview()
+    expect(o.mainGroups).toBe(5)
+    expect(o.nearCap.some((g) => g.name.startsWith('Q4 Launch'))).toBe(true)
+  })
+
+  it('adds a member who can then be found everywhere, and removes them again', async () => {
+    const m = await mockApi.admin.addMember({ name: 'Rania Saleh', email: 'rania@acme.example', jobTitle: 'Designer' })
+    expect(m.status).toBe('pending')
+    expect(await code(mockApi.admin.addMember({ name: 'Rania Two', email: 'RANIA@acme.example' }))).toBe('member_exists')
+    expect((await mockApi.chat.searchMembers('Rania')).length).toBe(1)
+    expect((await mockApi.admin.overview()).pendingMembers).toBe(1)
+    await mockApi.admin.removeMember(m.id)
+    expect((await mockApi.chat.searchMembers('Rania')).length).toBe(0)
+    expect((await mockApi.admin.members('')).some((x) => x.id === m.id)).toBe(false)
+  })
+
+  it('makes invites that the invite page accepts, until they are revoked or used', async () => {
+    const open = await mockApi.admin.createInvite({ days: 7 })
+    expect(open.link).toContain(`/invite/${open.code}`)
+    expect((await mockApi.auth.resolveInvite(open.link)).organization.name).toBe('Acme Studio')
+    await mockApi.admin.revokeInvite(open.code)
+    expect(await code(mockApi.auth.resolveInvite(open.code))).toBe('invite_invalid')
+
+    const one = await mockApi.admin.createInvite({ email: 'sara@x.co', days: 30 })
+    await mockApi.auth.signUp({ name: 'Sara', email: 'sara@x.co', password: 'longpass1', inviteToken: one.code })
+    expect(await code(mockApi.auth.resolveInvite(one.code))).toBe('invite_invalid')
+    expect((await mockApi.admin.invites()).find((i) => i.code === one.code)).toMatchObject({ status: 'used', uses: 1 })
+    expect(await code(mockApi.auth.resolveInvite('ORG-OLD'))).toBe('invite_expired')
+  })
+
+  it('creates a calendar and a one-off event that members then see, and deletes it', async () => {
+    const cal = await mockApi.calendar.createCalendar({ name: 'Offsite 2027', description: 'Planning', tone: 3 })
+    expect(await code(mockApi.calendar.createCalendar({ name: 'offsite 2027', description: '', tone: 1 }))).toBe('name_taken')
+    const start = Date.now() + 3 * 86_400_000
+    const ev = await mockApi.calendar.createEvent({ calendarId: cal.id, title: 'Kick-off', start, end: start + 3_600_000, allDay: false })
+    expect((await mockApi.calendar.events(start - 1000, start + 10_000_000)).some((e) => e.id === ev.id && e.oneOff)).toBe(true)
+    await mockApi.calendar.deleteEvent(ev.id)
+    expect((await mockApi.calendar.events(start - 1000, start + 10_000_000)).some((e) => e.id === ev.id)).toBe(false)
+  })
+})

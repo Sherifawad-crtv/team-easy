@@ -20,7 +20,7 @@
 | Routing | go_router (deep links, join links, push taps) | **[DECIDE]** |
 | Data pattern | Repository pattern, interfaces in domain | Proposed |
 | Backend and realtime transport | Not chosen | **[DECIDE]** |
-| Admin web app | Not chosen (Flutter web vs separate web stack) | **[DECIDE]** |
+| Admin web app | Not chosen (Flutter web vs separate web stack). A design prototype exists at `/admin` in the PWA harness, on mocks | **[DECIDE]** |
 | Calls | Zeego Cloud SDK behind `CallService` | Fixed by PRD (DEP-01) |
 | Purchases | RevenueCat behind `PurchaseService` | Fixed by PRD (MON-04) |
 | Lint | `very_good_analysis` (strict) | Proposed |

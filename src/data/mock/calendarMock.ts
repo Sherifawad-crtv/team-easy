@@ -62,6 +62,8 @@ function eventsOn(day: Date): CalendarEvent[] {
 
 export function createCalendar(deps: { gate: (base?: number) => Promise<void> }) {
   let cals = seed()
+  let oneOffs: CalendarEvent[] = []
+  let next = 1
   const isAdmin = () => roleStore.get() === 'admin'
   const visible = () => (isAdmin() ? cals : cals.filter((c) => c.assigned.has(ME.id)))
 
@@ -84,6 +86,7 @@ export function createCalendar(deps: { gate: (base?: number) => Promise<void> })
       for (; day.getTime() < to; day.setDate(day.getDate() + 1)) {
         for (const e of eventsOn(new Date(day))) if (ids.has(e.calendarId)) out.push(e)
       }
+      for (const e of oneOffs) if (ids.has(e.calendarId) && e.start < to && e.end > from) out.push(e)
       return out.sort((a, b) => a.start - b.start)
     },
     async assignees(calendarId) {
@@ -102,6 +105,35 @@ export function createCalendar(deps: { gate: (base?: number) => Promise<void> })
       if (!cal) throw new ApiError('unknown')
       cal.assigned = new Set(memberIds)
     },
+    async createCalendar({ name, description, tone }) {
+      await deps.gate(500)
+      if (!isAdmin()) throw new ApiError('not_allowed')
+      const cal: Cal = { id: `cal-new-${next++}`, name: name.trim(), description: description.trim(), tone, assigned: new Set([ME.id]) }
+      if (cals.some((c) => c.name.toLowerCase() === cal.name.toLowerCase())) throw new ApiError('name_taken')
+      cals.push(cal)
+      return { id: cal.id, name: cal.name, description: cal.description, tone, assigned: true, assignedCount: 1 }
+    },
+    async createEvent(data) {
+      await deps.gate(500)
+      if (!isAdmin()) throw new ApiError('not_allowed')
+      if (!cals.some((c) => c.id === data.calendarId)) throw new ApiError('unknown')
+      const e: CalendarEvent = { ...data, id: `one-off-${next++}`, oneOff: true }
+      oneOffs.push(e)
+      return e
+    },
+    async deleteEvent(id) {
+      await deps.gate(400)
+      if (!isAdmin()) throw new ApiError('not_allowed')
+      oneOffs = oneOffs.filter((e) => e.id !== id)
+    },
   }
-  return { api, reset: () => { cals = seed() } }
+  return {
+    api,
+    count: () => cals.length,
+    /** Someone left the organization. */
+    forget(personId: string) {
+      for (const c of cals) c.assigned.delete(personId)
+    },
+    reset: () => { cals = seed(); oneOffs = [] },
+  }
 }

@@ -24,7 +24,7 @@ export function EventSheet({ event, calendar, onClose }: { event: CalendarEvent;
 }
 
 /** CAL-02: choose exactly who has one calendar. */
-function AssignSheet({ calendar, onClose, onSaved }: { calendar: CalendarInfo; onClose: () => void; onSaved: () => void }) {
+export function AssignSheet({ calendar, onClose, onSaved }: { calendar: CalendarInfo; onClose: () => void; onSaved: () => void }) {
   const people = useAsync(() => api.calendar.assignees(calendar.id), [calendar.id])
   const [picked, setPicked] = useState<Set<string> | null>(null)
   const { busy, error, run } = useSubmit()

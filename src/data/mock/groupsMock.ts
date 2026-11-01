@@ -344,6 +344,19 @@ export function createGroups(deps: GroupDeps) {
       if (!row) return false
       return Boolean(row.left) || blocked.has(`${row.id}:${memberId}`)
     },
+    /** How many groups someone is in, for the admin member list. */
+    groupsOf: (personId: string) => rows.filter((r) => !r.deletedAt && !r.archived && r.roster.includes(personId)).length,
+    /** Takes a person out of every group (they left the organization). */
+    forget(personId: string) {
+      for (const r of rows) {
+        if (r.roster.includes(personId)) {
+          r.roster = r.roster.filter((p) => p !== personId)
+          r.count = Math.max(0, r.count - 1)
+        }
+      }
+    },
+    /** Every group as the admin sees it, without a network call. */
+    snapshot: (): Group[] => rows.filter((r) => !r.deletedAt && !r.hidden).map(toGroup),
     /** The people of a group chat other than the user, with presence (used for calls). */
     rosterOf(convId: string) {
       const row = rows.find((r) => convIdOf(r) === convId)
