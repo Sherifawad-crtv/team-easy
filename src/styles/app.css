@@ -108,7 +108,7 @@
 .empty__icon { display: grid; place-items: center; width: 88px; height: 88px; border-radius: 50%; background: var(--primary-container); color: var(--on-primary-container); margin-bottom: var(--s-3); }
 .empty--pane { display: none; }
 .people { list-style: none; margin: 0; padding: 0; }
-.people__text { display: flex; flex-direction: column; min-width: 0; }
+.people__text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .people__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ---------- Conversation: wallpaper, tailed bubbles ---------- */
