@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../../data'
 import type { Conversation } from '../../data/types'
 import { IconChat, IconEdit } from '../../design/icons'
@@ -16,6 +16,7 @@ import { listTiming } from './timing'
 export function ChatsScreen() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const list = useAsync(() => api.chat.listConversations(), [])
   const { patch } = list
   const [params, setParams] = useSearchParams()
@@ -79,7 +80,7 @@ export function ChatsScreen() {
 
       <section className="chats__pane" aria-label="Conversation">
         {current ? (
-          <ConversationView key={current.id} conversation={current} highlightId={params.get('m') ?? undefined} onBack={() => navigate('/chats')} />
+          <ConversationView key={current.id} conversation={current} highlightId={params.get('m') ?? undefined} onBack={() => (location.key !== 'default' ? navigate(-1) : navigate('/chats'))} />
         ) : id && list.status === 'ready' ? (
           <div className="empty"><h2 className="t-title">That conversation isn't available</h2><p className="t-body-sm muted">It may have been removed.</p></div>
         ) : id ? (

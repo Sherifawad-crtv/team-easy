@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../../data'
 import { LIMITS } from '../../config/limits'
 import type { DeletedGroup, Group, LeaveMode } from '../../data/types'
@@ -24,10 +24,11 @@ interface RowProps {
   depth?: number
   sub?: string
   toggle?: { open: boolean; onToggle: () => void }
+  busy?: boolean
   onOpen: (id: string) => void
 }
 
-function GroupRow({ group, active, depth = 0, sub, toggle, onOpen }: RowProps) {
+function GroupRow({ group, active, depth = 0, sub, toggle, busy, onOpen }: RowProps) {
   return (
     <div className={`grow${active ? ' grow--active' : ''}`} style={{ ['--depth' as string]: depth }}>
       {depth > 0 && <span className="grow__rail" aria-hidden="true" />}
@@ -36,7 +37,7 @@ function GroupRow({ group, active, depth = 0, sub, toggle, onOpen }: RowProps) {
           {toggle.open ? <IconChevronDown size={20} /> : <IconChevronRight size={20} />}
         </button>
       ) : <span className="grow__toggle grow__toggle--none" aria-hidden="true" />}
-      <button type="button" className="grow__main" onClick={() => onOpen(group.id)} aria-current={active ? 'page' : undefined}>
+      <button type="button" className="grow__main" onClick={() => onOpen(group.id)} aria-current={active ? 'page' : undefined} aria-busy={busy || undefined} style={busy ? { opacity: 0.6 } : undefined}>
         <Avatar name={group.name} size={depth > 0 ? 40 : 48} group icon={<IconPeople size={depth > 0 ? 20 : 24} />} />
         <span className="grow__text">
           <span className="grow__name">{group.name}</span>
@@ -49,8 +50,8 @@ function GroupRow({ group, active, depth = 0, sub, toggle, onOpen }: RowProps) {
   )
 }
 
-function TreeList({ nodes, activeId, open, setOpen, onOpen, depth = 0 }: {
-  nodes: TreeNode[]; activeId?: string; open: Set<string>; setOpen: (next: Set<string>) => void; onOpen: (id: string) => void; depth?: number
+function TreeList({ nodes, activeId, open, setOpen, onOpen, opening, depth = 0 }: {
+  nodes: TreeNode[]; activeId?: string; open: Set<string>; setOpen: (next: Set<string>) => void; onOpen: (id: string) => void; opening: string | null; depth?: number
 }) {
   return (
     <>
@@ -67,8 +68,8 @@ function TreeList({ nodes, activeId, open, setOpen, onOpen, depth = 0 }: {
           <div key={n.group.id}>
             <GroupRow group={n.group} active={n.group.id === activeId} depth={depth}
               sub={has ? `${memberLabel(n.group.memberCount)} · ${n.children.length} ${n.children.length === 1 ? 'sub-group' : 'sub-groups'}` : undefined}
-              toggle={has ? { open: isOpen, onToggle: flip } : undefined} onOpen={onOpen} />
-            {has && isOpen && <TreeList nodes={n.children} activeId={activeId} open={open} setOpen={setOpen} onOpen={onOpen} depth={depth + 1} />}
+              toggle={has ? { open: isOpen, onToggle: flip } : undefined} busy={opening === n.group.id} onOpen={onOpen} />
+            {has && isOpen && <TreeList nodes={n.children} activeId={activeId} open={open} setOpen={setOpen} onOpen={onOpen} opening={opening} depth={depth + 1} />}
           </div>
         )
       })}
@@ -80,6 +81,11 @@ function TreeList({ nodes, activeId, open, setOpen, onOpen, depth = 0 }: {
 export function GroupsScreen() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
+  // Opened from the top bar of a chat (like WhatsApp): going back returns to that chat.
+  const fromChat = (location.state as { from?: string } | null)?.from === 'chat'
+  const [opening, setOpening] = useState<string | null>(null)
+  const [openError, setOpenError] = useState<unknown>(null)
   const role = useReviewRole()
   const variant = useVariant('group_nav')
   const list = useAsync(() => api.groups.list(), [role])
@@ -119,7 +125,18 @@ export function GroupsScreen() {
     (gid: string) => {
       const g = groups.find((x) => x.id === gid)
       track('group_opened', { level: g?.level, ...groupTiming.opened() })
-      navigate(`/groups/${gid}`)
+      // Tapping a group goes straight to its chat. Group info is opened from the chat's top bar.
+      // An archived group has no chat in the list, so it opens its info.
+      if (g?.archived) {
+        navigate(`/groups/${gid}`)
+        return
+      }
+      setOpenError(null)
+      setOpening(gid)
+      api.groups.openChat(gid).then(
+        (c) => { setOpening(null); navigate(`/chats/${c.id}`) },
+        (e: unknown) => { setOpening(null); setOpenError(e) },
+      )
     },
     [groups, navigate],
   )
@@ -167,6 +184,8 @@ export function GroupsScreen() {
             </p>
           )}
 
+          {openError != null && <div style={{ padding: '0 var(--s-5) var(--s-3)' }}><ErrorBanner error={openError} /></div>}
+
           {variant === 'B' && settled && groups.length > 0 && (
             <div className="search gsearch">
               <IconSearch size={20} />
@@ -194,11 +213,11 @@ export function GroupsScreen() {
             <>
               <div role="tree" aria-label="Groups">
                 {variant === 'A' ? (
-                  <TreeList nodes={tree} activeId={id} open={open} setOpen={setOpen} onOpen={openGroup} />
+                  <TreeList nodes={tree} activeId={id} open={open} setOpen={setOpen} onOpen={openGroup} opening={opening} />
                 ) : (
                   flat.map((g) => {
                     const path = pathOf(g, groups)
-                    return <GroupRow key={g.id} group={g} active={g.id === id} sub={path.length ? `${path.join(' › ')} · ${LEVEL_NAME[g.level]}` : `${LEVEL_NAME[g.level]} · ${memberLabel(g.memberCount)}`} onOpen={openGroup} />
+                    return <GroupRow key={g.id} group={g} active={g.id === id} sub={path.length ? `${path.join(' › ')} · ${LEVEL_NAME[g.level]}` : `${LEVEL_NAME[g.level]} · ${memberLabel(g.memberCount)}`} busy={opening === g.id} onOpen={openGroup} />
                   })
                 )}
               </div>
@@ -225,8 +244,8 @@ export function GroupsScreen() {
 
       <section className="chats__pane" aria-label="Group">
         {current ? (
-          <GroupDetail key={current.id} group={current} all={groups} limits={known!.limits} onBack={() => navigate('/groups')} onOpenGroup={openGroup}
-            onOpenChat={(cid) => navigate(`/chats/${cid}`)} onChanged={reload} onDeleted={onDeleted} onLeft={onLeft} />
+          <GroupDetail key={current.id} group={current} all={groups} limits={known!.limits} onBack={() => (fromChat ? navigate(-1) : navigate('/groups'))} onOpenGroup={openGroup}
+            onOpenChat={(cid) => (fromChat ? navigate(-1) : navigate(`/chats/${cid}`))} onChanged={reload} onDeleted={onDeleted} onLeft={onLeft} />
         ) : id && settled ? (
           <div className="empty"><h2 className="t-title">That group isn't available</h2><p className="t-body-sm muted">It may have been deleted, or you may not have access.</p></div>
         ) : id ? (

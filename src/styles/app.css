@@ -294,7 +294,9 @@ mark { background: color-mix(in srgb, var(--accent) 28%, transparent); color: in
 .tag--admin { background: var(--primary-container); color: var(--on-primary-container); }
 .tag--blocked { background: var(--error-container); color: var(--on-error-container); }
 .bubble__tag { margin-left: var(--s-2); padding: 0 var(--s-3); border-radius: var(--shape-full); background: var(--secondary-container); color: var(--on-secondary-container); font-size: 11px; line-height: 16px; font-weight: 600; }
-.convo__who--link { border: 0; background: transparent; text-align: left; padding: 0; font: inherit; color: inherit; min-width: 0; flex: 1; }
+.convo__who--link { display: flex; align-items: center; gap: var(--s-4); align-self: stretch; border: 0; background: transparent; text-align: left; padding: 0; font: inherit; color: inherit; min-width: 0; flex: 1; }
+.convo__text { display: flex; flex-direction: column; min-width: 0; }
+.convo__text .convo__title, .convo__text .convo__sub { display: block; }
 .composer--left { justify-content: center; padding: var(--s-5); text-align: center; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); background: var(--surface-container-low); }
 .check { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--shape-sm); box-shadow: inset 0 0 0 2px var(--outline); color: var(--on-primary); }
 .check.is-on { background: var(--primary); box-shadow: none; }

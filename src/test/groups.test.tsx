@@ -1,10 +1,13 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { roleStore } from '../data/mock/role'
 import { scenarioStore } from '../data/mock/scenario'
 import { GroupsScreen } from '../features/groups/GroupsScreen'
 import { resetExperiments, variants } from '../experiments/experiments'
+import { ConversationView } from '../features/chat/Conversation'
+import type { Conversation } from '../data/types'
+import { CallsProvider } from '../state/calls'
 
 beforeEach(() => {
   localStorage.clear()
@@ -87,5 +90,55 @@ describe('group detail', () => {
     await waitFor(() => expect(screen.queryByText('Support rota', { selector: '.grow__name' })).toBeNull(), { timeout: 3000 })
     fireEvent.click(undo)
     await screen.findByText('Support rota', { selector: '.grow__name' }, { timeout: 3000 })
+  })
+})
+
+function Where() {
+  const l = useLocation()
+  return <p data-testid="where">{l.pathname}{(l.state as { from?: string } | null)?.from ? ` from ${(l.state as { from: string }).from}` : ''}</p>
+}
+
+describe('opening a group', () => {
+  it('goes straight to its chat, not to the group page', async () => {
+    act(() => variants.setOverride('group_nav', 'B'))
+    render(
+      <MemoryRouter initialEntries={['/groups']}>
+        <Where />
+        <Routes>
+          <Route path="/groups/:id?" element={<GroupsScreen />} />
+          <Route path="/chats/:id" element={<p>Chat page</p>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    fireEvent.click(await screen.findByText('Product Team', { selector: '.grow__name' }, { timeout: 3000 }))
+    await screen.findByText('Chat page', {}, { timeout: 3000 })
+    expect(screen.getByTestId('where').textContent).toBe('/chats/c-product')
+  })
+
+  it('opens the group page for an archived group, which has no chat in the list', async () => {
+    act(() => variants.setOverride('group_nav', 'A'))
+    renderAt('/groups')
+    fireEvent.click(await screen.findByRole('button', { name: /Archived \(1\)/ }, { timeout: 3000 }))
+    fireEvent.click(await screen.findByText('2025 Offsite', { selector: '.grow__name' }))
+    await screen.findByRole('heading', { name: '2025 Offsite' }, { timeout: 3000 })
+  })
+
+  it('opens group info from the top bar of the chat, and back returns to the chat', async () => {
+    const conv: Conversation = { id: 'c-product', kind: 'group', title: 'Product Team', groupId: 'g-product', memberCount: 24, lastMessage: '', lastAt: Date.now(), unread: 0 }
+    render(
+      <MemoryRouter initialEntries={['/chats/c-product']}>
+        <Where />
+        <Routes>
+          <Route path="/chats/:id" element={<CallsProvider><ConversationView conversation={conv} onBack={() => {}} /></CallsProvider>} />
+          <Route path="/groups/:id?" element={<GroupsScreen />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    fireEvent.click(await screen.findByRole('button', { name: /Product Team, group info/ }, { timeout: 3000 }))
+    await screen.findByRole('heading', { name: 'Product Team' }, { timeout: 3000 })
+    expect(screen.getByTestId('where').textContent).toBe('/groups/g-product from chat')
+    fireEvent.click(screen.getByRole('button', { name: 'Back to groups' }))
+    await screen.findByRole('button', { name: /Product Team, group info/ }, { timeout: 3000 })
+    expect(screen.getByTestId('where').textContent).toBe('/chats/c-product')
   })
 })

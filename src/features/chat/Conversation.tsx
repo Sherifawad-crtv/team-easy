@@ -160,17 +160,22 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
     <div className="convo">
       <header className="convo__bar">
         <span className="convo__back"><BackButton onClick={onBack} label="Back to chats" /></span>
-        <Avatar name={conversation.title} size={40} group={conversation.kind !== 'direct'} presence={isDirect ? conversation.presence : undefined} icon={conversation.kind === 'general' ? <IconMegaphone size={20} /> : undefined} tone={conversation.kind === 'general' ? 0 : undefined} />
         {conversation.groupId ? (
-          <button type="button" className="convo__who convo__who--link" onClick={() => navigate(`/groups/${conversation.groupId}`)} aria-label={`${conversation.title}, group info`}>
-            <h2 className="convo__title">{conversation.title}</h2>
-            <p className="convo__sub">{subtitle(conversation)}</p>
+          <button type="button" className="convo__who convo__who--link" onClick={() => navigate(`/groups/${conversation.groupId}`, { state: { from: 'chat' } })} aria-label={`${conversation.title}, group info`}>
+            <Avatar name={conversation.title} size={40} group icon={undefined} />
+            <span className="convo__text">
+              <span className="convo__title">{conversation.title}</span>
+              <span className="convo__sub">{subtitle(conversation)}</span>
+            </span>
           </button>
         ) : (
-          <div className="convo__who">
-            <h2 className="convo__title">{conversation.title}</h2>
-            <p className="convo__sub">{subtitle(conversation)}</p>
-          </div>
+          <>
+            <Avatar name={conversation.title} size={40} group={conversation.kind !== 'direct'} presence={isDirect ? conversation.presence : undefined} icon={conversation.kind === 'general' ? <IconMegaphone size={20} /> : undefined} tone={conversation.kind === 'general' ? 0 : undefined} />
+            <div className="convo__who">
+              <h2 className="convo__title">{conversation.title}</h2>
+              <p className="convo__sub">{subtitle(conversation)}</p>
+            </div>
+          </>
         )}
         <CallButtons conversation={conversation} />
       </header>
