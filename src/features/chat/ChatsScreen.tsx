@@ -3,7 +3,11 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 import { api } from '../../data'
 import type { Conversation } from '../../data/types'
 import { IconChat, IconEdit } from '../../design/icons'
+import { useEdgeSwipeBack } from '../../design/swipe'
 import { track, trackExposure } from '../../experiments/analytics'
+import { useVariant } from '../../experiments/experiments'
+import { useKept } from '../../state/useKept'
+import { useMedia } from '../../state/useMedia'
 import { useAsync } from '../../state/useAsync'
 import { InstallBanner } from '../install/InstallBanner'
 import { UpdatesBanner } from '../notifications/UpdatesBanner'
@@ -23,6 +27,14 @@ export function ChatsScreen() {
   const sheet = params.get('new') === '1'
   const setSheet = (on: boolean) => setParams(on ? { new: '1' } : {}, { replace: true })
   const scroller = useRef<HTMLDivElement>(null)
+  const root = useRef<HTMLDivElement>(null)
+  const iosMotion = useVariant('motion_style') === 'B'
+  const phone = useMedia('(max-width: 1023.98px)')
+  const slides = iosMotion && phone
+  // Keep the conversation on screen while it slides out, and swipe from the left edge to go back.
+  const shownId = useKept(id, slides ? 480 : 0)
+  const goBack = () => (location.key !== 'default' ? navigate(-1) : navigate('/chats'))
+  useEdgeSwipeBack(root, slides && Boolean(id), goBack)
 
   useEffect(() => {
     if (list.status === 'ready') {
@@ -55,10 +67,10 @@ export function ChatsScreen() {
     [list, navigate],
   )
 
-  const current: Conversation | undefined = list.status === 'ready' ? list.data.find((c) => c.id === id) : undefined
+  const current: Conversation | undefined = list.status === 'ready' ? list.data.find((c) => c.id === shownId) : undefined
 
   return (
-    <div className="chats" data-open={id ? 'true' : 'false'}>
+    <div className="chats" data-open={id ? 'true' : 'false'} ref={root}>
       <section className="chats__list" aria-label="Chats">
         <h1 className="sr-only">Chats</h1>
         <div className="chats__scroll" ref={scroller}>
@@ -78,12 +90,13 @@ export function ChatsScreen() {
         </div>
       </section>
 
+      {slides && id && <div className="chats__edge" aria-hidden="true" />}
       <section className="chats__pane" aria-label="Conversation">
         {current ? (
-          <ConversationView key={current.id} conversation={current} highlightId={params.get('m') ?? undefined} onBack={() => (location.key !== 'default' ? navigate(-1) : navigate('/chats'))} />
-        ) : id && list.status === 'ready' ? (
+          <ConversationView key={current.id} conversation={current} highlightId={params.get('m') ?? undefined} onBack={goBack} />
+        ) : shownId && list.status === 'ready' ? (
           <div className="empty"><h2 className="t-title">That conversation isn't available</h2><p className="t-body-sm muted">It may have been removed.</p></div>
-        ) : id ? (
+        ) : shownId ? (
           <div className="empty" aria-busy="true"><p className="t-body-sm muted">Loading…</p></div>
         ) : (
           <div className="empty empty--pane">

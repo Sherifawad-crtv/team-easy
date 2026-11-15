@@ -6,6 +6,7 @@ import { ErrorBanner } from '../auth/AuthFrame'
 import { useReviewRole } from '../../state/useReviewRole'
 import { InstallSheet } from '../install/InstallSheet'
 import { useInstall } from '../../state/install'
+import { useAnimatedNavigate } from '../../design/nav'
 import { useSession } from '../../state/session'
 import { useSubmit } from '../../state/useSubmit'
 import type { IdentityKind } from '../../data/types'
@@ -20,6 +21,7 @@ const MEDIA_CHOICES: { id: MediaPolicy; title: string; sub: string }[] = [
 export function AccountScreen() {
   const { account, signOut, switchIdentity, deleteAccount } = useSession()
   const navigate = useNavigate()
+  const go = useAnimatedNavigate()
   const action = useSubmit()
   const [confirmDelete, setConfirmDelete] = useState(false)
   if (!account) return null
@@ -100,13 +102,13 @@ export function AccountScreen() {
 
         <div className="stack">
           {!install.installed && <Button variant="secondary" onClick={() => setInstalling(true)}>Add to home screen</Button>}
-          <Button variant="secondary" onClick={() => navigate('/account/edit')}>Edit profile</Button>
-          {role === 'admin' && <Button variant="secondary" onClick={() => navigate('/admin')}>Admin console</Button>}
-          <Button variant="secondary" onClick={() => navigate('/account/plan')}>Plan and add-ons</Button>
-          <Button variant="secondary" onClick={() => navigate('/account/calls')}>Calls</Button>
-          <Button variant="secondary" onClick={() => navigate('/account/notifications')}>Notifications</Button>
-          <Button variant="secondary" onClick={() => navigate('/account/data')}>Data and storage</Button>
-          <Button variant="secondary" onClick={() => navigate('/updates')}>What's new</Button>
+          <Button variant="secondary" onClick={() => go('/account/edit')}>Edit profile</Button>
+          {role === 'admin' && <Button variant="secondary" onClick={() => go('/admin')}>Admin console</Button>}
+          <Button variant="secondary" onClick={() => go('/account/plan')}>Plan and add-ons</Button>
+          <Button variant="secondary" onClick={() => go('/account/calls')}>Calls</Button>
+          <Button variant="secondary" onClick={() => go('/account/notifications')}>Notifications</Button>
+          <Button variant="secondary" onClick={() => go('/account/data')}>Data and storage</Button>
+          <Button variant="secondary" onClick={() => go('/updates')}>What's new</Button>
           <Button variant="secondary" loading={action.busy} onClick={() => void action.run(signOut)}>Sign out</Button>
           <Button variant="tertiary" onClick={() => navigate('/results')} className="only-mobile">A/B results</Button>
           <Button variant="tertiary" onClick={() => setConfirmDelete(true)} disabled={action.busy}>Delete account</Button>

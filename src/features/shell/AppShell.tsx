@@ -1,8 +1,10 @@
-import { NavLink, Outlet, matchPath, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import { NavLink, Outlet, matchPath, useLocation, useNavigate } from 'react-router-dom'
 import { Avatar, Logo } from '../../design/ui'
 import { IconCalendar, IconChart, IconChat, IconPeople, IconUser } from '../../design/icons'
 import { useSession } from '../../state/session'
 import { haptic } from '../../design/haptics'
+import { animateNav } from '../../design/nav'
 import { CallsProvider } from '../../state/calls'
 import { CallOverlay } from '../calls/CallOverlay'
 import { PushHost } from '../notifications/PushHost'
@@ -21,6 +23,15 @@ const RAIL = [...NAV, { to: '/results', label: 'A/B', icon: IconChart }]
 export function AppShell() {
   const { pathname } = useLocation()
   const { account } = useSession()
+  const navigate = useNavigate()
+
+  // Lets pages with a large title tuck it away and show a hairline once they scroll.
+  useEffect(() => {
+    const onScroll = () => { document.documentElement.dataset.scrolled = window.scrollY > 4 ? 'true' : 'false' }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [pathname])
   const inConversation = Boolean(matchPath('/chats/:id', pathname) || matchPath('/groups/:id', pathname))
 
   return (
@@ -46,7 +57,12 @@ export function AppShell() {
       <div className="dock">
         <nav className="pill" aria-label="Main">
           {NAV.map(({ to, label, icon: Icon }) => (
-            <NavLink key={to} to={to} className={({ isActive }) => `pill__link${isActive ? ' is-active' : ''}`} onClick={() => { if (pathname !== to && !pathname.startsWith(`${to}/`)) haptic('selection') }}>
+            <NavLink key={to} to={to} className={({ isActive }) => `pill__link${isActive ? ' is-active' : ''}`} onClick={(e) => {
+                if (pathname === to || pathname.startsWith(`${to}/`)) return
+                haptic('selection')
+                e.preventDefault()
+                animateNav('tab', () => navigate(to))
+              }}>
               <Icon size={22} /><span>{label}</span>
             </NavLink>
           ))}

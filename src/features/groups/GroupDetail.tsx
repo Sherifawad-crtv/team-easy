@@ -55,7 +55,7 @@ export function GroupDetail({ group, all, limits, onBack, onOpenGroup, onOpenCha
   return (
     <main className="gdetail fade-in" aria-label={group.name}>
       <header className="gdetail__bar">
-        <span className="convo__back"><BackButton onClick={onBack} label="Back to groups" /></span>
+        <span className="convo__back"><BackButton onClick={onBack} label="Back to groups" animated={false} /></span>
         <h2 className="gdetail__barTitle">{LEVEL_NAME[group.level]}</h2>
       </header>
 

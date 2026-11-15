@@ -1,6 +1,6 @@
 # Motion and micro-interaction plan (Apple HIG direction)
 
-Status: **M1 built as the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M2 to M6 not started. Mobile only. Written 2026-11-02.
+Status: **M1 and M2 built inside the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M3 to M6 not started. Mobile only. Written 2026-11-02.
 
 ## How this was researched, and what is uncertain
 
@@ -111,3 +111,14 @@ Suggested order: M1, M2, M3, M4, M5, M6. M1 and M2 change how the whole app feel
 - B press feedback: rows highlight instantly, buttons shrink to 95% and dim, release springs back.
 - Both variants: no tap delay on controls, and Reduce Motion now turns slides and grows into a 140 ms fade.
 - Haptics (B only, with a Haptics switch in Account, off under Reduce Motion): tabs, switches, filter chips (selection); send, hang up (light); purchase, backup, answering a call (success); deleting a message or group (warning); failed send or payment (error). The unofficial iPhone trick is in, so it needs a real-phone check.
+
+## M2 as built (variant B only)
+
+- **List and detail** (chats, groups): on a phone the conversation or group page slides in from the right over the list. The list moves back by 28% and dims. Going back reverses it, and the page stays on screen until it has finished sliding out. The tab bar slides down and away while a conversation is open, and returns on the way out.
+- **Swipe back:** start a touch within 28 px of the left edge and drag right. The page follows the finger one to one, the list moves and brightens with it. Letting go past a third of the width, or with a quick flick, goes back. Otherwise it springs open again. A thin invisible strip at the edge stops the browser from starting to scroll instead. Touch and pen only, never a mouse.
+- **Other screens** (Account and each page under it, What's new, sign-in): the browser's own view transition slides the new page in and the old one back a little; Back reverses it. The tab bar stays still. Browsers without view transitions change the page at once, as before.
+- **Tabs:** a quick cross-fade, no sliding.
+- **Large titles:** pages with a title (Account, Calendar, Calls, Groups and so on) keep it large at the top, then it shrinks, the bar turns frosted and a hairline appears once you scroll.
+- **Reduce Motion:** every slide becomes a 140 ms fade.
+- **Not done yet:** the release speed of a swipe is used to decide go or stay, but the spring after release starts from rest rather than from your finger's speed. Chats has no large title, because the design starts with the search field.
+- **Check on a real iPhone:** Safari and the home-screen app have their own left-edge back swipe, which may compete with ours. If it does, the first thing to try is moving our start strip a few pixels in.

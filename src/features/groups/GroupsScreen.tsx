@@ -5,7 +5,10 @@ import { LIMITS } from '../../config/limits'
 import type { DeletedGroup, Group, LeaveMode } from '../../data/types'
 import { Avatar, Badge, Button, Skeleton, Snackbar } from '../../design/ui'
 import { IconChevronDown, IconChevronRight, IconPeople, IconPlus, IconSearch } from '../../design/icons'
+import { useEdgeSwipeBack } from '../../design/swipe'
 import { track, trackExposure } from '../../experiments/analytics'
+import { useKept } from '../../state/useKept'
+import { useMedia } from '../../state/useMedia'
 import { useVariant } from '../../experiments/experiments'
 import { useAsync } from '../../state/useAsync'
 import { useReviewRole } from '../../state/useReviewRole'
@@ -88,6 +91,11 @@ export function GroupsScreen() {
   const [openError, setOpenError] = useState<unknown>(null)
   const role = useReviewRole()
   const variant = useVariant('group_nav')
+  const iosMotion = useVariant('motion_style') === 'B'
+  const phone = useMedia('(max-width: 1023.98px)')
+  const slides = iosMotion && phone
+  const root = useRef<HTMLDivElement>(null)
+  const shownId = useKept(id, slides ? 480 : 0)
   const list = useAsync(() => api.groups.list(), [role])
   const [creating, setCreating] = useState(false)
   const [query, setQuery] = useState('')
@@ -110,7 +118,7 @@ export function GroupsScreen() {
   const known = list.status === 'ready' ? list.data : snapshot.current
   const settled = known !== null
   const groups = useMemo(() => known?.groups ?? [], [known])
-  const current = id ? groups.find((g) => g.id === id) : undefined
+  const current = shownId ? groups.find((g) => g.id === shownId) : undefined
   const admin = groups.length ? groups.some((g) => g.myRole === 'admin') : role === 'admin'
 
   // Make sure the open group is visible in the tree.
@@ -120,6 +128,9 @@ export function GroupsScreen() {
     for (let p = current.parentId; p; p = groups.find((g) => g.id === p)?.parentId ?? null) parents.add(p)
     if (parents.size) setOpen((prev) => new Set([...prev, ...parents]))
   }, [current, groups])
+
+  const back = () => (fromChat ? navigate(-1) : navigate('/groups'))
+  useEdgeSwipeBack(root, slides && Boolean(id), back)
 
   const openGroup = useCallback(
     (gid: string) => {
@@ -169,7 +180,7 @@ export function GroupsScreen() {
   }
 
   return (
-    <div className="chats" data-open={id ? 'true' : 'false'}>
+    <div className="chats" data-open={id ? 'true' : 'false'} ref={root}>
       <section className="chats__list" aria-label="Groups">
         <header className="bar">
           <h1 className="bar__title">Groups</h1>
@@ -177,7 +188,7 @@ export function GroupsScreen() {
             <button type="button" className="newchat" aria-label="New group" onClick={() => setCreating(true)}><IconPlus size={22} /></button>
           )}
         </header>
-        <div className="chats__scroll">
+        <div className="chats__scroll" onScroll={(e) => { const p = e.currentTarget.parentElement; if (p) p.dataset.scrolled = e.currentTarget.scrollTop > 4 ? 'true' : 'false' }}>
           {known && (
             <p className="t-body-sm muted gcount">
               You're in {known.myGroupCount} of {known.limits.groupsPerUser} groups you can join.
@@ -242,13 +253,14 @@ export function GroupsScreen() {
         </div>
       </section>
 
+      {slides && id && <div className="chats__edge" aria-hidden="true" />}
       <section className="chats__pane" aria-label="Group">
         {current ? (
-          <GroupDetail key={current.id} group={current} all={groups} limits={known!.limits} onBack={() => (fromChat ? navigate(-1) : navigate('/groups'))} onOpenGroup={openGroup}
+          <GroupDetail key={current.id} group={current} all={groups} limits={known!.limits} onBack={back} onOpenGroup={openGroup}
             onOpenChat={(cid) => (fromChat ? navigate(-1) : navigate(`/chats/${cid}`))} onChanged={reload} onDeleted={onDeleted} onLeft={onLeft} />
-        ) : id && settled ? (
+        ) : shownId && settled ? (
           <div className="empty"><h2 className="t-title">That group isn't available</h2><p className="t-body-sm muted">It may have been deleted, or you may not have access.</p></div>
-        ) : id ? (
+        ) : shownId ? (
           <div className="empty" aria-busy="true"><p className="t-body-sm muted">Loading…</p></div>
         ) : (
           <div className="empty empty--pane">

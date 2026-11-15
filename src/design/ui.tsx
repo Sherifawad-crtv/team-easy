@@ -36,9 +36,9 @@ export function IconButton({ label, children, ...rest }: ButtonHTMLAttributes<HT
   )
 }
 
-export function BackButton({ onClick, label = 'Back' }: { onClick: () => void; label?: string }) {
+export function BackButton({ onClick, label = 'Back', animated = true }: { onClick: () => void; label?: string; animated?: boolean }) {
   return (
-    <IconButton label={label} onClick={onClick}>
+    <IconButton label={label} onClick={animated ? () => animateNav('pop', onClick) : onClick}>
       <IconBack />
     </IconButton>
   )
@@ -208,6 +208,7 @@ export function Snackbar({ message, actionLabel, onAction, durationMs, onDone }:
 /* ---------- Switch ---------- */
 
 /** An on/off setting row control. The label comes from `label` for screen readers. */
+import { animateNav } from './nav'
 import { haptic } from './haptics'
 
 export function Switch({ checked, onChange, label, disabled }: { checked: boolean; onChange: (next: boolean) => void; label: string; disabled?: boolean }) {

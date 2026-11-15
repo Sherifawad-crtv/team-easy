@@ -54,3 +54,81 @@
   }
   :root[data-motion='ios'] :is(.btn, .chip, .seg button, .newchat, .icon-btn, .pill__link, .cctl):not(:disabled):active { transform: none; }
 }
+
+/* ---------- M2: moving between screens (docs/MOTION_PLAN.md) ---------- */
+
+/* List and detail on a phone: the detail slides over the list, and the list moves back a little and dims.
+   `--p` is how far open the detail is: 0 closed, 1 open. A swipe sets it while the finger is down. */
+@media (max-width: 1023.98px) {
+  :root[data-motion='ios'] .chats { position: relative; overflow: hidden; height: 100dvh; min-height: 0; --p: 0; }
+  :root[data-motion='ios'] .chats[data-open='true'] { --p: 1; }
+  :root[data-motion='ios'] .chats__list,
+  :root[data-motion='ios'] .chats[data-open='true'] .chats__list {
+    display: flex; position: absolute; inset: 0; height: 100%;
+    transform: translateX(calc(var(--p) * -28%));
+    transition: transform var(--motion-smooth-dur) var(--motion-smooth);
+  }
+  :root[data-motion='ios'] .chats__pane,
+  :root[data-motion='ios'] .chats[data-open='true'] .chats__pane {
+    display: block; position: absolute; inset: 0; z-index: 2; overflow: hidden;
+    transform: translateX(calc((1 - var(--p)) * 100%));
+    box-shadow: -10px 0 28px rgb(13 20 46 / calc(0.16 * var(--p)));
+    touch-action: pan-y;
+    transition: transform var(--motion-smooth-dur) var(--motion-smooth), box-shadow var(--motion-smooth-dur) var(--motion-smooth), visibility 0s linear var(--motion-smooth-dur);
+    visibility: hidden;
+  }
+  :root[data-motion='ios'] .chats[data-open='true'] .chats__pane { visibility: visible; transition-delay: 0s, 0s, 0s; }
+  :root[data-motion='ios'] .chats.is-dragging .chats__pane { visibility: visible; }
+  :root[data-motion='ios'] .chats__edge { position: absolute; z-index: 4; left: 0; top: 0; bottom: 0; width: 28px; touch-action: none; }
+  :root[data-motion='ios'] .chats::after {
+    content: ''; position: absolute; inset: 0; z-index: 1; background: var(--on-surface); pointer-events: none;
+    opacity: calc(var(--p) * 0.14); transition: opacity var(--motion-smooth-dur) var(--motion-smooth);
+  }
+  :root[data-motion='ios'] .chats.is-dragging .chats__list,
+  :root[data-motion='ios'] .chats.is-dragging .chats__pane,
+  :root[data-motion='ios'] .chats.is-dragging::after { transition: none; }
+
+  /* The tab bar slides away when a conversation opens, instead of vanishing. */
+  :root[data-motion='ios'] .shell--convo .dock { display: block; transform: translateY(130%); opacity: 0; pointer-events: none; }
+  :root[data-motion='ios'] .dock { transition: transform var(--motion-smooth-dur) var(--motion-smooth), opacity var(--spring-effects-dur) var(--spring-effects); }
+}
+
+/* Other screens (Account and its pages, What's new, sign-in): the browser animates the whole page. */
+.dock { view-transition-name: dock; }
+::view-transition-group(dock) { animation: none; }
+:root[data-vt]::view-transition-old(root),
+:root[data-vt]::view-transition-new(root) {
+  animation-duration: var(--motion-smooth-dur, 400ms);
+  animation-timing-function: var(--motion-smooth, ease);
+  animation-fill-mode: both;
+  mix-blend-mode: normal;
+}
+:root[data-vt='push']::view-transition-old(root) { animation-name: vt-back-away; z-index: 1; }
+:root[data-vt='push']::view-transition-new(root) { animation-name: vt-come-in; z-index: 2; }
+:root[data-vt='pop']::view-transition-old(root) { animation-name: vt-go-out; z-index: 2; }
+:root[data-vt='pop']::view-transition-new(root) { animation-name: vt-come-back; z-index: 1; }
+:root[data-vt='tab']::view-transition-old(root) { animation-name: vt-fade-out; animation-duration: var(--spring-effects-dur, 180ms); }
+:root[data-vt='tab']::view-transition-new(root) { animation-name: vt-fade-in; animation-duration: var(--spring-effects-dur, 180ms); }
+@keyframes vt-come-in { from { transform: translateX(100%); } }
+@keyframes vt-back-away { to { transform: translateX(-28%); filter: brightness(0.9); } }
+@keyframes vt-go-out { to { transform: translateX(100%); } }
+@keyframes vt-come-back { from { transform: translateX(-28%); filter: brightness(0.9); } }
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  :root[data-vt]::view-transition-old(root) { animation-name: vt-fade-out; animation-duration: 140ms; animation-timing-function: linear; }
+  :root[data-vt]::view-transition-new(root) { animation-name: vt-fade-in; animation-duration: 140ms; animation-timing-function: linear; }
+  :root[data-motion='ios'] .chats__pane, :root[data-motion='ios'] .chats__list, :root[data-motion='ios'] .dock { transition: opacity 140ms linear; }
+}
+
+/* Large titles tuck away and a hairline appears once the page scrolls. */
+:root[data-motion='ios'] .page > .bar {
+  position: sticky; top: 0; z-index: 5;
+  background: rgb(255 255 255 / 0.82); -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4);
+  transition: box-shadow var(--spring-effects-dur) var(--spring-effects);
+}
+:root[data-motion='ios'] .bar__title { transform-origin: left center; transition: transform var(--motion-snappy-dur) var(--motion-snappy); }
+:root[data-motion='ios'][data-scrolled='true'] .page > .bar { box-shadow: 0 0.5px 0 var(--outline-variant); }
+:root[data-motion='ios'][data-scrolled='true'] .page > .bar .bar__title { transform: scale(0.8); }
+:root[data-motion='ios'] .chats__list[data-scrolled='true'] > .bar { box-shadow: 0 0.5px 0 var(--outline-variant); }
+:root[data-motion='ios'] .chats__list[data-scrolled='true'] > .bar .bar__title { transform: scale(0.8); }

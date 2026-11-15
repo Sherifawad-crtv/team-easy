@@ -159,7 +159,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
   return (
     <div className="convo">
       <header className="convo__bar">
-        <span className="convo__back"><BackButton onClick={onBack} label="Back to chats" /></span>
+        <span className="convo__back"><BackButton onClick={onBack} label="Back to chats" animated={false} /></span>
         {conversation.groupId ? (
           <button type="button" className="convo__who convo__who--link" onClick={() => navigate(`/groups/${conversation.groupId}`, { state: { from: 'chat' } })} aria-label={`${conversation.title}, group info`}>
             <Avatar name={conversation.title} size={40} group icon={undefined} />
