@@ -408,3 +408,25 @@ describe('mock admin console', () => {
     expect((await mockApi.calendar.events(start - 1000, start + 10_000_000)).some((e) => e.id === ev.id)).toBe(false)
   })
 })
+
+describe('mock chat row actions', () => {
+  it('flags a chat as unread until it is read, and keeps the count at zero', async () => {
+    await mockApi.chat.markUnread('c-priya')
+    let row = (await mockApi.chat.listConversations()).find((c) => c.id === 'c-priya')!
+    expect(row).toMatchObject({ flaggedUnread: true, unread: 0 })
+    await mockApi.chat.markRead('c-priya')
+    row = (await mockApi.chat.listConversations()).find((c) => c.id === 'c-priya')!
+    expect(row.flaggedUnread).toBe(false)
+  })
+
+  it('mutes a direct chat, and a group chat together with its group', async () => {
+    await mockApi.chat.setMuted('c-priya', true)
+    await mockApi.chat.setMuted('c-product', true)
+    const rows = await mockApi.chat.listConversations()
+    expect(rows.find((c) => c.id === 'c-priya')!.muted).toBe(true)
+    expect(rows.find((c) => c.id === 'c-product')!.muted).toBe(true)
+    expect(await mockApi.notifications.mutedGroups()).toContain('g-product')
+    await mockApi.chat.setMuted('c-product', false)
+    expect(await mockApi.notifications.mutedGroups()).not.toContain('g-product')
+  })
+})

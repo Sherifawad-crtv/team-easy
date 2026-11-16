@@ -5,7 +5,9 @@ import { LIMITS } from '../../config/limits'
 import type { DeletedGroup, Group, LeaveMode } from '../../data/types'
 import { Avatar, Badge, Button, Skeleton, Snackbar } from '../../design/ui'
 import { IconChevronDown, IconChevronRight, IconPeople, IconPlus, IconSearch } from '../../design/icons'
+import { PullToRefresh } from '../../design/PullToRefresh'
 import { useEdgeSwipeBack } from '../../design/swipe'
+import { useFlip } from '../../design/useFlip'
 import { track, trackExposure } from '../../experiments/analytics'
 import { useKept } from '../../state/useKept'
 import { useMedia } from '../../state/useMedia'
@@ -28,12 +30,13 @@ interface RowProps {
   sub?: string
   toggle?: { open: boolean; onToggle: () => void }
   busy?: boolean
+  leaving?: boolean
   onOpen: (id: string) => void
 }
 
-function GroupRow({ group, active, depth = 0, sub, toggle, busy, onOpen }: RowProps) {
+function GroupRow({ group, active, depth = 0, sub, toggle, busy, leaving, onOpen }: RowProps) {
   return (
-    <div className={`grow${active ? ' grow--active' : ''}`} style={{ ['--depth' as string]: depth }}>
+    <div className={`grow${active ? ' grow--active' : ''}${leaving ? ' is-leaving' : ''}`} data-flip-id={group.id} style={{ ['--depth' as string]: depth }}>
       {depth > 0 && <span className="grow__rail" aria-hidden="true" />}
       {toggle ? (
         <button type="button" className="grow__toggle" aria-expanded={toggle.open} aria-label={`${toggle.open ? 'Collapse' : 'Expand'} ${group.name}`} onClick={toggle.onToggle}>
@@ -53,8 +56,8 @@ function GroupRow({ group, active, depth = 0, sub, toggle, busy, onOpen }: RowPr
   )
 }
 
-function TreeList({ nodes, activeId, open, setOpen, onOpen, opening, depth = 0 }: {
-  nodes: TreeNode[]; activeId?: string; open: Set<string>; setOpen: (next: Set<string>) => void; onOpen: (id: string) => void; opening: string | null; depth?: number
+function TreeList({ nodes, activeId, open, setOpen, onOpen, opening, leaving, depth = 0 }: {
+  nodes: TreeNode[]; activeId?: string; open: Set<string>; setOpen: (next: Set<string>) => void; onOpen: (id: string) => void; opening: string | null; leaving: string | null; depth?: number
 }) {
   return (
     <>
@@ -71,8 +74,8 @@ function TreeList({ nodes, activeId, open, setOpen, onOpen, opening, depth = 0 }
           <div key={n.group.id}>
             <GroupRow group={n.group} active={n.group.id === activeId} depth={depth}
               sub={has ? `${memberLabel(n.group.memberCount)} · ${n.children.length} ${n.children.length === 1 ? 'sub-group' : 'sub-groups'}` : undefined}
-              toggle={has ? { open: isOpen, onToggle: flip } : undefined} busy={opening === n.group.id} onOpen={onOpen} />
-            {has && isOpen && <TreeList nodes={n.children} activeId={activeId} open={open} setOpen={setOpen} onOpen={onOpen} opening={opening} depth={depth + 1} />}
+              toggle={has ? { open: isOpen, onToggle: flip } : undefined} busy={opening === n.group.id} leaving={leaving === n.group.id} onOpen={onOpen} />
+            {has && isOpen && <TreeList nodes={n.children} activeId={activeId} open={open} setOpen={setOpen} onOpen={onOpen} opening={opening} leaving={leaving} depth={depth + 1} />}
           </div>
         )
       })}
@@ -88,6 +91,9 @@ export function GroupsScreen() {
   // Opened from the top bar of a chat (like WhatsApp): going back returns to that chat.
   const fromChat = (location.state as { from?: string } | null)?.from === 'chat'
   const [opening, setOpening] = useState<string | null>(null)
+  const [leavingId, setLeavingId] = useState<string | null>(null)
+  const scroller = useRef<HTMLDivElement>(null)
+  const treeRef = useRef<HTMLDivElement>(null)
   const [openError, setOpenError] = useState<unknown>(null)
   const role = useReviewRole()
   const variant = useVariant('group_nav')
@@ -157,13 +163,16 @@ export function GroupsScreen() {
   const tree = useMemo(() => buildTree(activeGroups), [activeGroups])
   const q = query.trim().toLowerCase()
   const flat = activeGroups.filter((g) => !q || g.name.toLowerCase().includes(q)).sort((a, b) => b.unread - a.unread || a.name.localeCompare(b.name))
+  useFlip(treeRef, `${variant}|${query}|${[...open].join()}|${groups.map((g) => g.id).join()}`)
   const rootSlots = known ? childSlots(groups, null, known.limits) : { used: 0, max: 0, full: false, tooDeep: false }
   const [upgrading, setUpgrading] = useState(false)
 
   const onDeleted = (d: DeletedGroup) => {
     setUndo(d)
     navigate('/groups')
-    reload()
+    // The row folds away first, then the list updates.
+    setLeavingId(d.undoToken.split('@')[0])
+    window.setTimeout(() => { reload(); setLeavingId(null) }, iosMotion ? 300 : 0)
   }
   const doUndo = async () => {
     if (!undo) return
@@ -188,7 +197,7 @@ export function GroupsScreen() {
             <button type="button" className="newchat" aria-label="New group" onClick={() => setCreating(true)}><IconPlus size={22} /></button>
           )}
         </header>
-        <div className="chats__scroll" onScroll={(e) => { const p = e.currentTarget.parentElement; if (p) p.dataset.scrolled = e.currentTarget.scrollTop > 4 ? 'true' : 'false' }}>
+        <div className="chats__scroll" ref={scroller} onScroll={(e) => { const p = e.currentTarget.parentElement; if (p) p.dataset.scrolled = e.currentTarget.scrollTop > 4 ? 'true' : 'false' }}>
           {known && (
             <p className="t-body-sm muted gcount">
               You're in {known.myGroupCount} of {known.limits.groupsPerUser} groups you can join.
@@ -221,14 +230,14 @@ export function GroupsScreen() {
           )}
 
           {settled && groups.length > 0 && (
-            <>
-              <div role="tree" aria-label="Groups">
+            <PullToRefresh onRefresh={list.refresh} scroller={scroller}>
+              <div role="tree" aria-label="Groups" ref={treeRef}>
                 {variant === 'A' ? (
-                  <TreeList nodes={tree} activeId={id} open={open} setOpen={setOpen} onOpen={openGroup} opening={opening} />
+                  <TreeList nodes={tree} activeId={id} open={open} setOpen={setOpen} onOpen={openGroup} opening={opening} leaving={leavingId} />
                 ) : (
                   flat.map((g) => {
                     const path = pathOf(g, groups)
-                    return <GroupRow key={g.id} group={g} active={g.id === id} sub={path.length ? `${path.join(' › ')} · ${LEVEL_NAME[g.level]}` : `${LEVEL_NAME[g.level]} · ${memberLabel(g.memberCount)}`} busy={opening === g.id} onOpen={openGroup} />
+                    return <GroupRow key={g.id} group={g} active={g.id === id} sub={path.length ? `${path.join(' › ')} · ${LEVEL_NAME[g.level]}` : `${LEVEL_NAME[g.level]} · ${memberLabel(g.memberCount)}`} busy={opening === g.id} leaving={leavingId === g.id} onOpen={openGroup} />
                   })
                 )}
               </div>
@@ -248,7 +257,7 @@ export function GroupsScreen() {
                   <div style={{ marginTop: 'var(--s-3)' }}><Button variant="secondary" onClick={() => setUpgrading(true)}>Get more main groups</Button></div>
                 </div>
               )}
-            </>
+            </PullToRefresh>
           )}
         </div>
       </section>

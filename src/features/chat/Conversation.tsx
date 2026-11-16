@@ -9,6 +9,8 @@ import { track, trackExposure } from '../../experiments/analytics'
 import { useVariant } from '../../experiments/experiments'
 import { useAsync } from '../../state/useAsync'
 import { ErrorBanner } from '../auth/AuthFrame'
+import { useMedia } from '../../state/useMedia'
+import { MessageMenu } from './MessageMenu'
 import { AdBanner } from '../ads/AdSlot'
 import { CallButtons } from '../calls/CallButtons'
 import { AttachSheet } from '../media/AttachSheet'
@@ -62,6 +64,12 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
   const drafts = useRef(new Map<string, MessageDraft>())
   const scrollRef = useRef<HTMLDivElement>(null)
   const pressTimer = useRef<number>(0)
+  // Motion style B on phones: long press lifts the message into a menu, new messages glide in.
+  const ios = useVariant('motion_style') === 'B' && useMedia('(pointer: coarse)')
+  const [menu, setMenu] = useState<{ m: Message; bubble: HTMLElement } | null>(null)
+  const [popId, setPopId] = useState<string | null>(null)
+  const [toast, setToast] = useState<string | null>(null)
+  const seen = useRef<Set<string> | null>(null)
 
   useEffect(() => {
     if (history.status === 'ready') {
@@ -107,6 +115,9 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
       haptic('light')
       try {
         const saved = await api.chat.sendMessage(id, draft)
+        seen.current?.add(saved.id)
+        setPopId(saved.id)
+        window.setTimeout(() => setPopId(null), 900)
         patch((prev) => prev.map((m) => (m.id === tmpId ? saved : m)))
         drafts.current.delete(tmpId)
         track('message_sent', { conversation_id: id, kind: conversation.kind, retry: Boolean(retryId), attachment: file ? (file.type.startsWith('image/') ? 'image' : 'document') : null })
@@ -146,13 +157,39 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
     }
   }
 
+  // Remember which messages were there on arrival, so only later ones animate in.
+  if (history.status === 'ready' && seen.current === null) seen.current = new Set(history.data.map((m) => m.id))
+  useEffect(() => {
+    if (history.status === 'ready') for (const m of history.data) seen.current?.add(m.id)
+  }, [history])
+
   const items = useMemo(() => (history.status === 'ready' ? buildItems(history.data, grouped) : []), [history, grouped])
 
   const actionable = (m: Message) => m.status === 'failed' || (isDirect && m.senderId === ME && m.status === 'sent')
-  const startPress = (m: Message) => {
-    if (!actionable(m)) return
+  // On phones in motion style B every message with text can be copied, so every one has a menu.
+  const hasMenu = (m: Message) => actionable(m) || (ios && Boolean(m.text))
+  const openMenu = (m: Message, el: HTMLElement) => (ios ? setMenu({ m, bubble: el }) : setActionFor(m))
+  const startPress = (m: Message, el: HTMLElement) => {
+    if (!hasMenu(m)) return
     window.clearTimeout(pressTimer.current)
-    pressTimer.current = window.setTimeout(() => setActionFor(m), 450)
+    pressTimer.current = window.setTimeout(() => openMenu(m, el), 450)
+  }
+  const copyText = (m: Message) => {
+    const say = (text: string) => { setToast(text); window.setTimeout(() => setToast(null), 1600) }
+    const fallback = () => {
+      // Older browsers and pages without clipboard permission: copy through a hidden text field.
+      const field = document.createElement('textarea')
+      field.value = m.text
+      field.style.cssText = 'position:fixed;left:-1000px;top:0;opacity:0'
+      document.body.appendChild(field)
+      field.select()
+      let ok = false
+      try { ok = document.execCommand('copy') } catch { /* not allowed */ }
+      field.remove()
+      say(ok ? 'Copied' : "Couldn't copy")
+    }
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(m.text).then(() => say('Copied'), fallback)
+    else fallback()
   }
   const endPress = () => window.clearTimeout(pressTimer.current)
 
@@ -218,9 +255,11 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
                 if (it.m.status === 'failed') setActionFor(it.m)
                 else if (grouped) setShownTimes((s) => { const n = new Set(s); if (n.has(it.m.id)) n.delete(it.m.id); else n.add(it.m.id); return n })
               }}
-              onPressStart={() => startPress(it.m)}
+              enter={Boolean(seen.current && !seen.current.has(it.m.id))}
+              tickPop={popId === it.m.id}
+              onPressStart={(el) => startPress(it.m, el)}
               onPressEnd={endPress}
-              onMenu={() => actionable(it.m) && setActionFor(it.m)}
+              onMenu={(el) => hasMenu(it.m) && openMenu(it.m, el)}
             />
           ),
         )}
@@ -248,6 +287,20 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
       </form>
       )}
 
+      {menu && (
+        <MessageMenu
+          message={menu.m}
+          bubble={menu.bubble}
+          onClose={() => setMenu(null)}
+          actions={{
+            copy: menu.m.text ? () => copyText(menu.m) : undefined,
+            remove: menu.m.status === 'sent' && isDirect && menu.m.senderId === ME ? () => void remove(menu.m) : undefined,
+            retry: menu.m.status === 'failed' ? () => { track('message_retried', { conversation_id: id }); void send(drafts.current.get(menu.m.id) ?? { text: menu.m.text }, menu.m.id) } : undefined,
+            discard: menu.m.status === 'failed' ? () => void remove(menu.m) : undefined,
+          }}
+        />
+      )}
+      {toast && <div className="toast" role="status">{toast}</div>}
       {attaching && <AttachSheet onClose={() => setAttaching(false)} onSend={(d) => void send(d)} />}
 
       {actionFor && (
@@ -281,12 +334,14 @@ interface RowProps {
   showName: boolean
   timeShown: boolean
   onTap: () => void
-  onPressStart: () => void
+  enter: boolean
+  tickPop: boolean
+  onPressStart: (el: HTMLElement) => void
   onPressEnd: () => void
-  onMenu: () => void
+  onMenu: (el: HTMLElement) => void
 }
 
-function MessageRow({ m, hit, first, last, tail, grouped, showName, timeShown, onTap, onPressStart, onPressEnd, onMenu }: RowProps) {
+function MessageRow({ m, hit, first, last, tail, grouped, showName, timeShown, enter, tickPop, onTap, onPressStart, onPressEnd, onMenu }: RowProps) {
   const mine = m.senderId === ME
   const failed = m.status === 'failed'
   const time = messageTime(m.at)
@@ -294,7 +349,7 @@ function MessageRow({ m, hit, first, last, tail, grouped, showName, timeShown, o
   const bareImage = a?.kind === 'image' && !m.text
   const showFoot = !failed && (timeShown || m.status === 'sending' || (bareImage && !a?.expired))
   const label = failed ? 'Not sent. Tap to retry' : m.status === 'sending' ? 'Sending' : time
-  const cls = ['msg', hit && 'msg--hit', mine && 'msg--mine', tail && 'msg--tail', grouped && !first && 'msg--joined', grouped && !last && 'msg--open'].filter(Boolean).join(' ')
+  const cls = ['msg', enter && 'msg--enter', hit && 'msg--hit', mine && 'msg--mine', tail && 'msg--tail', grouped && !first && 'msg--joined', grouped && !last && 'msg--open'].filter(Boolean).join(' ')
   return (
     <div className={cls} data-mid={m.id}>
       <div
@@ -303,12 +358,12 @@ function MessageRow({ m, hit, first, last, tail, grouped, showName, timeShown, o
         tabIndex={a ? undefined : 0}
         aria-label={`${mine ? 'You' : m.senderName}: ${m.text || a?.name || ''}. ${label}`}
         onClick={onTap}
-        onKeyDown={(e) => { if (e.key === 'Enter') onTap(); if (e.key === 'ContextMenu') onMenu() }}
-        onPointerDown={onPressStart}
+        onKeyDown={(e) => { if (e.key === 'Enter') onTap(); if (e.key === 'ContextMenu') onMenu(e.currentTarget) }}
+        onPointerDown={(e) => onPressStart(e.currentTarget)}
         onPointerUp={onPressEnd}
         onPointerLeave={onPressEnd}
         onPointerCancel={onPressEnd}
-        onContextMenu={(e) => { e.preventDefault(); onMenu() }}
+        onContextMenu={(e) => { e.preventDefault(); onMenu(e.currentTarget) }}
       >
         {showName && <span className="bubble__name" style={{ color: `var(--sender-${toneFor(m.senderName)})` }}>{m.senderName}{m.senderTitle && <span className="bubble__tag">{m.senderTitle}</span>}</span>}
         {a && <MessageAttachment message={m} mine={mine} />}
@@ -316,7 +371,7 @@ function MessageRow({ m, hit, first, last, tail, grouped, showName, timeShown, o
         {showFoot && (
           <span className="bubble__foot">
             {time}
-            {mine && (m.status === 'sending' ? <IconClock size={14} /> : <span className="ticks"><IconDoubleTick size={16} /></span>)}
+            {mine && (m.status === 'sending' ? <IconClock size={14} /> : <span className={`ticks${tickPop ? ' tick-pop' : ''}`}><IconDoubleTick size={16} /></span>)}
           </span>
         )}
       </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clamp, doubleTapZoom, maxPan, rubber, settleDetent, settleSingle, shouldDismiss } from './gestures'
+import { clamp, doubleTapZoom, maxPan, rubber, settleDetent, settleRowSwipe, settleSingle, shouldDismiss } from './gestures'
 
 describe('drag arithmetic', () => {
   it('resists more and more past the limit, never going backwards', () => {
@@ -41,5 +41,15 @@ describe('drag arithmetic', () => {
   it('zooms in around the tap on a double tap, and back out on the next', () => {
     expect(doubleTapZoom(1, 100, -40)).toEqual({ scale: 2.5, x: -150, y: 60 })
     expect(doubleTapZoom(2.5, 100, -40)).toEqual({ scale: 1, x: 0, y: 0 })
+  })
+
+  it('settles a swiped chat row: runs, opens or closes', () => {
+    expect(settleRowSwipe(260, 0.2, 88, 390)).toBe('commit-lead')
+    expect(settleRowSwipe(-250, -0.2, 88, 390)).toBe('commit-trail')
+    expect(settleRowSwipe(100, 0.1, 88, 390)).toBe('open-lead')
+    expect(settleRowSwipe(-70, 0, 88, 390)).toBe('open-trail')
+    expect(settleRowSwipe(30, 0, 88, 390)).toBe('close')
+    expect(settleRowSwipe(80, 1.2, 88, 390)).toBe('commit-lead') // a flick
+    expect(settleRowSwipe(80, -1.2, 88, 390)).not.toBe('commit-lead') // flicked back the other way
   })
 })

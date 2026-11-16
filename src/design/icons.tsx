@@ -10,11 +10,13 @@ import {
   ArchiveMinimalisticIcon,
   ArrowUpIcon,
   BellIcon,
+  BellOffIcon,
   BugIcon,
   CalendarIcon,
   CameraIcon,
   Chart2Icon,
   ChatRoundLineIcon,
+  ChatUnreadIcon,
   CheckCircleIcon,
   CheckIcon,
   CheckReadIcon,
@@ -111,3 +113,5 @@ export const IconCallIn = make(IncomingCallRoundedIcon)
 export const IconCallOut = make(OutgoingCallRoundedIcon)
 export const IconCallMissed = make(CallDroppedRoundedIcon)
 export const IconUpload = make(UploadSquareIcon)
+export const IconMute = make(BellOffIcon)
+export const IconUnread = make(ChatUnreadIcon)

@@ -24,6 +24,17 @@ export function useAsync<T>(load: () => Promise<T>, deps: unknown[]) {
     )
   }, [])
 
+  /** Fetches again without flashing the loading state. A failure keeps what is on screen. */
+  const refresh = useCallback(async () => {
+    const id = ++run.current
+    try {
+      const data = await loader.current()
+      if (id === run.current) setState({ status: 'ready', data })
+    } catch {
+      // keep showing the old data
+    }
+  }, [])
+
   useEffect(() => {
     reload()
     return () => {
@@ -37,5 +48,5 @@ export function useAsync<T>(load: () => Promise<T>, deps: unknown[]) {
     setState((s) => (s.status === 'ready' ? { status: 'ready', data: update(s.data) } : s))
   }, [])
 
-  return { ...state, reload, patch }
+  return { ...state, reload, refresh, patch }
 }

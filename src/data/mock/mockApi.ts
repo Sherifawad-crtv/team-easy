@@ -24,7 +24,7 @@
 // Server must enforce: rate limiting, no account enumeration
 //
 // WIRE: chat.messages
-// Req: CHT-01..04, NFR-01 | Contract: ChatApi.listConversations/listMessages/subscribe | Mock: mockApi.chat
+// Req: CHT-01..04, NFR-01 | Contract: ChatApi.listConversations/listMessages/subscribe/markRead/markUnread/setMuted | Mock: mockApi.chat
 // Real: realtime conversations and message history with paging, unread counts, delivery events
 // Server must enforce: membership, read access
 //
@@ -260,7 +260,7 @@ function receive(conv: Conversation, text: string, senderName: string, senderId:
   conv.lastAt = message.at
   conv.unread += 1
   emit({ type: 'message', message })
-  emit({ type: 'conversation', conversation: { ...conv } })
+  emit({ type: 'conversation', conversation: { ...conv, muted: notificationsMock.isMuted(conv) } })
   notificationsMock.notifyMessage(conv, senderName, text, message.id)
 }
 
@@ -406,7 +406,7 @@ export const mockApi: Api = {
     async listConversations() {
       await gate()
       if (scenarioStore.get() === 'empty') return []
-      return conversations.filter((c) => !groupsMock.hiddenConvs.has(c.id)).map((c) => ({ ...c })).sort((a, b) => b.lastAt - a.lastAt)
+      return conversations.filter((c) => !groupsMock.hiddenConvs.has(c.id)).map((c) => ({ ...c, muted: notificationsMock.isMuted(c) })).sort((a, b) => b.lastAt - a.lastAt)
     },
     async listMessages(id) {
       await gate(350)
@@ -449,9 +449,24 @@ export const mockApi: Api = {
     },
     async markRead(id) {
       const conv = conversations.find((c) => c.id === id)
-      if (!conv || conv.unread === 0) return
+      if (!conv || (conv.unread === 0 && !conv.flaggedUnread)) return
       conv.unread = 0
-      emit({ type: 'conversation', conversation: { ...conv } })
+      conv.flaggedUnread = false
+      emit({ type: 'conversation', conversation: { ...conv, muted: notificationsMock.isMuted(conv) } })
+    },
+    async markUnread(id) {
+      await gate(200)
+      const conv = conversations.find((c) => c.id === id)
+      if (!conv) throw new ApiError('unknown')
+      conv.flaggedUnread = true
+      emit({ type: 'conversation', conversation: { ...conv, muted: notificationsMock.isMuted(conv) } })
+    },
+    async setMuted(id, value) {
+      await gate(200)
+      const conv = conversations.find((c) => c.id === id)
+      if (!conv) throw new ApiError('unknown')
+      notificationsMock.setChatMuted(conv, value)
+      emit({ type: 'conversation', conversation: { ...conv, muted: value } })
     },
     async searchMembers(query) {
       await gate(250)

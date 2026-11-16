@@ -160,3 +160,62 @@
 @media (prefers-reduced-motion: reduce) {
   :root[data-motion='ios'] .call { animation: fade-soft 140ms linear both; }
 }
+
+/* ---------- M4: rows and messages (docs/MOTION_PLAN.md) ---------- */
+
+/* Swipe actions on chat rows. --dx is how far the row has moved. */
+.swipe { position: relative; overflow: hidden; touch-action: pan-y; }
+.swipe__content { position: relative; z-index: 1; background: var(--surface-container-lowest); transform: translateX(var(--dx, 0px)); }
+.swipe.is-animating .swipe__content { transition: transform var(--motion-smooth-dur) var(--motion-smooth); }
+.swipe__lead, .swipe__trail { position: absolute; top: 0; bottom: 0; display: flex; overflow: hidden; }
+.swipe__lead { left: 0; width: max(0px, var(--dx, 0px)); justify-content: flex-start; }
+.swipe__trail { right: 0; width: max(0px, calc(var(--dx, 0px) * -1)); justify-content: flex-end; }
+.swipe.is-animating .swipe__lead, .swipe.is-animating .swipe__trail { transition: width var(--motion-smooth-dur) var(--motion-smooth); }
+.swipe__btn { flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s-2); width: 88px; border: 0; color: #fff; font-size: 12px; line-height: 16px; font-weight: 600; }
+.swipe__btn--lead { background: var(--primary); }
+.swipe__btn--trail { background: var(--on-surface-variant); }
+.swipe[data-side=''] .swipe__btn { visibility: hidden; }
+.swipe.is-armed .swipe__btn svg { transform: scale(1.18); }
+.swipe__btn svg { transition: transform var(--motion-snappy-dur) var(--motion-snappy); }
+
+/* Pull to refresh: the content follows the finger, a spinner turns with the pull. */
+.ptr { position: relative; }
+.ptr__ind { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: grid; place-items: center; pointer-events: none; opacity: calc(var(--pull-p, 0) * 1.2); transform: translateY(calc(var(--pull, 0px) / 2 - 28px)); }
+.ptr__spin { width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid var(--outline-variant); border-top-color: var(--primary); transform: rotate(calc(var(--pull-p, 0) * 270deg)); }
+.ptr.is-refreshing .ptr__spin { animation: turn 0.8s linear infinite; }
+.ptr__content { position: relative; transform: translateY(var(--pull, 0px)); background: var(--surface-container-lowest); }
+.ptr.is-settling .ptr__content, .ptr.is-settling .ptr__ind { transition: transform var(--motion-smooth-dur) var(--motion-smooth), opacity var(--spring-effects-dur) var(--spring-effects); }
+
+/* Rows that appear glide in; rows that are deleted fold away. */
+:root[data-motion='ios'] .row-enter { animation: row-in var(--motion-smooth-dur) var(--motion-smooth) both; }
+@keyframes row-in { from { opacity: 0; transform: translateY(-12px) scale(0.98); } }
+:root[data-motion='ios'] .grow.is-leaving { overflow: hidden; animation: row-out 280ms var(--motion-smooth) forwards; }
+@keyframes row-out { from { max-height: 80px; opacity: 1; } to { max-height: 0; opacity: 0; } }
+
+/* Messages: yours rises from the composer, theirs slides in softly, ticks pop, badges count with a pop. */
+:root[data-motion='ios'] .msg--enter.msg--mine .bubble { animation: msg-send var(--motion-snappy-dur) var(--motion-snappy) both; transform-origin: bottom right; }
+:root[data-motion='ios'] .msg--enter:not(.msg--mine) .bubble { animation: msg-receive var(--motion-smooth-dur) var(--motion-smooth) both; transform-origin: bottom left; }
+@keyframes msg-send { from { opacity: 0; transform: translateY(34px) scale(0.92); } }
+@keyframes msg-receive { from { opacity: 0; transform: translateY(12px) scale(0.97); } }
+:root[data-motion='ios'] .tick-pop { animation: tick-pop var(--motion-snappy-dur) var(--motion-snappy) both; }
+@keyframes tick-pop { 0% { opacity: 0; transform: scale(0.4); } 60% { opacity: 1; transform: scale(1.2); } 100% { transform: scale(1); } }
+:root[data-motion='ios'] .badge { animation: badge-pop var(--motion-snappy-dur) var(--motion-snappy) both; }
+@keyframes badge-pop { 0% { transform: scale(0.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+
+/* The menu a long press on a message opens. */
+.mmenu { position: fixed; inset: 0; z-index: 60; background: rgb(13 20 46 / 0.28); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); animation: fade-bg var(--spring-effects-dur) var(--spring-effects); }
+.mmenu__clone { position: absolute; pointer-events: none; padding: 0; animation: lift var(--motion-snappy-dur) var(--motion-snappy) both; filter: drop-shadow(0 10px 24px rgb(13 20 46 / 0.28)); }
+@keyframes lift { from { transform: scale(1); } to { transform: scale(1.03); } }
+.mmenu__card { position: absolute; min-width: 232px; padding: var(--s-2); border-radius: var(--shape-lg); background: rgb(255 255 255 / 0.96); box-shadow: var(--shadow-3); animation: menu-pop var(--motion-snappy-dur) var(--motion-snappy) both; }
+@keyframes menu-pop { from { opacity: 0; transform: scale(0.82); } }
+.mmenu__item { display: flex; align-items: center; justify-content: space-between; flex-direction: row-reverse; gap: var(--s-4); width: 100%; min-height: 48px; padding: 0 var(--s-5); border: 0; border-radius: var(--shape-md); background: transparent; font-size: 16px; text-align: left; color: var(--on-surface); }
+.mmenu__item + .mmenu__item { box-shadow: 0 -0.5px 0 var(--outline-variant); }
+.mmenu__item:active { background: color-mix(in srgb, var(--on-surface) 9%, transparent); }
+.mmenu__item.is-danger { color: var(--error); }
+.toast { position: fixed; z-index: 80; left: 50%; bottom: calc(var(--safe-bottom) + 90px); transform: translateX(-50%); padding: var(--s-3) var(--s-6); border-radius: var(--shape-full); background: var(--on-surface); color: var(--surface-container-lowest); font-size: 14px; font-weight: 600; box-shadow: var(--shadow-3); }
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-motion='ios'] .row-enter, :root[data-motion='ios'] .msg--enter .bubble, :root[data-motion='ios'] .tick-pop, :root[data-motion='ios'] .badge,
+  .mmenu__card, .mmenu__clone { animation: none; }
+  :root[data-motion='ios'] .grow.is-leaving { animation: none; display: none; }
+}

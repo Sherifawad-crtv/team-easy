@@ -111,6 +111,15 @@ export function createNotifications(deps: { gate: (base?: number) => Promise<voi
 
   return {
     api,
+    /** Is this chat muted? A group chat follows its group. */
+    isMuted: (conv: Conversation) => muted().has(conv.groupId ?? conv.id),
+    setChatMuted(conv: Conversation, value: boolean) {
+      const set = muted()
+      const key = conv.groupId ?? conv.id
+      if (value) set.add(key)
+      else set.delete(key)
+      writeJson(MUTED_KEY, [...set])
+    },
     /** An incoming chat message becomes a push when the settings allow it. */
     notifyMessage(conv: Conversation, from: string, text: string, messageId: string) {
       const s = settings()

@@ -47,3 +47,20 @@ export function doubleTapZoom(scale: number, tapX: number, tapY: number, zoomTo 
   if (scale > 1.05) return { scale: 1, x: 0, y: 0 }
   return { scale: zoomTo, x: -tapX * (zoomTo - 1), y: -tapY * (zoomTo - 1) }
 }
+
+export type RowSwipe = 'commit-lead' | 'open-lead' | 'commit-trail' | 'open-trail' | 'close'
+
+/**
+ * Where a swiped chat row ends up when you let go. `dx` is how far it was
+ * dragged (right is positive), `velocity` px per ms, `reveal` the width of one
+ * action button and `width` the width of the row. A long swipe runs the first
+ * action at once; a short one leaves the buttons showing; a tiny one closes.
+ */
+export function settleRowSwipe(dx: number, velocity: number, reveal: number, width: number): RowSwipe {
+  const side = dx >= 0 ? 'lead' : 'trail'
+  const far = Math.abs(dx)
+  const flick = Math.abs(velocity) > 0.9 && far > reveal * 0.8 && Math.sign(velocity) === Math.sign(dx)
+  if (far > width * 0.6 || flick) return `commit-${side}`
+  if (far > reveal * 0.5) return `open-${side}`
+  return 'close'
+}

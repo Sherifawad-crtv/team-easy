@@ -1,6 +1,6 @@
 # Motion and micro-interaction plan (Apple HIG direction)
 
-Status: **M1, M2 and M3 built inside the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M4 to M6 not started. Mobile only. Written 2026-11-02.
+Status: **M1 to M4 built inside the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M5 and M6 not started. Mobile only. Written 2026-11-02.
 
 ## How this was researched, and what is uncertain
 
@@ -130,3 +130,13 @@ Suggested order: M1, M2, M3, M4, M5, M6. M1 and M2 change how the whole app feel
 - **Picture viewer:** pinch to zoom (up to 5 times), double tap to zoom in around the tap and again to zoom out, drag a zoomed picture around within its edges, and pull a normal-size picture up or down to close it while the black background fades.
 - **Call screen:** pull it down to tuck it into the green bar. It rises from the bottom when you tap the bar again. The control buttons do not start a drag.
 - **Not done:** pinching does not keep the point between your fingers fixed (it zooms about the centre), and releasing a drag does not hand your finger's speed to the spring after the decision. Both are small and belong to the tuning phase.
+
+## M4 as built
+
+- **Chat row actions** (both variants): Mark as unread (or read) and Mute (or Unmute). Reach them by a long press or a right click on a row, which opens a sheet. A chat marked unread shows a dot and a bold title, counts in the Unread filter, and the flag clears when the chat is opened. A muted chat shows a small bell-off mark and a grey badge. A group chat's mute is the same as the mute on its group page.
+- **Swipe on a row** (variant B, touch only): swipe right to reveal Unread/Read, left to reveal Mute/Unmute. The row follows the finger. A short swipe leaves the button showing, a long one runs it at once with a tap of haptics, a tiny one closes. Only one row is open at a time, and a tap on an open row closes it instead of opening the chat. The edge strip at the left is left to the back swipe.
+- **Message long press** (variant B, touch): the rest of the chat blurs, the message lifts where it was and a card pops in beside it with Copy, plus Delete for your own messages in private chats, and Try again or Discard for a message that failed. Every message with text can now be copied. Variant A keeps the old sheet.
+- **Pull to refresh** (variant B, touch): chat list, groups list and calendar. The content follows the finger with a rubber band, a spinner turns with the pull, past the trigger point it refreshes without flashing the loading screen, and a failure keeps what is on screen.
+- **Rows that move:** a chat that jumps to the top glides there, and a group that comes back after Undo glides in. A deleted group folds away before the list updates.
+- **Messages and badges:** your message rises from the composer, theirs slides in softly, the ticks pop when a message is delivered, and unread badges pop when they change. Messages already on screen when the chat opens do not animate.
+- **Not done:** deleted chat rows from other causes vanish at once, and the swipe has no spring handoff from your finger's speed (same as M2 and M3).

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { api } from '../../data'
 import type { CalendarEvent } from '../../data/types'
+import { PullToRefresh } from '../../design/PullToRefresh'
 import { Banner, Button, Skeleton } from '../../design/ui'
 import { IconChevronRight, IconBack, IconEdit } from '../../design/icons'
 import { track } from '../../experiments/analytics'
@@ -50,6 +51,7 @@ export function CalendarScreen() {
         </span>
       </header>
 
+      <PullToRefresh onRefresh={() => Promise.all([cals.refresh(), events.refresh()])}>
       <div className="page__body stack-lg">
         {cals.status === 'error' && <ErrorBanner error={cals.error} onRetry={cals.reload} />}
 
@@ -121,6 +123,7 @@ export function CalendarScreen() {
           </>
         )}
       </div>
+      </PullToRefresh>
 
       {open && <EventSheet event={open} calendar={calendars.find((c) => c.id === open.calendarId)} onClose={() => setOpen(null)} />}
       {managing && <ManageSheet calendars={calendars} onClose={() => setManaging(false)} onChanged={() => { cals.reload(); events.reload() }} />}

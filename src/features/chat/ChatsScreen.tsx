@@ -11,6 +11,7 @@ import { useMedia } from '../../state/useMedia'
 import { useAsync } from '../../state/useAsync'
 import { InstallBanner } from '../install/InstallBanner'
 import { UpdatesBanner } from '../notifications/UpdatesBanner'
+import { PullToRefresh } from '../../design/PullToRefresh'
 import { ChatList } from './ChatList'
 import { ConversationView } from './Conversation'
 import { NewChatSheet } from './NewChatSheet'
@@ -50,7 +51,7 @@ export function ChatsScreen() {
         if (e.type !== 'conversation') return
         patch((prev) => {
           const next = prev.some((c) => c.id === e.conversation.id)
-            ? prev.map((c) => (c.id === e.conversation.id ? e.conversation : c))
+            ? prev.map((c) => (c.id === e.conversation.id ? { ...e.conversation, muted: e.conversation.muted ?? c.muted } : c))
             : [...prev, e.conversation]
           return next.sort((a, b) => b.lastAt - a.lastAt)
         })
@@ -74,19 +75,21 @@ export function ChatsScreen() {
       <section className="chats__list" aria-label="Chats">
         <h1 className="sr-only">Chats</h1>
         <div className="chats__scroll" ref={scroller}>
-          <ChatList
-            state={list}
-            activeId={id}
-            onOpen={open}
-            onRetry={list.reload}
-            onNewChat={() => setSheet(true)}
-            banner={<><UpdatesBanner /><InstallBanner /></>}
-            action={
-              <button type="button" className="newchat" aria-label="New chat" onClick={() => setSheet(true)}>
-                <IconEdit size={22} />
-              </button>
-            }
-          />
+          <PullToRefresh onRefresh={list.refresh} scroller={scroller}>
+            <ChatList
+              state={list}
+              activeId={id}
+              onOpen={open}
+              onRetry={list.reload}
+              onNewChat={() => setSheet(true)}
+              banner={<><UpdatesBanner /><InstallBanner /></>}
+              action={
+                <button type="button" className="newchat" aria-label="New chat" onClick={() => setSheet(true)}>
+                  <IconEdit size={22} />
+                </button>
+              }
+            />
+          </PullToRefresh>
         </div>
       </section>
 

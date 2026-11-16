@@ -71,6 +71,10 @@ export interface ChatApi {
   /** Only allowed in direct (private) chats, CHT-05. */
   deleteMessage(conversationId: string, messageId: string): Promise<void>
   markRead(conversationId: string): Promise<void>
+  /** Swipe action: flag a chat as unread by hand. Opening it clears the flag. */
+  markUnread(conversationId: string): Promise<void>
+  /** Swipe action: stop or start banners for one chat (a group chat follows its group's mute). */
+  setMuted(conversationId: string, muted: boolean): Promise<void>
   searchMembers(query: string): Promise<Member[]>
   /** SRC-02..04: chats, message text and document names, with filters. */
   search(query: string, filters: SearchFilters): Promise<SearchResults>

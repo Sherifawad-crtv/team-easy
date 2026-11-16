@@ -129,9 +129,9 @@ export function Avatar({ name, size = 48, group = false, presence, icon, tone, s
   )
 }
 
-export function Badge({ count, muted = false }: { count: number; muted?: boolean }) {
-  if (count <= 0) return null
-  return <span className={`badge${muted ? ' badge--muted' : ''}`} aria-label={`${count} unread`}>{count > 99 ? '99+' : count}</span>
+export function Badge({ count, muted = false, dot = false }: { count: number; muted?: boolean; dot?: boolean }) {
+  if (count <= 0) return dot ? <span className={`badge badge--dot${muted ? ' badge--muted' : ''}`} role="img" aria-label="Marked as unread" /> : null
+  return <span key={count} className={`badge${muted ? ' badge--muted' : ''}`} aria-label={`${count} unread`}>{count > 99 ? '99+' : count}</span>
 }
 
 /* ---------- Logo ---------- */

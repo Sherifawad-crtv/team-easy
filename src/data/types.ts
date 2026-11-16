@@ -56,6 +56,10 @@ export interface Conversation {
   left?: boolean
   /** The group this chat belongs to, for group chats. */
   groupId?: string
+  /** No banners for this chat. */
+  muted?: boolean
+  /** Marked as unread by hand: shows a dot even with no new messages. */
+  flaggedUnread?: boolean
 }
 
 export type MessageStatus = 'sent' | 'sending' | 'failed'
