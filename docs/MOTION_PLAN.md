@@ -1,6 +1,6 @@
 # Motion and micro-interaction plan (Apple HIG direction)
 
-Status: **M1 to M5 built inside the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M6 (tuning on a real phone) not started. Mobile only. Written 2026-11-02.
+Status: **M1 to M6 built** inside the A/B test `motion_style` (variant B = this plan, variant A = the old feel). What is left is your hands-on tuning on a real iPhone (see M6 below), and reading the test results once testers have used both. Mobile only. Written 2026-11-02.
 
 ## How this was researched, and what is uncertain
 
@@ -156,3 +156,21 @@ Text selection, page zoom, browser long-press menus, image dragging, browser pul
 - **Call buttons:** spring when pressed and when they switch on; the Answer button breathes gently while ringing and pops when you tap it.
 - **Reduce Motion:** all of these turn off, the sliding highlight just jumps.
 - **Not done:** the bounce is not used anywhere else on purpose. Haptics for these touches were left out to keep them rare.
+
+## M6 as built: tune and test
+
+- **Motion lab** (review tools, "Tune the springs…"): sliders for the response and damping of Smooth, Snappy, Smooth slow and Bouncy, a Play button that moves a dot with each spring, and live changes to the whole app on that phone. "Copy numbers" gives the values to send back so they can be built in for everyone; "Back to the built-in values" resets. Tunings are kept on the device and applied at start-up.
+- **Durations table** in `docs/DESIGN.md`, the last section, so a new screen reuses the same motion.
+- **Checks that stay in the test suite:**
+  - the spring maths matches the numbers in the stylesheet (`springs.test.ts`), so tuning and shipping cannot drift apart;
+  - every animation that moves something has a Reduce Motion answer (`reduceMotion.test.ts` reads the stylesheets and lists any that does not);
+  - every gesture has a visible control or key (`alternatives.test.tsx`): sheets close with Escape or a tap outside, the picture viewer has Close, chats have Back, messages open their menu from a right click or the context menu key, the call screen has Minimize, chat rows open their actions from a long press or right click.
+- **One gesture without a button:** pull to refresh. It matches iPhone, which has no button for it either; a failed list shows Try again. If you want one, a Refresh item in the chat row sheet or the top of each list is the smallest fix.
+
+### How to tune on your iPhone
+
+1. Open the app from the home screen, with `?v_motion_style=B` once so variant B is on.
+2. Review tools (the thin tab on the right edge), Tune the springs…
+3. Start with Smooth: it moves screens and sheets. Open and close a sheet between changes. Lower response is quicker. Damping 1 means no bounce; below 0.8 starts to wobble.
+4. Then Snappy (taps and toggles), then Bouncy (only used when you answer a call or finish a purchase).
+5. Tap Copy numbers and send them over.

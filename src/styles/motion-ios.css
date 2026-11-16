@@ -279,3 +279,17 @@
   :root[data-motion='ios'] :is(.chat-list [role='list'], [role='tree'], .people, .agenda, .atable-wrap, ul.card) { animation: none; }
   :root[data-motion='ios'] [data-slide]::before { transition: none; }
 }
+
+/* Reduce Motion, the rest: nothing that moves or draws keeps moving (checked by reduceMotion.test.ts). */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-motion='ios'] .msg--enter.msg--mine .bubble,
+  :root[data-motion='ios'] .msg--enter:not(.msg--mine) .bubble,
+  :root[data-motion='ios'] .check.is-on svg path,
+  :root[data-motion='ios'] .banner--success .banner__icon path,
+  :root[data-motion='ios'] .gdetail__body > section,
+  :root[data-motion='ios'] .page__body > section,
+  :root[data-motion='ios'] .cctl--answer[data-answering] .cctl__ic { animation: none; }
+  :root[data-motion='ios'] .swipe.is-animating .swipe__content,
+  :root[data-motion='ios'] .swipe.is-animating .swipe__lead,
+  :root[data-motion='ios'] .swipe.is-animating .swipe__trail { transition: none; }
+}

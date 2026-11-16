@@ -489,7 +489,7 @@ ul.card > li + li { border-top: 1px solid var(--outline-variant); }
 /* Reduce Motion: things that slid or grew now only fade in, shortly. */
 @keyframes fade-soft { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .sheet, .sheet-backdrop, .snackbar, .push, .call, .fade-in, .viewer__img { animation: fade-soft 140ms linear both; }
+  .sheet, .sheet-backdrop, .snackbar, .push, .call, .fade-in, .viewer, .viewer__img, .mmenu { animation: fade-soft 140ms linear both; }
   .call__pulse { animation: none; }
 }
 
@@ -498,3 +498,12 @@ ul.card > li + li { border-top: 1px solid var(--outline-variant); }
 /* ---------- Chat row actions ---------- */
 .badge--dot { width: 12px; height: 12px; min-width: 12px; padding: 0; }
 .chat-row__muted { display: inline-flex; align-items: center; margin-left: var(--s-2); color: var(--on-surface-variant); }
+
+/* ---------- Motion lab (review tool) ---------- */
+.lab { display: flex; flex-direction: column; gap: var(--s-3); padding: var(--s-4); border-radius: var(--shape-lg); background: var(--surface-container-lowest); }
+.lab__head { display: flex; justify-content: space-between; gap: var(--s-4); }
+.lab__row { display: flex; flex-direction: column; gap: var(--s-2); font-size: 13px; }
+.lab__row input[type='range'] { width: 100%; accent-color: var(--primary); }
+.lab__track { position: relative; height: 28px; border-radius: var(--shape-full); background: var(--surface-container); overflow: hidden; }
+.lab__dot { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--primary); }
+.lab__text { margin: 0; padding: var(--s-4); border-radius: var(--shape-md); background: var(--surface-container-lowest); font-size: 12px; line-height: 18px; white-space: pre-wrap; }

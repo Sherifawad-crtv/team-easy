@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { resetPurchases, simulateCallTimeLeft, simulateIncomingCall, simulatePermission, simulatePurchaseFailure, simulatePush } from '../data/mock/mockApi'
 import { roleStore } from '../data/mock/role'
 import { SCENARIOS, scenarioStore } from '../data/mock/scenario'
+import { MotionLab } from './MotionLab'
 import { forceInstallMode, forcedInstallMode, type InstallMode } from '../state/install'
 import { settings, useConnection } from '../state/settings'
 import { IconBug, IconClose } from '../design/icons'
@@ -27,6 +28,7 @@ function Toggle({ id }: { id: ExperimentId }) {
 /** Review tools: flip the mock data state and force an A/B variant on any screen. */
 export function DebugPanel() {
   const [open, setOpen] = useState(false)
+  const [lab, setLab] = useState(false)
   const scenario = useScenario()
   const connection = useConnection()
   const role = useReviewRole()
@@ -93,6 +95,8 @@ export function DebugPanel() {
               <button key={r} type="button" aria-pressed={role === r} onClick={() => roleStore.set(r)}>{r === 'admin' ? 'Admin' : 'Member'}</button>
             ))}
           </div>
+          <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Motion</p>
+          <button type="button" className="btn btn--secondary" onClick={() => { setLab(true); setOpen(false) }}>Tune the springs…</button>
           <p className="t-label" style={{ marginTop: 'var(--s-4)' }}>Force a variant</p>
           {EXPERIMENT_IDS.map((id) => <Toggle key={id} id={id} />)}
           <p className="t-caption muted" style={{ marginTop: 'var(--s-3)' }}>
@@ -100,6 +104,7 @@ export function DebugPanel() {
           </p>
         </div>
       )}
+      {lab && <MotionLab onClose={() => setLab(false)} />}
       <button type="button" className="debug__fab" aria-label={open ? 'Close review tools' : 'Open review tools'} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
         {open ? <IconClose size={20} /> : <IconBug size={20} />}
       </button>

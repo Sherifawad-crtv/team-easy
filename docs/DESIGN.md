@@ -120,3 +120,19 @@ Do:
 ## 9. Mock data quality
 
 Mock data is part of the design. Use varied names and lengths, very long names and messages, missing avatars, emoji, links, large groups (300 members), deep hierarchy (5/5/5), unread counts in the hundreds, and (if confirmed) Arabic and English mixed.
+
+## 7. Motion durations (motion style B)
+
+One spring per job. Use these names, not new numbers. Values are the starting point; the Motion lab in the review tools tunes them on a phone.
+
+| Spring | Response, damping | Settles in | Used for |
+|---|---|---|---|
+| Smooth | 0.32, 1.00 | about 410 ms | Screens, sheets, list and detail slides, rows that move, large moves of dragged things |
+| Smooth, slow | 0.42, 1.00 | about 540 ms | Large moves that need a little longer |
+| Snappy | 0.26, 0.85 | about 310 ms | Taps, toggles, tab changes, the sliding highlight, message and menu pops |
+| Bouncy | 0.50, 0.60 | about 760 ms | Rare delight only: answering a call, a purchase or install finished |
+| Fade, fast | 0.12, 1.00 | about 150 ms | Colour and opacity changes on press |
+| Fade | 0.18, 1.00 | about 230 ms | Banners, content fading in |
+| Fade, slow | 0.26, 1.00 | about 330 ms | Lists and tables replacing a skeleton |
+
+Rules: move only transform and opacity; every gesture follows the finger and hands its speed on; every animation can be interrupted; with Reduce Motion on, movement becomes a 140 ms fade (a test reads the stylesheets and fails if a new moving animation has no answer for it); every gesture has a visible alternative. See `docs/MOTION_PLAN.md`.
