@@ -45,3 +45,13 @@ The app is installable (manifest, icons, standalone display). How people add it 
 | Already on the home screen | Nothing is shown |
 
 Where it appears: a dismissible card under the notice on the chat list (phones only, back after a week), and Account, Add to home screen. The review tools can show the steps for each browser. Limits: the iPhone instruction cannot be automated, and the wording of Apple's Share menu changes between iOS versions.
+
+## Behave like an app, not a web page (touch screens)
+
+- **No text selection or magnifier** anywhere except text fields, the invite link and the transfer code. In the old motion style (variant A) a message can still be selected by hand; in variant B copying is in the long-press menu.
+- **No page zoom:** pinch and double tap do nothing to the page (viewport locked, `touch-action: manipulation`, and Safari's pinch gesture events are stopped). The picture viewer has its own pinch and double-tap zoom.
+- **No browser menus:** long press on a link or picture shows no callout or context menu (except in text fields), and pictures and links cannot be dragged out of the page.
+- **No pull-to-refresh or bounce chaining from the browser.** Our own pull to refresh is the only one.
+- **Fields are at least 16 px**, so iPhone does not zoom in when one is focused, and the layout resizes with the keyboard.
+- **No scrollbars** on touch screens.
+- **Trade-off:** locking zoom takes away a way some people read small text. Native apps answer this with a system text size setting; a Text size setting in Account is the matching step if it is wanted. Desktop browsers keep normal behaviour.

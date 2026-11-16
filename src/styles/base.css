@@ -48,3 +48,26 @@ a { color: var(--primary); }
 
 /* No 300 ms tap delay and no double-tap zoom on controls. */
 button, a, [role='button'], [role='checkbox'], [role='radio'], [role='switch'], input, select, textarea, label { touch-action: manipulation; }
+
+/* ---------- Behave like an app on a touch screen (not like a web page) ---------- */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior: none; }
+body { overscroll-behavior: none; }
+@media (pointer: coarse) {
+  html, body {
+    -webkit-user-select: none; user-select: none;       /* no text selection, no magnifier */
+    -webkit-touch-callout: none;                          /* no link or image callout on long press */
+    touch-action: manipulation;                           /* no double-tap zoom */
+  }
+  img, a, svg { -webkit-user-drag: none; user-drag: none; -webkit-touch-callout: none; }
+  /* People can still type, select and paste in fields, and copy the things that are made to be copied. */
+  input, textarea, select, [contenteditable='true'], .selectable, .linkbox__url, .code { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+  /* A field smaller than 16px makes iPhone zoom in on focus. */
+  input, textarea, select { font-size: max(16px, 1em); }
+  /* Native lists do not show scrollbars. */
+  * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; }
+  /* Controls are not text. */
+  button { -webkit-user-select: none; user-select: none; }
+}
+/* In the old motion style a message can still be selected and copied by hand. */
+:root[data-motion='current'] .bubble__text { -webkit-user-select: text; user-select: text; }

@@ -140,3 +140,7 @@ Suggested order: M1, M2, M3, M4, M5, M6. M1 and M2 change how the whole app feel
 - **Rows that move:** a chat that jumps to the top glides there, and a group that comes back after Undo glides in. A deleted group folds away before the list updates.
 - **Messages and badges:** your message rises from the composer, theirs slides in softly, the ticks pop when a message is delivered, and unread badges pop when they change. Messages already on screen when the chat opens do not animate.
 - **Not done:** deleted chat rows from other causes vanish at once, and the swipe has no spring handoff from your finger's speed (same as M2 and M3).
+
+## Done before M5: native feel
+
+Text selection, page zoom, browser long-press menus, image dragging, browser pull-to-refresh and scrollbars are switched off on touch screens (see `docs/PWA_SPEC.md`).

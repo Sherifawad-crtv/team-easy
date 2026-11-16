@@ -1,11 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
+import { installNativeFeel } from './native'
 import './styles/tokens.css'
 import './styles/base.css'
 import './styles/components.css'
 import './styles/app.css'
 import './styles/motion-ios.css'
+
+installNativeFeel()
 
 // Safari on iPhone only shows :active when something listens for touches.
 document.addEventListener('touchstart', () => {}, { passive: true })
