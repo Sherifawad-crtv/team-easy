@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../data'
 import { haptic } from '../../design/haptics'
@@ -63,6 +63,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
   const [attaching, setAttaching] = useState(false)
   const drafts = useRef(new Map<string, MessageDraft>())
   const scrollRef = useRef<HTMLDivElement>(null)
+  const composer = useRef<HTMLTextAreaElement>(null)
   const pressTimer = useRef<number>(0)
   // Motion style B on phones: long press lifts the message into a menu, new messages glide in.
   const ios = useVariant('motion_style') === 'B' && useMedia('(pointer: coarse)')
@@ -129,6 +130,20 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
     },
     [id, conversation.kind, patch],
   )
+
+  // The message field grows and shrinks with what is typed, smoothly in motion style B.
+  useLayoutEffect(() => {
+    const el = composer.current
+    if (!el) return
+    const was = el.offsetHeight
+    el.style.height = 'auto'
+    const next = Math.min(el.scrollHeight, 120)
+    if (was > 0 && was !== next) {
+      el.style.height = `${was}px`
+      void el.offsetHeight
+    }
+    el.style.height = `${next}px`
+  }, [draft])
 
   const submit = () => {
     const text = draft.trim()
@@ -271,17 +286,13 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
       <form className="composer" onSubmit={(e) => { e.preventDefault(); submit() }}>
         <button type="button" className="composer__attach" aria-label="Attach a photo or document" onClick={() => setAttaching(true)}><IconAttach size={22} /></button>
         <textarea
+          ref={composer}
           rows={1}
           value={draft}
           placeholder="Message"
           aria-label={`Message ${conversation.title}`}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={onKey}
-          onInput={(e) => {
-            const el = e.currentTarget
-            el.style.height = 'auto'
-            el.style.height = `${Math.min(el.scrollHeight, 120)}px`
-          }}
         />
         <button type="submit" className="composer__send" disabled={!draft.trim()} aria-label="Send message"><IconSend size={20} /></button>
       </form>

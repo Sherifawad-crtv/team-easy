@@ -38,7 +38,7 @@ export function UpgradeSheet({ focus, onClose, onChanged }: { focus?: ProductId;
       <BottomSheet title="You're all set" onClose={() => { onChanged(); onClose() }}>
         <div className="stack">
           <div className="perm">
-            <span className="empty__icon"><IconCheck size={36} /></span>
+            <span className="empty__icon success-mark"><IconCheck size={36} /></span>
             <p className="t-title">{done.product.title} added</p>
             <p className="t-body-sm muted">{gains(done.product.id, done.entitlements)}</p>
           </div>

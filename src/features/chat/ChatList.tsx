@@ -5,6 +5,7 @@ import { IconBell, IconDoubleTick, IconMegaphone, IconMute, IconPeople, IconSear
 import { api } from '../../data'
 import { useMedia } from '../../state/useMedia'
 import { useFlip } from '../../design/useFlip'
+import { useSlide } from '../../design/useSlide'
 import { SwipeRow } from './SwipeRow'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { Banner } from '../../design/ui'
@@ -103,6 +104,8 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, 
   const [actionsFor, setActionsFor] = useState<Conversation | null>(null)
   const [actionError, setActionError] = useState<unknown>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const chipsRef = useRef<HTMLDivElement>(null)
+  useSlide(chipsRef, `${filter}|${state.status}|${(state.data ?? []).length}|${variant}`)
   const touch = useMedia('(pointer: coarse)')
   const swipe = useVariant('motion_style') === 'B' && touch
 
@@ -146,7 +149,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, 
       {searching && <SearchPanel query={query} conversations={all} onOpen={onOpen} />}
 
       {!searching && variant === 'B' && state.status === 'ready' && all.length > 0 && (
-        <div className="chips" role="group" aria-label="Filter chats">
+        <div className="chips" role="group" aria-label="Filter chats" ref={chipsRef} data-slide>
           {FILTERS.map((f) => (
             <button key={f.id} type="button" className="chip" aria-pressed={filter === f.id} onClick={() => { haptic('selection'); setFilter(f.id) }}>
               {f.label}

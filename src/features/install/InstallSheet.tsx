@@ -15,7 +15,7 @@ export function InstallSheet({ mode, onClose }: { mode: InstallMode; onClose: ()
     return (
       <BottomSheet title="Added to your home screen" onClose={onClose}>
         <div className="stack">
-          <div className="perm"><span className="empty__icon"><IconCheck size={36} /></span><p className="t-body-sm muted">{done ? 'Open it from your home screen. It runs full screen, with no browser bars.' : "It's already on your home screen."}</p></div>
+          <div className="perm"><span className="empty__icon success-mark"><IconCheck size={36} /></span><p className="t-body-sm muted">{done ? 'Open it from your home screen. It runs full screen, with no browser bars.' : "It's already on your home screen."}</p></div>
           <Button onClick={onClose}>Done</Button>
         </div>
       </BottomSheet>

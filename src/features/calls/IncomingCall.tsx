@@ -10,6 +10,7 @@ export function IncomingCall() {
   const c = useCalls()
   const call = c.call!
   const [asking, setAsking] = useState(false)
+  const [answering, setAnswering] = useState(false)
   const callers = call.participants.filter((p) => !p.isMe && p.state === 'connected')
   const who = call.group ? call.title : (callers[0]?.name ?? call.title)
 
@@ -28,11 +29,11 @@ export function IncomingCall() {
         <button type="button" className="cctl cctl--end" onClick={() => void c.decline()}>
           <span className="cctl__ic"><IconEndCall size={28} /></span><span>Decline</span>
         </button>
-        <button type="button" className="cctl cctl--answer" onClick={() => setAsking(true)}>
+        <button type="button" className="cctl cctl--answer" onClick={() => { setAnswering(true); setAsking(true) }} data-answering={answering || undefined}>
           <span className="cctl__ic">{call.mode === 'video' ? <IconVideo size={28} /> : <IconCall size={28} />}</span><span>Answer</span>
         </button>
       </footer>
-      {asking && <CallAccessSheet mode={call.mode} onGranted={(cam) => { setAsking(false); if (!cam && call.mode === 'video' && c.cameraOn) c.toggleCamera(); void c.answer() }} onCancel={() => setAsking(false)} />}
+      {asking && <CallAccessSheet mode={call.mode} onGranted={(cam) => { setAsking(false); if (!cam && call.mode === 'video' && c.cameraOn) c.toggleCamera(); void c.answer() }} onCancel={() => { setAsking(false); setAnswering(false) }} />}
     </div>
   )
 }

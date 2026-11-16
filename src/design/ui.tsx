@@ -60,10 +60,19 @@ export function TextField({ label, value, onChange, error, hint, password = fals
   const inputId = id ?? auto
   const [hidden, setHidden] = useState(true)
   const describedBy = error ? `${inputId}-err` : hint ? `${inputId}-hint` : undefined
+  // A wrong field gives a small shake when its error appears or changes.
+  const control = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = control.current
+    if (!error || !el) return
+    el.classList.remove('is-shaking')
+    void el.offsetWidth
+    el.classList.add('is-shaking')
+  }, [error])
   return (
     <div className={`field${error ? ' field--error' : ''}`}>
       <label className="field__label" htmlFor={inputId}>{label}</label>
-      <div className="field__control">
+      <div className="field__control" ref={control}>
         <input
           id={inputId}
           className={`field__input${password ? ' field__input--pw' : ''}`}
@@ -211,6 +220,21 @@ export function Snackbar({ message, actionLabel, onAction, durationMs, onDone }:
   )
 }
 
+/* ---------- Segmented control ---------- */
+
+/** Two or three options in one pill, with a highlight that slides to the one you pick. */
+export function Segmented<T extends string | number>({ label, options, value, onChange }: { label: string; options: { id: T; label: string }[]; value: T; onChange: (id: T) => void }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useSlide(ref, value)
+  return (
+    <div className="seg" role="group" aria-label={label} ref={ref} data-slide style={{ alignSelf: 'flex-start' }}>
+      {options.map((o) => (
+        <button key={String(o.id)} type="button" aria-pressed={o.id === value} onClick={() => { haptic('selection'); onChange(o.id) }}>{o.label}</button>
+      ))}
+    </div>
+  )
+}
+
 /* ---------- Switch ---------- */
 
 /** An on/off setting row control. The label comes from `label` for screen readers. */
@@ -218,6 +242,7 @@ import { useVariant } from '../experiments/experiments'
 import { useMedia } from '../state/useMedia'
 import { animateNav } from './nav'
 import { useSheetDrag } from './useSheetDrag'
+import { useSlide } from './useSlide'
 import { haptic } from './haptics'
 
 export function Switch({ checked, onChange, label, disabled }: { checked: boolean; onChange: (next: boolean) => void; label: string; disabled?: boolean }) {

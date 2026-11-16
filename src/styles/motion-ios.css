@@ -219,3 +219,63 @@
   .mmenu__card, .mmenu__clone { animation: none; }
   :root[data-motion='ios'] .grow.is-leaving { animation: none; display: none; }
 }
+
+/* ---------- M5: small touches (docs/MOTION_PLAN.md) ---------- */
+
+/* A highlight that slides between the options of a segmented control and the chat filters. */
+:root[data-motion='ios'] [data-slide] { position: relative; }
+:root[data-motion='ios'] [data-slide]::before {
+  content: ''; position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; border-radius: inherit;
+  width: var(--ind-w, 0px); height: var(--ind-h, 0px); transform: translate(var(--ind-x, 0px), var(--ind-y, 0px));
+  background: var(--secondary-container);
+  transition: transform var(--motion-snappy-dur) var(--motion-snappy), width var(--motion-snappy-dur) var(--motion-snappy);
+}
+:root[data-motion='ios'] [data-slide]:not([data-ready])::before { transition: none; }
+:root[data-motion='ios'] .chips[data-slide]::before { background: var(--primary-container); border-radius: var(--shape-full); }
+:root[data-motion='ios'] .seg[data-slide]::before { border-radius: var(--shape-full); }
+:root[data-motion='ios'] [data-slide] > button { position: relative; z-index: 1; }
+:root[data-motion='ios'] .chips[data-slide] > .chip[aria-pressed='true'],
+:root[data-motion='ios'] .seg[data-slide] > button[aria-pressed='true'] { background: transparent; }
+
+/* The tab bar icon bounces when its tab is picked. */
+:root[data-motion='ios'] .pill__link.is-active svg { animation: tab-bounce var(--motion-snappy-dur) var(--motion-snappy) both; }
+@keyframes tab-bounce { 0% { transform: scale(0.78) translateY(2px); } 60% { transform: scale(1.14) translateY(-1px); } 100% { transform: scale(1); } }
+
+/* Ticks and success marks draw themselves, and a finished purchase or backup gets the one bouncy moment. */
+:root[data-motion='ios'] .check.is-on svg path { stroke-dasharray: 24; animation: draw-tick var(--motion-smooth-dur) var(--motion-smooth) both; }
+@keyframes draw-tick { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+:root[data-motion='ios'] .success-mark { animation: success-pop var(--motion-bouncy-dur) var(--motion-bouncy) both; }
+:root[data-motion='ios'] .success-mark svg path { stroke-dasharray: 26; animation: draw-tick 420ms var(--motion-smooth) 120ms both; }
+@keyframes success-pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+:root[data-motion='ios'] .banner--success .banner__icon path { stroke-dasharray: 60; animation: draw-tick-long 520ms var(--motion-smooth) both; }
+@keyframes draw-tick-long { from { stroke-dashoffset: 60; } to { stroke-dashoffset: 0; } }
+
+/* A wrong field shakes once. */
+:root[data-motion='ios'] .field__control.is-shaking { animation: shake 420ms var(--motion-snappy); }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 18% { transform: translateX(-7px); } 38% { transform: translateX(6px); } 58% { transform: translateX(-4px); } 78% { transform: translateX(2px); } }
+
+/* Lists and tables settle in once their content arrives, instead of replacing the skeleton in a flash. */
+:root[data-motion='ios'] :is(.chat-list [role='list'], [role='tree'], .people, .agenda, .atable-wrap, .gdetail__body > section, .page__body > section, ul.card) {
+  animation: reveal var(--spring-slow-effects-dur) var(--spring-slow-effects) both;
+}
+@keyframes reveal { from { opacity: 0; } }
+
+/* The message field grows and shrinks smoothly. */
+:root[data-motion='ios'] .composer textarea { transition: height var(--motion-snappy-dur) var(--motion-snappy), box-shadow var(--spring-fast-effects-dur) var(--spring-fast-effects); }
+
+/* Call buttons spring, and answering pops. */
+:root[data-motion='ios'] .cctl__ic { transition: transform var(--motion-snappy-dur) var(--motion-snappy), background-color var(--spring-fast-effects-dur) var(--spring-fast-effects), border-radius var(--motion-snappy-dur) var(--motion-snappy); }
+:root[data-motion='ios'] .cctl:active .cctl__ic { transform: scale(0.9); }
+:root[data-motion='ios'] .cctl.is-on .cctl__ic { animation: toggle-pop var(--motion-snappy-dur) var(--motion-snappy); }
+@keyframes toggle-pop { 0% { transform: scale(0.88); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
+:root[data-motion='ios'] .cctl--answer .cctl__ic { animation: answer-breathe 1.8s ease-in-out infinite; }
+@keyframes answer-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+:root[data-motion='ios'] .cctl--answer[data-answering] .cctl__ic { animation: answer-pop var(--motion-bouncy-dur) var(--motion-bouncy) both; }
+@keyframes answer-pop { 0% { transform: scale(1); } 40% { transform: scale(1.3); } 100% { transform: scale(1.12); } }
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-motion='ios'] .pill__link.is-active svg, :root[data-motion='ios'] .success-mark, :root[data-motion='ios'] .success-mark svg path,
+  :root[data-motion='ios'] .field__control.is-shaking, :root[data-motion='ios'] .cctl--answer .cctl__ic, :root[data-motion='ios'] .cctl.is-on .cctl__ic,
+  :root[data-motion='ios'] :is(.chat-list [role='list'], [role='tree'], .people, .agenda, .atable-wrap, ul.card) { animation: none; }
+  :root[data-motion='ios'] [data-slide]::before { transition: none; }
+}

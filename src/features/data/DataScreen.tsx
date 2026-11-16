@@ -93,7 +93,7 @@ function BackupCard({ status }: { status: ReturnType<typeof useAsync<BackupStatu
           </p>
         )}
         {run.busy && <p className="t-body-sm muted" role="status">Backing up your chats… keep the app open.</p>}
-        {current && !run.busy && done && <p className="t-body-sm row-flex" style={{ gap: 'var(--s-2)', color: 'var(--success)' }} role="status"><IconCheck size={18} /> Backup finished</p>}
+        {current && !run.busy && done && <p className="t-body-sm row-flex" style={{ gap: 'var(--s-2)', color: 'var(--success)' }} role="status"><span className="success-mark"><IconCheck size={18} /></span> Backup finished</p>}
         <Button variant="secondary" loading={run.busy} disabled={!current} onClick={async () => {
           let result: BackupStatus | undefined
           if (await run.run(async () => { result = await api.data.startBackup() }) && result) { setDone(result); haptic('success'); track('backup_completed') }

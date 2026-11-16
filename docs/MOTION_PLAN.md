@@ -1,6 +1,6 @@
 # Motion and micro-interaction plan (Apple HIG direction)
 
-Status: **M1 to M4 built inside the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M5 and M6 not started. Mobile only. Written 2026-11-02.
+Status: **M1 to M5 built inside the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M6 (tuning on a real phone) not started. Mobile only. Written 2026-11-02.
 
 ## How this was researched, and what is uncertain
 
@@ -144,3 +144,15 @@ Suggested order: M1, M2, M3, M4, M5, M6. M1 and M2 change how the whole app feel
 ## Done before M5: native feel
 
 Text selection, page zoom, browser long-press menus, image dragging, browser pull-to-refresh and scrollbars are switched off on touch screens (see `docs/PWA_SPEC.md`).
+
+## M5 as built (variant B)
+
+- **Sliding highlight:** on segmented controls (invite options) and the chat filters (All, Unread, Groups, Direct), the highlight slides to the option you pick instead of jumping. It is measured, so it follows any label width and re-measures when the screen changes size.
+- **Tab bar:** the icon of the tab you pick bounces.
+- **Ticks and success marks draw themselves:** checkboxes draw their tick, and the green "added", "backup finished" and "profile updated" marks draw while the mark pops in. A finished purchase or install is the one place the Bouncy spring is used, with the call-answer button.
+- **Wrong field:** the field shakes once when its error appears or changes.
+- **Content arriving:** lists, tables and cards fade in when they replace their skeleton, instead of flashing in.
+- **Message field:** grows and shrinks smoothly as you type, and shrinks back after sending.
+- **Call buttons:** spring when pressed and when they switch on; the Answer button breathes gently while ringing and pops when you tap it.
+- **Reduce Motion:** all of these turn off, the sliding highlight just jumps.
+- **Not done:** the bounce is not used anywhere else on purpose. Haptics for these touches were left out to keep them rare.

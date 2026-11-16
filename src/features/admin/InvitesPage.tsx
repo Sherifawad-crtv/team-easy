@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { api } from '../../data'
 import type { AdminInvite } from '../../data/types'
-import { Banner, BottomSheet, Button, Skeleton, TextField } from '../../design/ui'
+import { Banner, BottomSheet, Button, Segmented, Skeleton, TextField } from '../../design/ui'
 import { IconCheck, IconCopy, IconPlus } from '../../design/icons'
 import { track } from '../../experiments/analytics'
 import { useAsync } from '../../state/useAsync'
@@ -54,14 +54,9 @@ function NewInviteSheet({ onClose, onCreated }: { onClose: () => void; onCreated
         if (await run(async () => { inv = await api.admin.createInvite({ email: forOne ? email : undefined, days }) }) && inv) { track('admin_invite_created', { forOne, days }); setMade(inv) }
       }}>
         {error != null && <ErrorBanner error={error} />}
-        <div className="seg" role="group" aria-label="Who can use it" style={{ alignSelf: 'flex-start' }}>
-          <button type="button" aria-pressed={!forOne} onClick={() => setForOne(false)}>Open link</button>
-          <button type="button" aria-pressed={forOne} onClick={() => setForOne(true)}>One person</button>
-        </div>
+        <Segmented label="Who can use it" value={forOne ? 'one' : 'open'} onChange={(v) => setForOne(v === 'one')} options={[{ id: 'open', label: 'Open link' }, { id: 'one', label: 'One person' }]} />
         {forOne && <TextField label="Their email" type="email" value={email} onChange={setEmail} autoFocus error={touched ? emailError : undefined} />}
-        <div className="seg" role="group" aria-label="How long it works" style={{ alignSelf: 'flex-start' }}>
-          {([7, 30] as const).map((d) => <button key={d} type="button" aria-pressed={days === d} onClick={() => setDays(d)}>{d} days</button>)}
-        </div>
+        <Segmented label="How long it works" value={days} onChange={setDays} options={[{ id: 7 as const, label: '7 days' }, { id: 30 as const, label: '30 days' }]} />
         <Button type="submit" loading={busy}>Create invite</Button>
       </form>
     </BottomSheet>
