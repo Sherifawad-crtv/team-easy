@@ -1,3 +1,7 @@
+import { useRef } from 'react'
+import { useDragDown } from '../../design/useDragDown'
+import { useVariant } from '../../experiments/experiments'
+import { useMedia } from '../../state/useMedia'
 import { useCalls } from '../../state/calls'
 import type { CallParticipant } from '../../data/types'
 import { LIMITS } from '../../config/limits'
@@ -20,6 +24,11 @@ function Tile({ p, video, solo }: { p: CallParticipant; video: boolean; solo: bo
 /** The call screen: who is on it, how long, and the controls (CLL-01..05). */
 export function InCall() {
   const c = useCalls()
+  const root = useRef<HTMLDivElement>(null)
+  const ios = useVariant('motion_style') === 'B'
+  const phone = useMedia('(max-width: 1023.98px)')
+  // Pull the call screen down to tuck it into the green bar.
+  useDragDown(root, ios && phone, () => c.setMinimized(true), (t) => !t.closest('.call__controls'))
   const call = c.call!
   const video = call.mode === 'video'
   const mine = call.participants.find((p) => p.isMe)!
@@ -31,7 +40,7 @@ export function InCall() {
   const oneToOne = !call.group
 
   return (
-    <div className="call" role="dialog" aria-label={`${modeLabel(call.mode, call.group)} with ${call.title}`}>
+    <div className="call" ref={root} role="dialog" aria-label={`${modeLabel(call.mode, call.group)} with ${call.title}`}>
       <header className="call__top">
         <button type="button" className="call__min" aria-label="Minimize call" onClick={() => c.setMinimized(true)}><IconChevronDown size={26} /></button>
         <div className="call__who">

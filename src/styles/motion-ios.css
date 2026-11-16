@@ -132,3 +132,31 @@
 :root[data-motion='ios'][data-scrolled='true'] .page > .bar .bar__title { transform: scale(0.8); }
 :root[data-motion='ios'] .chats__list[data-scrolled='true'] > .bar { box-shadow: 0 0.5px 0 var(--outline-variant); }
 :root[data-motion='ios'] .chats__list[data-scrolled='true'] > .bar .bar__title { transform: scale(0.8); }
+
+/* ---------- M3: sheets and layers you drag (docs/MOTION_PLAN.md) ---------- */
+
+/* Sheets: the dim behind follows how far the sheet is open. Dragging sets --dim and the sheet's transform directly. */
+@media (max-width: 1023.98px) {
+  :root[data-motion='ios'] .sheet-backdrop { background: rgb(13 20 46 / calc(0.4 * var(--dim, 1))); animation: none; }
+  :root[data-motion='ios'] .sheet { touch-action: pan-y; will-change: transform; overscroll-behavior: contain; }
+  :root[data-motion='ios'] .sheet__handle, :root[data-motion='ios'] .sheet__title { touch-action: none; }
+  :root[data-motion='ios'] .sheet[data-dragging='true'] { user-select: none; }
+  /* Two heights: tall box, half of it showing to begin with. Content scrolls once it is fully open. */
+  :root[data-motion='ios'] .sheet--detents { height: 90dvh; max-height: 90dvh; }
+}
+
+/* Call screen and picture viewer: they follow a finger pulling down. */
+@media (max-width: 1023.98px) {
+  :root[data-motion='ios'] .call { transform: translateY(var(--drag, 0px)); transition: transform var(--motion-smooth-dur) var(--motion-smooth); animation: call-rise var(--motion-smooth-dur) var(--motion-smooth); touch-action: pan-x; }
+  :root[data-motion='ios'] .call.is-dragging { transition: none; }
+  :root[data-motion='ios'] .call { border-radius: calc(var(--p, 0) * 32px) calc(var(--p, 0) * 32px) 0 0; }
+}
+@keyframes call-rise { from { transform: translateY(100%); } to { transform: translateY(0); } }
+:root[data-motion='ios'] .viewer { background: rgb(8 12 28 / calc(0.92 * (1 - var(--p, 0)))); touch-action: none; transition: background-color var(--motion-smooth-dur) var(--motion-smooth); }
+:root[data-motion='ios'] .viewer.is-dragging { transition: none; }
+:root[data-motion='ios'] .viewer__img { transform-origin: center; will-change: transform; touch-action: none; animation: none; }
+:root[data-motion='ios'] .viewer__img.is-settling { transition: transform var(--motion-smooth-dur) var(--motion-smooth); }
+:root[data-motion='ios'] .viewer__bar, :root[data-motion='ios'] .viewer__caption { opacity: calc(1 - var(--p, 0) * 2); }
+@media (prefers-reduced-motion: reduce) {
+  :root[data-motion='ios'] .call { animation: fade-soft 140ms linear both; }
+}

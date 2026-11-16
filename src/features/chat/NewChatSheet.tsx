@@ -35,7 +35,7 @@ export function NewChatSheet({ onClose, onOpened }: { onClose: () => void; onOpe
   }
 
   return (
-    <BottomSheet title="New chat" onClose={onClose}>
+    <BottomSheet title="New chat" onClose={onClose} detents>
       <div className="search" style={{ margin: '0 0 var(--s-4)' }}>
         <IconSearch size={20} />
         <input type="search" autoFocus placeholder="Search people by name" aria-label="Search people by name" value={query} onChange={(e) => setQuery(e.target.value)} />

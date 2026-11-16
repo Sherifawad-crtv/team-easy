@@ -74,7 +74,7 @@ export function UpgradeSheet({ focus, onClose, onChanged }: { focus?: ProductId;
   }
 
   return (
-    <BottomSheet title="Add more room" onClose={onClose}>
+    <BottomSheet title="Add more room" onClose={onClose} detents>
       <div className="stack">
         <p className="t-body-sm muted">Add-ons raise a limit for your whole organization. Any paid add-on also removes ads.</p>
         {offers.status === 'loading' && <div aria-busy="true" aria-label="Loading add-ons"><Skeleton height={76} radius={16} /></div>}

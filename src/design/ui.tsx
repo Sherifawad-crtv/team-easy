@@ -142,21 +142,27 @@ export function Logo({ size = 64, label }: { size?: number; label?: string }) {
 
 /* ---------- Bottom sheet ---------- */
 
-export function BottomSheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+export function BottomSheet({ title, onClose, children, detents = false }: { title: string; onClose: () => void; children: ReactNode; detents?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
+  const backdrop = useRef<HTMLDivElement>(null)
+  const phone = useMedia('(max-width: 1023.98px)')
+  const ios = useVariant('motion_style') === 'B'
+  const draggable = ios && phone
+  // On phones in motion style B a sheet can be dragged down, and between two heights when it has them.
+  const closeNicely = useSheetDrag({ sheet: ref, backdrop, enabled: draggable, detents, onClose })
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null
     ref.current?.focus()
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeNicely()
     document.addEventListener('keydown', onKey)
     return () => {
       document.removeEventListener('keydown', onKey)
       prev?.focus?.()
     }
-  }, [onClose])
+  }, [closeNicely])
   return (
-    <div className="sheet-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="sheet" role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} ref={ref}>
+    <div className="sheet-backdrop" ref={backdrop} onMouseDown={(e) => e.target === e.currentTarget && closeNicely()}>
+      <div className={`sheet${draggable && detents ? ' sheet--detents' : ''}`} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} ref={ref}>
         <div className="sheet__handle" />
         <h2 className="t-title sheet__title">{title}</h2>
         {children}
@@ -208,7 +214,10 @@ export function Snackbar({ message, actionLabel, onAction, durationMs, onDone }:
 /* ---------- Switch ---------- */
 
 /** An on/off setting row control. The label comes from `label` for screen readers. */
+import { useVariant } from '../experiments/experiments'
+import { useMedia } from '../state/useMedia'
 import { animateNav } from './nav'
+import { useSheetDrag } from './useSheetDrag'
 import { haptic } from './haptics'
 
 export function Switch({ checked, onChange, label, disabled }: { checked: boolean; onChange: (next: boolean) => void; label: string; disabled?: boolean }) {

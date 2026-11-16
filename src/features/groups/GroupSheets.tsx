@@ -75,7 +75,7 @@ export function AddMembersSheet({ group, memberCap, onClose, onAdded, onUpgrade 
   }
 
   return (
-    <BottomSheet title="Add people" onClose={onClose}>
+    <BottomSheet title="Add people" onClose={onClose} detents>
       <p className="t-body-sm muted" style={{ marginBottom: 'var(--s-4)' }}>
         {room === 0 ? 'This group is full.' : `Room for ${room} more ${room === 1 ? 'person' : 'people'} (limit ${memberCap}).`}
       </p>

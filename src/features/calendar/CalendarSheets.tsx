@@ -36,7 +36,7 @@ export function AssignSheet({ calendar, onClose, onSaved }: { calendar: Calendar
     setPicked(next)
   }
   return (
-    <BottomSheet title={`Who has ${calendar.name}?`} onClose={onClose}>
+    <BottomSheet title={`Who has ${calendar.name}?`} onClose={onClose} detents>
       {people.status === 'loading' && <div aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="list-row"><Skeleton width={40} height={40} radius="50%" /><Skeleton width="50%" height={14} /></div>)}</div>}
       {people.status === 'error' && <ErrorBanner error={people.error} onRetry={people.reload} />}
       {people.status === 'ready' && (

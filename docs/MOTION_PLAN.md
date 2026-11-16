@@ -1,6 +1,6 @@
 # Motion and micro-interaction plan (Apple HIG direction)
 
-Status: **M1 and M2 built inside the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M3 to M6 not started. Mobile only. Written 2026-11-02.
+Status: **M1, M2 and M3 built inside the A/B test `motion_style`** (variant B = this plan, variant A = the old feel). M4 to M6 not started. Mobile only. Written 2026-11-02.
 
 ## How this was researched, and what is uncertain
 
@@ -122,3 +122,11 @@ Suggested order: M1, M2, M3, M4, M5, M6. M1 and M2 change how the whole app feel
 - **Reduce Motion:** every slide becomes a 140 ms fade.
 - **Not done yet:** the release speed of a swipe is used to decide go or stay, but the spring after release starts from rest rather than from your finger's speed. Chats has no large title, because the design starts with the search field.
 - **Check on a real iPhone:** Safari and the home-screen app have their own left-edge back swipe, which may compete with ours. If it does, the first thing to try is moving our start strip a few pixels in.
+
+## M3 as built (variant B, phones)
+
+- **Sheets:** drag any sheet down to close it. The sheet follows the finger and the dim behind it fades with it. A small pull springs back; a long pull or a quick flick closes it, sliding out first. Pulling up past the top resists like rubber. A pull down inside a list that is scrolled down scrolls the list first; the handle and title always drag. Escape and a tap outside also slide the sheet out instead of making it vanish.
+- **Two heights:** the long sheets (New chat, Add people, Add more room, Assign calendar) open half way. Pull up for full height, down for half, and further down to close. The speed of your release decides where it lands. While half open, the content waits until the sheet is full before it scrolls.
+- **Picture viewer:** pinch to zoom (up to 5 times), double tap to zoom in around the tap and again to zoom out, drag a zoomed picture around within its edges, and pull a normal-size picture up or down to close it while the black background fades.
+- **Call screen:** pull it down to tuck it into the green bar. It rises from the bottom when you tap the bar again. The control buttons do not start a drag.
+- **Not done:** pinching does not keep the point between your fingers fixed (it zooms about the centre), and releasing a drag does not hand your finger's speed to the spring after the decision. Both are small and belong to the tuning phase.
