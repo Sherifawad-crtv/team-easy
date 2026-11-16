@@ -41,3 +41,12 @@ Open `/results` (Account tab on phones, sidebar on desktop). With fewer than abo
 2. Use `useVariant('<id>')` in the screen and call `trackExposure('<id>')` once the screen is ready.
 3. Add the id to `ab_summary()` and to `summarize()` if it needs a new metric, and update this file.
 4. Add a test.
+
+## Review panel (comparing A and B)
+
+- A small pill at the top of every screen shows the experiment for that screen with an **A | B** switch. Flipping it keeps you on the same screen. Tap the name to move to the next experiment, the bug icon to open the full panel, × to hide it (it comes back from the edge tab).
+- The full panel has three tabs:
+  - **Compare**: one card per experiment with A/B, a plain description of each, things to try, "Open <screen>", and your choice (Prefer A / Prefer B / Not sure) with an optional note. Presets: All A, All B, Back to random. At the bottom, "Copy my choices" gives the text to send back.
+  - **States**: data state, connection, permissions, install steps, purchases, calls, push, admin/member.
+  - **Motion**: spring tuning lab.
+- Choices are saved on the device (`te.verdicts`) and logged as a `verdict_set` event. Forcing a variant leaves the session out of the results.
