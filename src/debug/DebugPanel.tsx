@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { resetPurchases, simulateCallTimeLeft, simulateIncomingCall, simulatePermission, simulatePurchaseFailure, simulatePush } from '../data/mock/mockApi'
 import { roleStore } from '../data/mock/role'
@@ -104,7 +105,7 @@ export function DebugPanel() {
           </p>
         </div>
       )}
-      {lab && <MotionLab onClose={() => setLab(false)} />}
+      {lab && createPortal(<MotionLab onClose={() => setLab(false)} />, document.body)}
       <button type="button" className="debug__fab" aria-label={open ? 'Close review tools' : 'Open review tools'} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
         {open ? <IconClose size={20} /> : <IconBug size={20} />}
       </button>
