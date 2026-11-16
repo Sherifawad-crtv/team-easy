@@ -52,6 +52,8 @@ export interface Conversation {
   lastAt: number
   unread: number
   presence?: Presence
+  /** Direct chats: the other person's job title. */
+  jobTitle?: string
   /** ROL-05: the user left but kept the group in the list. Read only. */
   left?: boolean
   /** The group this chat belongs to, for group chats. */

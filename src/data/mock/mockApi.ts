@@ -487,7 +487,7 @@ export const mockApi: Api = {
       let conv = conversations.find((c) => c.kind === 'direct' && c.title === member.name)
       if (!conv) {
         conv = {
-          id: `c-${member.id}`, kind: 'direct', title: member.name, presence: member.presence,
+          id: `c-${member.id}`, kind: 'direct', title: member.name, presence: member.presence, jobTitle: member.jobTitle,
           lastMessage: '', lastAt: Date.now(), unread: 0,
         }
         conversations.push(conv)

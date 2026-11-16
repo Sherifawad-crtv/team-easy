@@ -11,6 +11,7 @@ import { useAsync } from '../../state/useAsync'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { useMedia } from '../../state/useMedia'
 import { MessageMenu } from './MessageMenu'
+import { ContactSheet } from './ContactSheet'
 import { AdBanner } from '../ads/AdSlot'
 import { CallButtons } from '../calls/CallButtons'
 import { AttachSheet } from '../media/AttachSheet'
@@ -59,6 +60,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
   const { patch } = history
   const [draft, setDraft] = useState('')
   const [actionFor, setActionFor] = useState<Message | null>(null)
+  const [contactOpen, setContactOpen] = useState(false)
   const [shownTimes, setShownTimes] = useState<Set<string>>(new Set())
   const [attaching, setAttaching] = useState(false)
   const drafts = useRef(new Map<string, MessageDraft>())
@@ -221,16 +223,17 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
             </span>
           </button>
         ) : (
-          <>
+          <button type="button" className="convo__who convo__who--link" onClick={() => setContactOpen(true)} aria-label={`${conversation.title}, contact info`}>
             <Avatar name={conversation.title} size={40} group={conversation.kind !== 'direct'} presence={isDirect ? conversation.presence : undefined} icon={conversation.kind === 'general' ? <IconMegaphone size={20} /> : undefined} tone={conversation.kind === 'general' ? 0 : undefined} />
-            <div className="convo__who">
-              <h2 className="convo__title">{conversation.title}</h2>
-              <p className="convo__sub">{subtitle(conversation)}</p>
-            </div>
-          </>
+            <span className="convo__text">
+              <span className="convo__title">{conversation.title}</span>
+              <span className="convo__sub">{subtitle(conversation)}</span>
+            </span>
+          </button>
         )}
         <CallButtons conversation={conversation} />
       </header>
+      {contactOpen && <ContactSheet conversation={conversation} onClose={() => setContactOpen(false)} />}
       <AdBanner />
 
       <div className="convo__scroll" ref={scrollRef} role="log" aria-live="polite" aria-label={`Messages with ${conversation.title}`}>

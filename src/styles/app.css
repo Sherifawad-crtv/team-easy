@@ -192,7 +192,7 @@
 /* ---------- Review tools ---------- */
 .debug__fab { position: fixed; right: 0; top: 46%; z-index: 60; display: grid; place-items: center; width: 16px; height: 56px; padding: 0; border: 0; border-radius: var(--shape-md) 0 0 var(--shape-md); background: color-mix(in srgb, var(--surface-container-highest) 85%, transparent); color: var(--on-surface-variant); opacity: 0.6; }
 .debug__fab svg { width: 12px; height: 12px; }
-.quick { position: fixed; z-index: 60; top: calc(env(safe-area-inset-top) + 6px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--s-2); padding: 4px 6px 4px 12px; border-radius: var(--shape-full); background: color-mix(in srgb, var(--surface-container-highest) 94%, transparent); color: var(--on-surface); backdrop-filter: blur(12px); box-shadow: var(--shadow-3); max-width: calc(100vw - 16px); }
+.quick { position: fixed; z-index: 60; bottom: calc(env(safe-area-inset-bottom) + 96px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--s-2); padding: 4px 6px 4px 12px; border-radius: var(--shape-full); background: color-mix(in srgb, var(--surface-container-highest) 94%, transparent); color: var(--on-surface); backdrop-filter: blur(12px); box-shadow: var(--shadow-3); max-width: calc(100vw - 16px); }
 .quick__label { border: 0; background: transparent; color: inherit; font-size: 12px; font-weight: 600; white-space: nowrap; padding: 0; min-height: 32px; }
 .quick .seg { margin-top: 0; background: var(--surface); }
 .quick .seg button { min-height: 30px; padding: 0 var(--s-3); }
@@ -526,3 +526,7 @@ ul.card > li + li { border-top: 1px solid var(--outline-variant); }
 .lab__track { position: relative; height: 28px; border-radius: var(--shape-full); background: var(--surface-container); overflow: hidden; }
 .lab__dot { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--primary); }
 .lab__text { margin: 0; padding: var(--s-4); border-radius: var(--shape-md); background: var(--surface-container-lowest); font-size: 12px; line-height: 18px; white-space: pre-wrap; }
+.contact { display: flex; flex-direction: column; align-items: center; gap: var(--s-2); padding-bottom: var(--s-4); text-align: center; }
+.contact__name { margin-top: var(--s-3); }
+.contact__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-3); margin-top: var(--s-4); }
+.contact__actions .btn { gap: var(--s-2); }

@@ -35,7 +35,7 @@ export const CONVERSATIONS: Conversation[] = [
     lastSender: 'Omar', lastAt: ago(14), unread: 214,
   },
   {
-    id: 'c-omar', kind: 'direct', title: 'Omar Al-Fayed', presence: 'online',
+    id: 'c-omar', kind: 'direct', jobTitle: 'Engineering lead', title: 'Omar Al-Fayed', presence: 'online',
     lastMessage: 'Can you send the latest build?', lastAt: ago(3), unread: 2,
   },
   {
@@ -47,7 +47,7 @@ export const CONVERSATIONS: Conversation[] = [
     lastMessage: 'Jonas: Uploaded the onboarding motion test', lastSender: 'Jonas', lastAt: ago(75), unread: 0,
   },
   {
-    id: 'c-amelia', kind: 'direct', title: 'Amelia Kowalczyk-Fernandez', presence: 'away',
+    id: 'c-amelia', kind: 'direct', jobTitle: 'Head of customer success', title: 'Amelia Kowalczyk-Fernandez', presence: 'away',
     lastMessage: 'Thanks! I will share the customer interview notes tomorrow morning before the sync.',
     lastAt: ago(190), unread: 0,
   },
@@ -58,7 +58,7 @@ export const CONVERSATIONS: Conversation[] = [
     lastSender: 'Sam', lastAt: ago(260), unread: 128,
   },
   {
-    id: 'c-priya', kind: 'direct', title: 'Priya Raman', presence: 'online',
+    id: 'c-priya', kind: 'direct', jobTitle: 'Product manager', title: 'Priya Raman', presence: 'online',
     lastMessage: 'https://acme.example/specs/groups-v2', lastAt: ago(420), unread: 0,
   },
   {
