@@ -38,4 +38,17 @@ describe('screen transitions', () => {
     await Promise.resolve()
     expect(document.documentElement.dataset.vt).toBeUndefined()
   })
+
+  it('never waits for an animation frame while the browser has paused drawing', async () => {
+    const raf = vi.spyOn(window, 'requestAnimationFrame').mockImplementation(() => 0)
+    let update: Promise<void> | void
+    ;doc.startViewTransition = (cb: () => Promise<void> | void) => {
+      update = cb()
+      return { finished: Promise.resolve() }
+    }
+    animateNav('tab', () => {})
+    const outcome = await Promise.race([Promise.resolve(update!).then(() => 'done'), new Promise((r) => setTimeout(() => r('frozen'), 1000))])
+    raf.mockRestore()
+    expect(outcome).toBe('done')
+  })
 })

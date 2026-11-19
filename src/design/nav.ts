@@ -15,7 +15,11 @@ type WithTransitions = Document & { startViewTransition?: (cb: () => Promise<voi
 
 const supported = () => typeof document !== 'undefined' && typeof (document as WithTransitions).startViewTransition === 'function'
 
-/** Resolves once the page has re-rendered after a navigation, or after a short wait. */
+/**
+ * Resolves once the page has re-rendered after a navigation, or after a short wait.
+ * The browser pauses drawing while it waits for this, so it must not wait for an
+ * animation frame (that never comes and the page freezes until the browser gives up).
+ */
 function settle(): Promise<void> {
   return new Promise((resolve) => {
     const root = document.getElementById('root')
@@ -25,13 +29,13 @@ function settle(): Promise<void> {
       if (done) return
       done = true
       observer?.disconnect()
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      window.setTimeout(resolve, 24)
     }
     if (root) {
       observer = new MutationObserver(finish)
       observer.observe(root, { childList: true, subtree: true })
     }
-    window.setTimeout(finish, 300)
+    window.setTimeout(finish, 200)
   })
 }
 
