@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../../data'
 import { haptic } from '../../design/haptics'
 import type { Conversation as Conv, Message, MessageDraft } from '../../data/types'
-import { Avatar, BackButton, Banner, BottomSheet, Button, Skeleton, toneFor } from '../../design/ui'
+import { Avatar, BackButton, Banner, BottomSheet, Button, Overlay, Skeleton, toneFor } from '../../design/ui'
 import { IconAttach, IconClock, IconDoubleTick, IconMegaphone, IconRetry, IconSend, IconTrash } from '../../design/icons'
 import { track } from '../../analytics'
 import { useAsync } from '../../state/useAsync'
@@ -301,7 +301,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
           }}
         />
       )}
-      {toast && <div className="toast" role="status">{toast}</div>}
+      {toast && <Overlay><div className="toast" role="status">{toast}</div></Overlay>}
       {attaching && <AttachSheet onClose={() => setAttaching(false)} onSend={(d) => void send(d)} />}
 
       {actionFor && (

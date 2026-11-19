@@ -79,7 +79,8 @@
   }
   .chats[data-open='true'] .chats__pane { visibility: visible; transition-delay: 0s, 0s, 0s; }
   .chats.is-dragging .chats__pane { visibility: visible; }
-  .chats__edge { position: absolute; z-index: 4; left: 0; top: 0; bottom: 0; width: 28px; touch-action: none; }
+  /* Below the top bar and above the message field, so their buttons stay tappable at the very edge. */
+  .chats__edge { position: absolute; z-index: 4; left: 0; top: calc(var(--safe-top) + 64px); bottom: calc(var(--safe-bottom) + 80px); width: 28px; touch-action: none; }
   .chats::after {
     content: ''; position: absolute; inset: 0; z-index: 1; background: var(--on-surface); pointer-events: none;
     opacity: calc(var(--p) * 0.14); transition: opacity var(--motion-smooth-dur) var(--motion-smooth);

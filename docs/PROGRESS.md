@@ -95,6 +95,8 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 
 ## Session log (latest first)
 
+- 2026-11-19: Audit fixes. Sheets, the photo viewer, the message menu, toasts and the undo bar are now drawn above the whole app (before, the chat's top bar sat over the viewer, so tapping Close tapped Back). The swipe-back strip no longer covers the Back and attach buttons. Audited every screen with real taps on phone and desktop sizes.
+
 - 2026-11-19: Made the app feel fast. Shorter springs (smooth 330 ms, snappy 240 ms), tabs switch instantly with no fade, list reveal 154 ms, last-loaded lists show at once when you return to a tab, mock latency cut to about 40%.
 
 - 2026-11-19: Fixed tab changes freezing for about 4 seconds, and the tab bar going flat white with a halo during screen changes (it no longer gets its own transition layer, so the glass blur stays).

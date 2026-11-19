@@ -1,5 +1,17 @@
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { IconAlert, IconBack, IconCheckCircle, IconEye, IconEyeOff, IconInfo, IconUser, IconWifiOff } from './icons'
+
+/* ---------- Overlay ---------- */
+
+/**
+ * Draws full-screen layers (sheets, the photo viewer, menus, toasts) on top of the whole app.
+ * A screen that slides is moved with a transform, which makes anything fixed inside it
+ * belong to that screen: its top bar would sit over the layer and swallow taps.
+ */
+export function Overlay({ children }: { children: ReactNode }) {
+  return typeof document === 'undefined' ? null : createPortal(children, document.body)
+}
 
 /* ---------- Button ---------- */
 
@@ -169,6 +181,7 @@ export function BottomSheet({ title, onClose, children, detents = false }: { tit
     }
   }, [closeNicely])
   return (
+    <Overlay>
     <div className="sheet-backdrop" ref={backdrop} onMouseDown={(e) => e.target === e.currentTarget && closeNicely()}>
       <div className={`sheet${draggable && detents ? ' sheet--detents' : ''}`} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} ref={ref}>
         <div className="sheet__handle" />
@@ -176,6 +189,7 @@ export function BottomSheet({ title, onClose, children, detents = false }: { tit
         {children}
       </div>
     </div>
+    </Overlay>
   )
 }
 
@@ -211,11 +225,13 @@ export function Snackbar({ message, actionLabel, onAction, durationMs, onDone }:
     return () => window.clearTimeout(t)
   }, [durationMs, onDone])
   return (
+    <Overlay>
     <div className="snackbar" role="status" aria-live="polite">
       <span className="snackbar__text">{message}</span>
       <button type="button" className="snackbar__action" onClick={onAction}>{actionLabel}</button>
       <span className="snackbar__timer" style={{ animationDuration: `${durationMs}ms` }} aria-hidden="true" />
     </div>
+    </Overlay>
   )
 }
 

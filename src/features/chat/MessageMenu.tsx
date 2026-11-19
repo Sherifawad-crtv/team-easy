@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { Message } from '../../data/types'
 import { haptic } from '../../design/haptics'
+import { Overlay } from '../../design/ui'
 import { IconCopy, IconRetry, IconTrash } from '../../design/icons'
 
 export interface MenuActions {
@@ -60,6 +61,7 @@ export function MessageMenu({ message, bubble, actions, onClose }: { message: Me
   const top = below > cardHeight + 28 ? rect.bottom + 12 : Math.max(12, rect.top - cardHeight - 12)
 
   return (
+    <Overlay>
     <div className="mmenu" role="dialog" aria-label="Message actions" onClick={() => { if (Date.now() > armedAt.current) onClose() }}>
       <div className="mmenu__clone" ref={host} style={{ top: rowRect.top, left: rowRect.left, width: rowRect.width, transformOrigin: mine ? 'right center' : 'left center' }} />
       <div className="mmenu__card" ref={card} style={{ top, [mine ? 'right' : 'left']: mine ? window.innerWidth - rect.right : rect.left, transformOrigin: mine ? 'top right' : 'top left' }} onClick={(e) => e.stopPropagation()}>
@@ -70,5 +72,6 @@ export function MessageMenu({ message, bubble, actions, onClose }: { message: Me
         ))}
       </div>
     </div>
+    </Overlay>
   )
 }

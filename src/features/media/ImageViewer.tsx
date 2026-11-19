@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { IconClose } from '../../design/icons'
+import { Overlay } from '../../design/ui'
 import { clamp, doubleTapZoom, maxPan, rubber, shouldDismiss } from '../../design/gestures'
 import { useMedia } from '../../state/useMedia'
 import type { Message } from '../../data/types'
@@ -169,6 +170,7 @@ export function ImageViewer({ message, onClose }: { message: Message; onClose: (
 
   if (!a?.url) return null
   return (
+    <Overlay>
     <div className="viewer" ref={root} role="dialog" aria-modal="true" aria-label={a.name} onClick={onClose}>
       <header className="viewer__bar" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="icon-btn viewer__close" aria-label="Close" onClick={onClose}><IconClose /></button>
@@ -180,5 +182,6 @@ export function ImageViewer({ message, onClose }: { message: Message; onClose: (
       <img ref={img} className="viewer__img" src={a.url} alt={message.text || a.name} onClick={(e) => e.stopPropagation()} draggable={false} />
       {message.text && <p className="viewer__caption" onClick={(e) => e.stopPropagation()}>{message.text}</p>}
     </div>
+    </Overlay>
   )
 }
