@@ -36,6 +36,10 @@ tool/list_wires.sh        # every open placeholder
 | `src/config/limits.ts` | Business limits (some now come from the server entity, see `GroupTree.limits`) |
 | `src/debug` | Review tools: fake states and spring tuning. Not product code; leave out of production builds |
 
+## Speed on purpose
+
+Tab roots (chat list, groups, calendar) show the last loaded data at once and refresh quietly (`useAsync` with a cache key). Keep that behaviour when wiring a real backend: use a stale-while-revalidate cache, not a spinner on every tab visit. Mock latency is about 40% of its nominal value for the same reason; the `slow` state in the review tools shows the slow case.
+
 ## What to wire
 
 Every placeholder has a `// WIRE:` marker and a row in `docs/WIRING.md` (about 30: auth, chat, media, search, groups, roles, calendar, notifications, data, calls, ads, purchases, admin, analytics). Replace a mock with the real implementation behind the same contract and the UI should not change. In Claude Code run `/wire <wire-id>`.

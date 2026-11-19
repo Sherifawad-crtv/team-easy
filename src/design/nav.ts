@@ -6,10 +6,9 @@ import { useNavigate } from 'react-router-dom'
 // later). Without them the page changes at once, as before.
 //   push  the new screen slides in from the right, the old one slides back a little
 //   pop   the reverse
-//   tab   a quick cross-fade, no sliding
-// Only motion style B uses it. Reduce Motion turns all three into a fade (in CSS).
+// Reduce Motion turns both into a fade (in CSS).
 
-export type NavDir = 'push' | 'pop' | 'tab'
+export type NavDir = 'push' | 'pop'
 
 type WithTransitions = Document & { startViewTransition?: (cb: () => Promise<void> | void) => { finished: Promise<void> } }
 

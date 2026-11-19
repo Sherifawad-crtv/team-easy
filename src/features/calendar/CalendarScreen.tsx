@@ -22,8 +22,8 @@ export function CalendarScreen() {
   const [managing, setManaging] = useState(false)
 
   const grid = useMemo(() => monthGrid(month), [month])
-  const cals = useAsync(() => api.calendar.calendars(), [role])
-  const events = useAsync(() => api.calendar.events(grid[0].getTime(), addDays(grid[41], 1).getTime()), [grid[0].getTime(), role])
+  const cals = useAsync(() => api.calendar.calendars(), [role], 'calendars')
+  const events = useAsync(() => api.calendar.events(grid[0].getTime(), addDays(grid[41], 1).getTime()), [grid[0].getTime(), role], 'events')
 
   const calendars = cals.status === 'ready' ? cals.data : []
   const toneOf = (id: string) => calendars.find((c) => c.id === id)?.tone ?? 0

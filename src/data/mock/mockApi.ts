@@ -174,10 +174,14 @@ const SESSION_KEY = 'te.session'
 
 const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
-/** Latency plus the failures the current scenario asks for. */
+/**
+ * Latency plus the failures the current scenario asks for. Normal latency is kept short
+ * on purpose (about 40% of the nominal value) so the prototype feels as fast as a cached
+ * app; the `slow` scenario shows what a slow network looks like.
+ */
 async function gate(base = 450) {
   const scenario = scenarioStore.get()
-  await delay(scenario === 'slow' ? 3500 : base)
+  await delay(scenario === 'slow' ? 3500 : Math.round(base * 0.4))
   if (scenario === 'offline') throw new ApiError('network')
   if (scenario === 'error') throw new ApiError('unknown')
 }

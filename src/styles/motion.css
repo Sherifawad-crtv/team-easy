@@ -1,25 +1,25 @@
 /* Motion: Apple-style springs (docs/MOTION_PLAN.md).
  * Springs are defined like SwiftUI does: how quick (response) and how bouncy
  * (damping), then sampled into linear() curves.
- *   Smooth  response 0.32, damping 1.00 (no bounce)  screens, sheets, list changes
- *   Snappy  response 0.26, damping 0.85 (a hint)     taps, toggles, tab changes
- *   Bouncy  response 0.50, damping 0.60               rare delight only
+ *   Smooth  response 0.26, damping 1.00 (no bounce)  screens, sheets, list changes
+ *   Snappy  response 0.20, damping 0.85 (a hint)     taps, toggles
+ *   Bouncy  response 0.42, damping 0.60               rare delight only
  * Effects springs fade and recolour, never overshoot.
  * Generated; regenerate by changing the numbers above and sampling again. */
 
 @supports (transition-timing-function: linear(0, 1)) {
   :root {
-    --motion-snappy: linear(0, 0.028, 0.096, 0.187, 0.289, 0.391, 0.49, 0.58, 0.66, 0.73, 0.79, 0.839, 0.88, 0.912, 0.938, 0.958, 0.973, 0.984, 0.993, 0.998, 1.002, 1.004, 1.006, 1.006, 1.006, 1.006, 1.005, 1.005, 1.004, 1.004, 1);
-    --motion-snappy-dur: 314ms;
-    --motion-smooth: linear(0, 0.03, 0.101, 0.192, 0.289, 0.386, 0.476, 0.557, 0.63, 0.692, 0.746, 0.791, 0.829, 0.861, 0.887, 0.909, 0.926, 0.941, 0.953, 0.962, 0.97, 0.976, 0.981, 0.985, 0.988, 0.99, 0.992, 0.994, 0.995, 0.996, 1);
-    --motion-smooth-dur: 408ms;
-    --motion-bouncy: linear(0, 0.045, 0.155, 0.302, 0.46, 0.613, 0.75, 0.865, 0.954, 1.019, 1.061, 1.085, 1.094, 1.093, 1.084, 1.071, 1.056, 1.041, 1.027, 1.016, 1.007, 1, 0.995, 0.992, 0.991, 0.991, 0.992, 0.993, 0.994, 0.996, 1);
-    --motion-bouncy-dur: 762ms;
+    --motion-snappy: linear(0, 0.028, 0.096, 0.188, 0.289, 0.392, 0.491, 0.581, 0.662, 0.732, 0.791, 0.84, 0.881, 0.913, 0.939, 0.959, 0.974, 0.985, 0.993, 0.998, 1.002, 1.004, 1.006, 1.006, 1.006, 1.006, 1.005, 1.005, 1.004, 1.004, 1);
+    --motion-snappy-dur: 242ms;
+    --motion-smooth: linear(0, 0.03, 0.101, 0.192, 0.29, 0.386, 0.477, 0.558, 0.63, 0.693, 0.747, 0.792, 0.83, 0.862, 0.888, 0.909, 0.927, 0.941, 0.953, 0.962, 0.97, 0.976, 0.981, 0.985, 0.988, 0.99, 0.992, 0.994, 0.995, 0.996, 1);
+    --motion-smooth-dur: 332ms;
+    --motion-bouncy: linear(0, 0.045, 0.155, 0.302, 0.46, 0.613, 0.75, 0.864, 0.954, 1.019, 1.061, 1.085, 1.094, 1.093, 1.084, 1.071, 1.056, 1.041, 1.027, 1.016, 1.007, 1, 0.995, 0.992, 0.991, 0.991, 0.992, 0.993, 0.994, 0.996, 1);
+    --motion-bouncy-dur: 640ms;
 
     --spring-fast-spatial: var(--motion-snappy);   --spring-fast-spatial-dur: var(--motion-snappy-dur);
     --spring-spatial: var(--motion-smooth);        --spring-spatial-dur: var(--motion-smooth-dur);
     --spring-slow-spatial: linear(0, 0.03, 0.101, 0.192, 0.29, 0.386, 0.476, 0.558, 0.63, 0.693, 0.746, 0.792, 0.83, 0.861, 0.888, 0.909, 0.927, 0.941, 0.953, 0.962, 0.97, 0.976, 0.981, 0.985, 0.988, 0.99, 0.992, 0.994, 0.995, 0.996, 1);
-    --spring-slow-spatial-dur: 536ms;
+    --spring-slow-spatial-dur: 434ms;
     --spring-fast-effects: linear(0, 0.03, 0.102, 0.193, 0.292, 0.389, 0.479, 0.561, 0.633, 0.696, 0.749, 0.794, 0.832, 0.863, 0.889, 0.911, 0.928, 0.942, 0.954, 0.963, 0.97, 0.976, 0.981, 0.985, 0.988, 0.991, 0.993, 0.994, 0.995, 0.996, 1);
     --spring-fast-effects-dur: 154ms;
     --spring-effects: linear(0, 0.03, 0.101, 0.192, 0.29, 0.387, 0.477, 0.559, 0.631, 0.693, 0.747, 0.792, 0.83, 0.862, 0.888, 0.909, 0.927, 0.941, 0.953, 0.962, 0.97, 0.976, 0.981, 0.985, 0.988, 0.99, 0.992, 0.994, 0.995, 0.996, 1);
@@ -105,8 +105,6 @@
 :root[data-vt='push']::view-transition-new(root) { animation-name: vt-come-in; z-index: 2; }
 :root[data-vt='pop']::view-transition-old(root) { animation-name: vt-go-out; z-index: 2; }
 :root[data-vt='pop']::view-transition-new(root) { animation-name: vt-come-back; z-index: 1; }
-:root[data-vt='tab']::view-transition-old(root) { animation-name: vt-fade-out; animation-duration: var(--spring-effects-dur, 180ms); }
-:root[data-vt='tab']::view-transition-new(root) { animation-name: vt-fade-in; animation-duration: var(--spring-effects-dur, 180ms); }
 @keyframes vt-come-in { from { transform: translateX(100%); } }
 @keyframes vt-back-away { to { transform: translateX(-28%); filter: brightness(0.9); } }
 @keyframes vt-go-out { to { transform: translateX(100%); } }
@@ -254,7 +252,7 @@
 
 /* Lists and tables settle in once their content arrives, instead of replacing the skeleton in a flash. */
 :is(.chat-list [role='list'], [role='tree'], .people, .agenda, .atable-wrap, .gdetail__body > section, .page__body > section, ul.card) {
-  animation: reveal var(--spring-slow-effects-dur) var(--spring-slow-effects) both;
+  animation: reveal var(--spring-fast-effects-dur) var(--spring-fast-effects) both;
 }
 @keyframes reveal { from { opacity: 0; } }
 

@@ -46,7 +46,7 @@ describe('screen transitions', () => {
       update = cb()
       return { finished: Promise.resolve() }
     }
-    animateNav('tab', () => {})
+    animateNav('push', () => {})
     const outcome = await Promise.race([Promise.resolve(update!).then(() => 'done'), new Promise((r) => setTimeout(() => r('frozen'), 1000))])
     raf.mockRestore()
     expect(outcome).toBe('done')

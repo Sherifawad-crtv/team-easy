@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { api } from '../data'
 import type { Account, IdentityKind, ProfilePatch, SignUpData } from '../data/types'
 import { track } from '../analytics'
+import { clearAsyncCache } from './useAsync'
 
 interface SessionValue {
   /** `undefined` while the saved session is being restored. */
@@ -31,22 +32,30 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signIn = useCallback(async (email: string, password: string) => {
-    setAccount(await api.auth.signIn(email, password))
+    const next = await api.auth.signIn(email, password)
+    clearAsyncCache()
+    setAccount(next)
     track('sign_in_completed')
   }, [])
   const signUp = useCallback(async (data: SignUpData) => {
-    setAccount(await api.auth.signUp(data))
+    const next = await api.auth.signUp(data)
+    clearAsyncCache()
+    setAccount(next)
     track('signup_completed', { with_invite: Boolean(data.inviteToken) })
   }, [])
   const signOut = useCallback(async () => {
     await api.auth.signOut()
+    clearAsyncCache()
     setAccount(null)
   }, [])
   const switchIdentity = useCallback(async (kind: IdentityKind) => {
-    setAccount(await api.auth.switchIdentity(kind))
+    const next = await api.auth.switchIdentity(kind)
+    clearAsyncCache()
+    setAccount(next)
   }, [])
   const deleteAccount = useCallback(async () => {
     await api.auth.deleteAccount()
+    clearAsyncCache()
     setAccount(null)
   }, [])
 

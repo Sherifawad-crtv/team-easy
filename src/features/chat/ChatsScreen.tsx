@@ -21,7 +21,7 @@ export function ChatsScreen() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const list = useAsync(() => api.chat.listConversations(), [])
+  const list = useAsync(() => api.chat.listConversations(), [], 'conversations')
   const { patch } = list
   const [params, setParams] = useSearchParams()
   const sheet = params.get('new') === '1'
@@ -32,7 +32,7 @@ export function ChatsScreen() {
   // On phones the conversation slides in over the list.
   const slides = phone
   // Keep the conversation on screen while it slides out, and swipe from the left edge to go back.
-  const shownId = useKept(id, slides ? 480 : 0)
+  const shownId = useKept(id, slides ? 380 : 0)
   const goBack = () => (location.key !== 'default' ? navigate(-1) : navigate('/chats'))
   useEdgeSwipeBack(root, slides && Boolean(id), goBack)
 

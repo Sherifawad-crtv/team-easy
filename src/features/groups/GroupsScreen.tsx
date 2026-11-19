@@ -98,8 +98,8 @@ export function GroupsScreen() {
   const phone = useMedia('(max-width: 1023.98px)')
   const slides = phone
   const root = useRef<HTMLDivElement>(null)
-  const shownId = useKept(id, slides ? 480 : 0)
-  const list = useAsync(() => api.groups.list(), [role])
+  const shownId = useKept(id, slides ? 380 : 0)
+  const list = useAsync(() => api.groups.list(), [role], 'groups')
   const [creating, setCreating] = useState(false)
   const [open, setOpen] = useState<Set<string>>(new Set())
   const [showArchived, setShowArchived] = useState(false)
@@ -165,7 +165,7 @@ export function GroupsScreen() {
     navigate('/groups')
     // The row folds away first, then the list updates.
     setLeavingId(d.undoToken.split('@')[0])
-    window.setTimeout(() => { reload(); setLeavingId(null) }, 300)
+    window.setTimeout(() => { reload(); setLeavingId(null) }, 240)
   }
   const doUndo = async () => {
     if (!undo) return

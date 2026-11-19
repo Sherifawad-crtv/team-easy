@@ -12,10 +12,10 @@ export interface SpringSpec {
 export type SpringName = 'smooth' | 'snappy' | 'smoothSlow' | 'bouncy'
 
 export const DEFAULT_SPRINGS: Record<SpringName, SpringSpec> = {
-  smooth: { response: 0.32, damping: 1 },
-  snappy: { response: 0.26, damping: 0.85 },
-  smoothSlow: { response: 0.42, damping: 1 },
-  bouncy: { response: 0.5, damping: 0.6 },
+  smooth: { response: 0.26, damping: 1 },
+  snappy: { response: 0.2, damping: 0.85 },
+  smoothSlow: { response: 0.34, damping: 1 },
+  bouncy: { response: 0.42, damping: 0.6 },
 }
 
 export const SPRING_LABELS: Record<SpringName, { title: string; use: string }> = {

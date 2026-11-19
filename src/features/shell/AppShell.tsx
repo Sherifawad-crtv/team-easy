@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
-import { NavLink, Outlet, matchPath, useLocation, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, matchPath, useLocation } from 'react-router-dom'
 import { Avatar, Logo } from '../../design/ui'
 import { IconCalendar, IconChat, IconPeople, IconUser } from '../../design/icons'
 import { useSession } from '../../state/session'
 import { haptic } from '../../design/haptics'
-import { animateNav } from '../../design/nav'
 import { CallsProvider } from '../../state/calls'
 import { CallOverlay } from '../calls/CallOverlay'
 import { PushHost } from '../notifications/PushHost'
@@ -22,7 +21,6 @@ const NAV = [
 export function AppShell() {
   const { pathname } = useLocation()
   const { account } = useSession()
-  const navigate = useNavigate()
 
   // Lets pages with a large title tuck it away and show a hairline once they scroll.
   useEffect(() => {
@@ -56,11 +54,10 @@ export function AppShell() {
       <div className="dock">
         <nav className="pill" aria-label="Main">
           {NAV.map(({ to, label, icon: Icon }) => (
-            <NavLink key={to} to={to} className={({ isActive }) => `pill__link${isActive ? ' is-active' : ''}`} onClick={(e) => {
+            <NavLink key={to} to={to} className={({ isActive }) => `pill__link${isActive ? ' is-active' : ''}`} onClick={() => {
                 if (pathname === to || pathname.startsWith(`${to}/`)) return
+                // Tabs switch at once, like the iOS tab bar: no slide, no fade.
                 haptic('selection')
-                e.preventDefault()
-                animateNav('tab', () => navigate(to))
               }}>
               <Icon size={22} /><span>{label}</span>
             </NavLink>
