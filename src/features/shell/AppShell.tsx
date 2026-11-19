@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { NavLink, Outlet, matchPath, useLocation } from 'react-router-dom'
 import { Avatar, Logo } from '../../design/ui'
 import { IconCalendar, IconChat, IconPeople, IconUser } from '../../design/icons'
@@ -47,7 +47,7 @@ export function AppShell() {
         {account && <span className="rail__who"><Avatar name={account.name} src={account.photoUrl} size={40} /></span>}
       </aside>
 
-      <div className="shell__main"><Outlet /></div>
+      <div className="shell__main"><Suspense fallback={null}><Outlet /></Suspense></div>
       <PushHost />
       <CallOverlay />
 

@@ -8,7 +8,8 @@ import { StatesTab } from './StatesTab'
 /**
  * Review tools: fake the states a real backend would produce (empty, error, slow, offline,
  * denied permissions, calls, roles) so every screen can be checked. Opens from the small
- * tab on the right edge. Not part of the product; engineers can drop it from the build.
+ * tab on the right edge. Not part of the product: it only appears after opening the app with
+ * `?review` in the address (see App.tsx), and engineers can drop it from the build.
  */
 export function ReviewTools() {
   const [open, setOpen] = useState(false)

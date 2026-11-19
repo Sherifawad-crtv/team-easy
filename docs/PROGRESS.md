@@ -95,6 +95,8 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 
 ## Session log (latest first)
 
+- 2026-11-19: Speed and HIG pass. Review tools icon removed from the product (opens only with `?review`). First load 918 kB to under 300 kB (WOFF2 fonts, lazy screens). Motion: press feedback now dims like iOS instead of shrinking, removed the tab icon bounce and the badge pop on every load, removed the page-dimming filter from screen slides, page bar no longer blurs while scrolling.
+
 - 2026-11-19: Audit fixes. Sheets, the photo viewer, the message menu, toasts and the undo bar are now drawn above the whole app (before, the chat's top bar sat over the viewer, so tapping Close tapped Back). The swipe-back strip no longer covers the Back and attach buttons. Audited every screen with real taps on phone and desktop sizes.
 
 - 2026-11-19: Made the app feel fast. Shorter springs (smooth 330 ms, snappy 240 ms), tabs switch instantly with no fade, list reveal 154 ms, last-loaded lists show at once when you return to a tab, mock latency cut to about 40%.

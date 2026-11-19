@@ -9,21 +9,7 @@ import { useAsync } from '../../state/useAsync'
 import { useSubmit } from '../../state/useSubmit'
 import { AuthFrame, ErrorBanner } from '../auth/AuthFrame'
 import { memberLabel } from './tree'
-
-const PENDING_KEY = 'te.pendingJoin'
-
-/** Remembers a join link across sign-in or sign-up. */
-export const pendingJoin = {
-  get(): string | null {
-    try { return sessionStorage.getItem(PENDING_KEY) } catch { return null }
-  },
-  set(token: string) {
-    try { sessionStorage.setItem(PENDING_KEY, token) } catch { /* ignore */ }
-  },
-  clear() {
-    try { sessionStorage.removeItem(PENDING_KEY) } catch { /* ignore */ }
-  },
-}
+import { pendingJoin } from './pendingJoin'
 
 /** Join a group from a link (GRP-06). Works signed in or out. */
 export function JoinScreen() {

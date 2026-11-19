@@ -4,10 +4,10 @@
  * varied shapes, emphasized type, spring motion. Brand palette on top.
  * Names are semantic roles, never raw values.
  */
-@font-face { font-family: 'Poppins'; font-weight: 400; font-display: swap; src: url('/fonts/Poppins_400Regular.ttf') format('truetype'); }
-@font-face { font-family: 'Poppins'; font-weight: 500; font-display: swap; src: url('/fonts/Poppins_500Medium.ttf') format('truetype'); }
-@font-face { font-family: 'Poppins'; font-weight: 600; font-display: swap; src: url('/fonts/Poppins_600SemiBold.ttf') format('truetype'); }
-@font-face { font-family: 'Poppins'; font-weight: 700; font-display: swap; src: url('/fonts/Poppins_700Bold.ttf') format('truetype'); }
+@font-face { font-family: 'Poppins'; font-weight: 400; font-display: swap; src: url('/fonts/Poppins_400Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-weight: 500; font-display: swap; src: url('/fonts/Poppins_500Medium.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-weight: 600; font-display: swap; src: url('/fonts/Poppins_600SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-weight: 700; font-display: swap; src: url('/fonts/Poppins_700Bold.woff2') format('woff2'); }
 
 :root {
   color-scheme: light;

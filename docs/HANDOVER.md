@@ -34,9 +34,11 @@ tool/list_wires.sh        # every open placeholder
 | `src/state` | Session, data-fetching (`useAsync`, `useSubmit`), calls, install, settings |
 | `src/analytics.ts` | `track(event, props)`, a placeholder (`analytics.events`) |
 | `src/config/limits.ts` | Business limits (some now come from the server entity, see `GroupTree.limits`) |
-| `src/debug` | Review tools: fake states and spring tuning. Not product code; leave out of production builds |
+| `src/debug` | Review tools: fake states and spring tuning. Not product code; only loaded with `?review`, drop from production builds |
 
 ## Speed on purpose
+
+First load is kept small: Poppins is four 8 kB WOFF2 files (Latin only), the admin console and less-used screens are separate chunks that load on demand and are fetched quietly once the app is idle (`src/App.tsx`). Keep new screens lazy unless they are a tab root. On a throttled phone connection the first screen went from 2.7 s to 2.0 s and fonts from 5.1 s to 2.1 s.
 
 Tab roots (chat list, groups, calendar) show the last loaded data at once and refresh quietly (`useAsync` with a cache key). Keep that behaviour when wiring a real backend: use a stale-while-revalidate cache, not a spinner on every tab visit. Mock latency is about 40% of its nominal value for the same reason; the `slow` state in the review tools shows the slow case.
 
@@ -46,7 +48,7 @@ Every placeholder has a `// WIRE:` marker and a row in `docs/WIRING.md` (about 3
 
 ## States are covered on purpose
 
-The review tools (small bug tab on the right edge) switch the whole app between `normal`, `empty`, `error`, `slow` and `offline`, deny photo, mic and camera access, force the install steps, fail the next purchase, start incoming calls, cap calling time, send a test push and flip between admin and member. Use them to check every real case when wiring; the mock behaviours show what the UI expects from the backend for each.
+The review tools are hidden in the product. Open the app once with `?review` in the address (for example `/chats?review`) and a small tab appears on the right edge for that browser tab. They switch the whole app between `normal`, `empty`, `error`, `slow` and `offline`, deny photo, mic and camera access, force the install steps, fail the next purchase, start incoming calls, cap calling time, send a test push and flip between admin and member. Use them to check every real case when wiring; the mock behaviours show what the UI expects from the backend for each.
 
 ## Not built, and why
 
