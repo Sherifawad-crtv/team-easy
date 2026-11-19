@@ -41,7 +41,6 @@ Order is by value to the daily loop, then dependencies (groups come before group
 | Item | Why |
 |---|---|
 | Decide: make the preview public, or keep it private | Testers cannot open it behind the Vercel login |
-| Create the A/B Supabase project (a third project on your free plan will likely cost money) | Without it, results stay on one device |
 | Create `main` and `dev` branches, point Vercel production at `main` | Right now production is the working branch |
 | Engineers acknowledge the client framework decision | Engineers should not build against an unconfirmed contract |
 

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Avatar, Banner, BottomSheet, Button, Switch } from '../../design/ui'
 import { useHaptics, useMediaPolicy, settings, type MediaPolicy } from '../../state/settings'
 import { ErrorBanner } from '../auth/AuthFrame'
@@ -20,7 +19,6 @@ const MEDIA_CHOICES: { id: MediaPolicy; title: string; sub: string }[] = [
 /** Profile, identity switching (ACC-07), sign out and delete account (ACC-08). */
 export function AccountScreen() {
   const { account, signOut, switchIdentity, deleteAccount } = useSession()
-  const navigate = useNavigate()
   const go = useAnimatedNavigate()
   const action = useSubmit()
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -110,7 +108,6 @@ export function AccountScreen() {
           <Button variant="secondary" onClick={() => go('/account/data')}>Data and storage</Button>
           <Button variant="secondary" onClick={() => go('/updates')}>What's new</Button>
           <Button variant="secondary" loading={action.busy} onClick={() => void action.run(signOut)}>Sign out</Button>
-          <Button variant="tertiary" onClick={() => navigate('/results')} className="only-mobile">A/B results</Button>
           <Button variant="tertiary" onClick={() => setConfirmDelete(true)} disabled={action.busy}>Delete account</Button>
         </div>
       </div>

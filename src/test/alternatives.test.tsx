@@ -8,7 +8,6 @@ import { ConversationView } from '../features/chat/Conversation'
 import { ImageViewer } from '../features/media/ImageViewer'
 import { InCall } from '../features/calls/InCall'
 import { CallsProvider, useCalls } from '../state/calls'
-import { resetExperiments } from '../experiments/experiments'
 import type { Conversation, Message } from '../data/types'
 
 // Every gesture needs a visible control or key for people who cannot or do not want to make it.
@@ -18,7 +17,6 @@ beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
   scenarioStore.set('normal')
-  resetExperiments()
 })
 afterEach(cleanup)
 

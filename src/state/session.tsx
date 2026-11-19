@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { api } from '../data'
 import type { Account, IdentityKind, ProfilePatch, SignUpData } from '../data/types'
-import { track } from '../experiments/analytics'
+import { track } from '../analytics'
 
 interface SessionValue {
   /** `undefined` while the saved session is being restored. */

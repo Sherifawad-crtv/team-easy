@@ -2,7 +2,7 @@
 
 Team messaging app. Mobile-first PWA (users) + web admin. Spec: `docs/PRD.md`. Status: `docs/PROGRESS.md`. Build spec: `docs/PWA_SPEC.md`.
 
-This repo is the design-in-code test harness: real flows on a typed mock data layer, A/B tested, while engineers build the production architecture. The Flutter attempt lives on the `flutter-archive` branch.
+This repo is the design-in-code test harness: real flows on a typed mock data layer. The design is final and being handed to engineers (`docs/HANDOVER.md`); A/B testing is finished and removed. The Flutter attempt lives on the `flutter-archive` branch.
 
 ## Who works here
 - **Designer:** UI/UX, flows, interactions. Works in `src/design`, `src/styles`, `src/features`, `src/data/mock` and docs. Does not read code: explain problems in plain language, no code dumps.
@@ -29,12 +29,9 @@ Never write real backend code unless asked.
 - Follow the native-feel standard and the "avoid the generic AI look" section in DESIGN.md.
 - Never build placeholder or stub screens or features. Give context for future work instead.
 
-## A/B tests (`docs/AB_TESTING.md`)
-Variants live behind `useVariant(id)`. A new experiment needs: an entry in `EXPERIMENTS`, a metric, a row in `docs/AB_TESTING.md`, and a test.
-
 ## Never
 - Never hardcode secrets. Only `VITE_*` public values go in the browser; see `.env.example`.
-- Never change the real backend or the Supabase projects Nimble and Bizqwik. The A/B project is separate.
+- Never change the real backend or the Supabase projects Nimble and Bizqwik.
 - Never change PRD scope. Log deviations in the PRD "Open questions" section.
 - Never commit `.env` files, keystores or certificates.
 
@@ -50,4 +47,4 @@ tool/list_wires.sh        # list all open placeholders
 lint, typecheck, tests and build pass, `PROGRESS.md` updated, screenshots in the PR, requirement IDs in the commit message (e.g. `feat(chat): CHT-05 delete own message in private chats`).
 
 ## Read on demand
-`docs/DESIGN.md` before any UI · `docs/WIRING.md` before adding or replacing a placeholder · `docs/AB_TESTING.md` before touching experiments · `docs/PIPELINE.md` for deploys · `docs/ARCHITECTURE.md` and `docs/decisions/` for engineer decisions
+`docs/DESIGN.md` before any UI · `docs/WIRING.md` before adding or replacing a placeholder · `docs/PIPELINE.md` for deploys · `docs/ARCHITECTURE.md` and `docs/decisions/` for engineer decisions

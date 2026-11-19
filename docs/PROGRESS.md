@@ -10,7 +10,7 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 | Item | Status | Notes |
 |---|---|---|
 | Engineer sign-off: client framework and architecture decisions | TODO | See `docs/decisions/README.md` and `0001-pwa-test-harness.md` |
-| A/B testing: experiments, events, results page | UI | `docs/AB_TESTING.md`. Database not created yet (needs a new Supabase project) |
+| A/B testing | Done, removed | Final picks: chat list with filter chips and pinned announcements, plain conversation (time in every message), nested group tree, Apple-style motion with haptics. Event tracking stays as the `analytics.events` placeholder |
 | Repo, lint, tests (PWA) | UI | Vite + React + TypeScript, oxlint, vitest. No CI workflow on GitHub yet; Vercel builds every push. Flutter attempt archived on `flutter-archive`. |
 | Design system: tokens, theme, base components | UI | Approved. Tokens in `src/styles/tokens.css`, components in `src/design`. See `docs/DESIGN.md` |
 | Mock infrastructure: typed contract, mock API, scenario switch, seed data | UI | `src/data`. Review tools in the app (bug icon) |
@@ -94,6 +94,8 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 | DEP-05 | Tech stack may change | TODO | | | See `docs/decisions/` |
 
 ## Session log (latest first)
+
+- 2026-11-19: A/B testing finished and removed. Final picks: chat list with filter chips and pinned announcements, conversation with the time in every message, nested group tree, Apple-style motion with haptics (now the only motion). Removed the experiments module, results page, A/B panel, quick switch and database migration. Kept the review tools (all data and permission states, calls, plan, role, spring lab) and event tracking as the `analytics.events` placeholder. Added `docs/HANDOVER.md`.
 
 - 2026-10-28: Brought back the iOS-style floating glass pill tab bar, removed the app name from the chat list, moved New chat to a round button beside search, review tools moved to a thin edge tab.
 - 2026-10-28: Restyled the messaging layout like WhatsApp on the same design system: flat chat rows with ticks, wallpaper conversation with tailed bubbles and in-bubble time, WhatsApp Web style desktop. Experiment `conversation` variant A is now time inside every bubble. Fixed the desktop page scrolling when a conversation opens.

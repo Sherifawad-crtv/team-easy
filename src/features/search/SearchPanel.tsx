@@ -4,7 +4,7 @@ import type { Conversation, MessageHit, SearchDate, SearchFilters, SearchType } 
 import { formatBytes } from '../../config/limits'
 import { Avatar, BottomSheet, Skeleton } from '../../design/ui'
 import { IconCamera } from '../../design/icons'
-import { track } from '../../experiments/analytics'
+import { track } from '../../analytics'
 import { useAsync } from '../../state/useAsync'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { listTime } from '../chat/format'

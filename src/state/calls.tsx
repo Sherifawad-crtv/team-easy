@@ -3,7 +3,7 @@ import { api } from '../data'
 import { LIMITS } from '../config/limits'
 import type { CallEndReason, CallEvent, CallMode, CallParticipant, CallSession } from '../data/types'
 import { haptic } from '../design/haptics'
-import { track } from '../experiments/analytics'
+import { track } from '../analytics'
 
 export interface EndedCall {
   reason: CallEndReason

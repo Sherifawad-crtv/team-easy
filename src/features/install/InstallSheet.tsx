@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { BottomSheet, Button } from '../../design/ui'
 import { IconCheck, IconCopy, IconUpload } from '../../design/icons'
-import { track } from '../../experiments/analytics'
+import { track } from '../../analytics'
 import { runInstallPrompt, type InstallMode } from '../../state/install'
 
 /**

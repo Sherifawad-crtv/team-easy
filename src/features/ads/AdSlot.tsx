@@ -4,7 +4,7 @@ import { api } from '../../data'
 import type { Ad, AdSlot as Slot } from '../../data/types'
 import { Avatar, BottomSheet, Button } from '../../design/ui'
 import { IconInfo } from '../../design/icons'
-import { track } from '../../experiments/analytics'
+import { track } from '../../analytics'
 import { useAsync } from '../../state/useAsync'
 
 /** MON-01, 02: asks for an ad for this place, and shows it only when the server returns one. Failing to load never shows an error. */

@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import { useDragDown } from '../../design/useDragDown'
-import { useVariant } from '../../experiments/experiments'
 import { useMedia } from '../../state/useMedia'
 import { useCalls } from '../../state/calls'
 import type { CallParticipant } from '../../data/types'
@@ -25,10 +24,9 @@ function Tile({ p, video, solo }: { p: CallParticipant; video: boolean; solo: bo
 export function InCall() {
   const c = useCalls()
   const root = useRef<HTMLDivElement>(null)
-  const ios = useVariant('motion_style') === 'B'
   const phone = useMedia('(max-width: 1023.98px)')
   // Pull the call screen down to tuck it into the green bar.
-  useDragDown(root, ios && phone, () => c.setMinimized(true), (t) => !t.closest('.call__controls'))
+  useDragDown(root, phone, () => c.setMinimized(true), (t) => !t.closest('.call__controls'))
   const call = c.call!
   const video = call.mode === 'video'
   const mine = call.participants.find((p) => p.isMe)!

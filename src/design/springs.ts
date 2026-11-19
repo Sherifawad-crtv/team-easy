@@ -2,7 +2,7 @@
 // (docs/MOTION_PLAN.md, M6). Defined like SwiftUI does it: `response` is how
 // quick (seconds of one swing), `damping` is how bouncy (1 means no bounce).
 // A spring is sampled into a CSS `linear()` curve and a duration. The same
-// maths produced `src/styles/motion-ios.css`; a test keeps the two in step.
+// maths produced `src/styles/motion.css`; a test keeps the two in step.
 
 export interface SpringSpec {
   response: number

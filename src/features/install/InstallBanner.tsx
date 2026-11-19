@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { IconClose, IconPhone } from '../../design/icons'
-import { track } from '../../experiments/analytics'
+import { track } from '../../analytics'
 import { snooze, useInstall } from '../../state/install'
 import { InstallSheet } from './InstallSheet'
 

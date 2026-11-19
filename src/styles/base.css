@@ -69,5 +69,3 @@ body { overscroll-behavior: none; }
   /* Controls are not text. */
   button { -webkit-user-select: none; user-select: none; }
 }
-/* In the old motion style a message can still be selected and copied by hand. */
-:root[data-motion='current'] .bubble__text { -webkit-user-select: text; user-select: text; }

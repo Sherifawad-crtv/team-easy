@@ -1,5 +1,4 @@
 import { useEffect, useRef, type ReactNode, type RefObject } from 'react'
-import { useVariant } from '../experiments/experiments'
 import { useMedia } from '../state/useMedia'
 import { haptic } from './haptics'
 import { rubber } from './gestures'
@@ -11,17 +10,16 @@ const HOLD = 56
  * Pull a list down from its top to refresh it, the way iPhone lists do: the
  * content follows the finger with a rubber band, a spinner turns with the pull,
  * and past the trigger point letting go starts the refresh. Phones in motion
- * style B only. `scroller` is the element that scrolls, or null for the page itself.
+ * `scroller` is the element that scrolls, or null for the page itself.
  */
 export function PullToRefresh({ onRefresh, scroller, children }: { onRefresh: () => Promise<unknown>; scroller?: RefObject<HTMLElement | null> | null; children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null)
   const content = useRef<HTMLDivElement>(null)
-  const ios = useVariant('motion_style') === 'B'
   const touch = useMedia('(pointer: coarse)')
   const phone = useMedia('(max-width: 1023.98px)')
   const refresh = useRef(onRefresh)
   refresh.current = onRefresh
-  const enabled = ios && touch && phone
+  const enabled = touch && phone
 
   useEffect(() => {
     const el = root.current

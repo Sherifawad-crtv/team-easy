@@ -4,7 +4,7 @@ import { DEFAULT_SPRINGS, applySprings, clearSprings, settleTime, springCurve, s
 // The app's TypeScript setup has no Node types, and this test only needs to read one file.
 // @ts-ignore
 const { readFileSync } = (await import('node:fs')) as { readFileSync: (p: string, enc: string) => string }
-const css = readFileSync('src/styles/motion-ios.css', 'utf8')
+const css = readFileSync('src/styles/motion.css', 'utf8')
 
 describe('spring maths', () => {
   it('starts at rest and ends on target', () => {

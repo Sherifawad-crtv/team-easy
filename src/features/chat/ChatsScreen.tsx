@@ -4,8 +4,7 @@ import { api } from '../../data'
 import type { Conversation } from '../../data/types'
 import { IconChat, IconEdit } from '../../design/icons'
 import { useEdgeSwipeBack } from '../../design/swipe'
-import { track, trackExposure } from '../../experiments/analytics'
-import { useVariant } from '../../experiments/experiments'
+import { track } from '../../analytics'
 import { useKept } from '../../state/useKept'
 import { useMedia } from '../../state/useMedia'
 import { useAsync } from '../../state/useAsync'
@@ -29,9 +28,9 @@ export function ChatsScreen() {
   const setSheet = (on: boolean) => setParams(on ? { new: '1' } : {}, { replace: true })
   const scroller = useRef<HTMLDivElement>(null)
   const root = useRef<HTMLDivElement>(null)
-  const iosMotion = useVariant('motion_style') === 'B'
   const phone = useMedia('(max-width: 1023.98px)')
-  const slides = iosMotion && phone
+  // On phones the conversation slides in over the list.
+  const slides = phone
   // Keep the conversation on screen while it slides out, and swipe from the left edge to go back.
   const shownId = useKept(id, slides ? 480 : 0)
   const goBack = () => (location.key !== 'default' ? navigate(-1) : navigate('/chats'))
@@ -40,7 +39,6 @@ export function ChatsScreen() {
   useEffect(() => {
     if (list.status === 'ready') {
       listTiming.shown()
-      trackExposure('chat_list')
     }
   }, [list.status])
 

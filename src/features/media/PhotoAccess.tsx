@@ -1,7 +1,7 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { Banner, BottomSheet, Button } from '../../design/ui'
 import { IconCamera } from '../../design/icons'
-import { track } from '../../experiments/analytics'
+import { track } from '../../analytics'
 import { usePermission } from './usePermission'
 
 /**

@@ -9,14 +9,12 @@ import { DataScreen } from '../features/data/DataScreen'
 import { NotificationSettingsScreen } from '../features/notifications/NotificationSettingsScreen'
 import { PushHost } from '../features/notifications/PushHost'
 import { UpdatesBanner } from '../features/notifications/UpdatesBanner'
-import { resetExperiments } from '../experiments/experiments'
 
 beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
   scenarioStore.set('normal')
   roleStore.set('admin')
-  resetExperiments()
 })
 afterEach(cleanup)
 

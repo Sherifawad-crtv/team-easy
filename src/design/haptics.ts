@@ -14,7 +14,6 @@
 // Haptics only run in motion style B, when the Haptics setting is on, and when
 // Reduce Motion is off.
 
-import { variants } from '../experiments/experiments'
 import { settings } from '../state/settings'
 
 export type Haptic = 'selection' | 'light' | 'success' | 'warning' | 'error'
@@ -53,7 +52,6 @@ function tapOnIos() {
 }
 
 function allowed(): boolean {
-  if (variants.get('motion_style') !== 'B') return false
   if (!settings.haptics()) return false
   try {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false

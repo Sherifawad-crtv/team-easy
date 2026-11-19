@@ -10,7 +10,6 @@ import { SwipeRow } from './SwipeRow'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { Banner } from '../../design/ui'
 import type { Conversation } from '../../data/types'
-import { useVariant } from '../../experiments/experiments'
 import { AdRow } from '../ads/AdSlot'
 import { LIMITS } from '../../config/limits'
 import { SearchPanel } from '../search/SearchPanel'
@@ -35,7 +34,7 @@ function preview(c: Conversation): string {
 
 const isUnread = (c: Conversation) => c.unread > 0 || Boolean(c.flaggedUnread)
 
-function Row({ c, active, onOpen, lines, onActions }: { c: Conversation; active: boolean; onOpen: (id: string, messageId?: string) => void; lines: 1 | 2; onActions: (c: Conversation) => void }) {
+function Row({ c, active, onOpen, onActions }: { c: Conversation; active: boolean; onOpen: (id: string, messageId?: string) => void; onActions: (c: Conversation) => void }) {
   // A long press (touch) or a right click opens the same actions the swipe does.
   const timer = useRef<number>(undefined)
   const fired = useRef(false)
@@ -73,7 +72,7 @@ function Row({ c, active, onOpen, lines, onActions }: { c: Conversation; active:
         </span>
         {c.parent && <span className="chat-row__parent">in {c.parent}</span>}
         <span className="chat-row__bottom">
-          <span className={`chat-row__preview chat-row__preview--${lines}${unread ? ' is-unread' : ''}`}>
+          <span className={`chat-row__preview${unread ? ' is-unread' : ''}`}>
             {c.lastSender === 'You' && c.lastMessage && <span className="ticks" aria-label="Delivered"><IconDoubleTick size={18} /></span>}
             {preview(c)}
           </span>
@@ -97,7 +96,6 @@ export interface ChatListProps {
 }
 
 export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, banner }: ChatListProps) {
-  const variant = useVariant('chat_list')
   const online = useOnline()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<Filter>('all')
@@ -105,9 +103,9 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, 
   const [actionError, setActionError] = useState<unknown>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const chipsRef = useRef<HTMLDivElement>(null)
-  useSlide(chipsRef, `${filter}|${state.status}|${(state.data ?? []).length}|${variant}`)
+  useSlide(chipsRef, `${filter}|${state.status}|${(state.data ?? []).length}`)
   const touch = useMedia('(pointer: coarse)')
-  const swipe = useVariant('motion_style') === 'B' && touch
+  const swipe = touch
 
   const toggleUnread = (c: Conversation) => { setActionError(null); void (isUnread(c) ? api.chat.markRead(c.id) : api.chat.markUnread(c.id)).catch(setActionError) }
   const toggleMute = (c: Conversation) => { setActionError(null); void api.chat.setMuted(c.id, !c.muted).catch(setActionError) }
@@ -117,19 +115,16 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, 
     const q = query.trim().toLowerCase()
     return all.filter((c) => {
       if (q && !`${c.title} ${c.lastMessage}`.toLowerCase().includes(q)) return false
-      if (variant === 'B') {
-        if (filter === 'unread') return isUnread(c)
-        if (filter === 'groups') return isGroupish(c)
-        if (filter === 'direct') return c.kind === 'direct'
-      }
+      if (filter === 'unread') return isUnread(c)
+      if (filter === 'groups') return isGroupish(c)
+      if (filter === 'direct') return c.kind === 'direct'
       return true
     })
-  }, [all, query, filter, variant])
+  }, [all, query, filter])
 
   const searching = query.trim().length >= 2 && state.status === 'ready'
-  const pinned = variant === 'B' && !query && filter === 'all' ? shown.find((c) => c.kind === 'general') : undefined
+  const pinned = !query && filter === 'all' ? shown.find((c) => c.kind === 'general') : undefined
   const rest = pinned ? shown.filter((c) => c.id !== pinned.id) : shown
-  const lines = variant === 'B' ? 1 : 2
   useFlip(listRef, rest.map((c) => c.id).join())
 
   return (
@@ -148,7 +143,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, 
 
       {searching && <SearchPanel query={query} conversations={all} onOpen={onOpen} />}
 
-      {!searching && variant === 'B' && state.status === 'ready' && all.length > 0 && (
+      {!searching && state.status === 'ready' && all.length > 0 && (
         <div className="chips" role="group" aria-label="Filter chats" ref={chipsRef} data-slide>
           {FILTERS.map((f) => (
             <button key={f.id} type="button" className="chip" aria-pressed={filter === f.id} onClick={() => { haptic('selection'); setFilter(f.id) }}>
@@ -222,7 +217,7 @@ export function ChatList({ state, activeId, onOpen, onRetry, onNewChat, action, 
                   lead={{ label: isUnread(c) ? 'Read' : 'Unread', icon: <IconUnread size={22} />, run: () => toggleUnread(c) }}
                   trail={{ label: c.muted ? 'Unmute' : 'Mute', icon: c.muted ? <IconBell size={22} /> : <IconMute size={22} />, run: () => toggleMute(c) }}
                 >
-                  <Row c={c} active={c.id === activeId} onOpen={onOpen} lines={lines} onActions={setActionsFor} />
+                  <Row c={c} active={c.id === activeId} onOpen={onOpen} onActions={setActionsFor} />
                 </SwipeRow>
                 {i === LIMITS.adAfterChats - 1 && <AdRow />}
               </div>

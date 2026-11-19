@@ -155,8 +155,7 @@ export function BottomSheet({ title, onClose, children, detents = false }: { tit
   const ref = useRef<HTMLDivElement>(null)
   const backdrop = useRef<HTMLDivElement>(null)
   const phone = useMedia('(max-width: 1023.98px)')
-  const ios = useVariant('motion_style') === 'B'
-  const draggable = ios && phone
+  const draggable = phone
   // On phones in motion style B a sheet can be dragged down, and between two heights when it has them.
   const closeNicely = useSheetDrag({ sheet: ref, backdrop, enabled: draggable, detents, onClose })
   useEffect(() => {
@@ -238,7 +237,6 @@ export function Segmented<T extends string | number>({ label, options, value, on
 /* ---------- Switch ---------- */
 
 /** An on/off setting row control. The label comes from `label` for screen readers. */
-import { useVariant } from '../experiments/experiments'
 import { useMedia } from '../state/useMedia'
 import { animateNav } from './nav'
 import { useSheetDrag } from './useSheetDrag'

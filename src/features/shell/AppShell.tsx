@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet, matchPath, useLocation, useNavigate } from 'react-router-dom'
 import { Avatar, Logo } from '../../design/ui'
-import { IconCalendar, IconChart, IconChat, IconPeople, IconUser } from '../../design/icons'
+import { IconCalendar, IconChat, IconPeople, IconUser } from '../../design/icons'
 import { useSession } from '../../state/session'
 import { haptic } from '../../design/haptics'
 import { animateNav } from '../../design/nav'
@@ -18,7 +18,6 @@ const NAV = [
   { to: '/calendar', label: 'Calendar', icon: IconCalendar },
   { to: '/account', label: 'Account', icon: IconUser },
 ]
-const RAIL = [...NAV, { to: '/results', label: 'A/B', icon: IconChart }]
 
 export function AppShell() {
   const { pathname } = useLocation()
@@ -40,7 +39,7 @@ export function AppShell() {
       <aside className="rail" aria-label="Main">
         <span className="rail__logo"><Logo size={40} label="Team Easy" /></span>
         <nav className="rail__nav">
-          {RAIL.map(({ to, label, icon: Icon }) => (
+          {NAV.map(({ to, label, icon: Icon }) => (
             <NavLink key={to} to={to} className={({ isActive }) => `rail__item${isActive ? ' is-active' : ''}`}>
               <span className="navbar__ind"><Icon size={24} /></span>
               {label}

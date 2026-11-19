@@ -1,10 +1,9 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { App } from '../App'
 import { scenarioStore } from '../data/mock/scenario'
 import { ChatList } from '../features/chat/ChatList'
-import { resetExperiments, variants } from '../experiments/experiments'
 import type { Conversation } from '../data/types'
 
 const conv = (over: Partial<Conversation>): Conversation => ({
@@ -20,23 +19,14 @@ beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
   scenarioStore.set('normal')
-  resetExperiments()
 })
 afterEach(cleanup)
 
 const renderList = (status: 'ready' | 'loading' | 'error' = 'ready', data: Conversation[] = DATA) =>
   render(<MemoryRouter><ChatList state={{ status, data, error: new Error('x') }} onOpen={() => {}} onRetry={() => {}} onNewChat={() => {}} /></MemoryRouter>)
 
-describe('chat list variants', () => {
-  it('A is a plain list without filters', () => {
-    act(() => variants.setOverride('chat_list', 'A'))
-    renderList()
-    expect(screen.queryByRole('group', { name: 'Filter chats' })).toBeNull()
-    expect(screen.getByText('Amelia')).toBeTruthy()
-  })
-
-  it('B adds filter chips and filters by unread', () => {
-    act(() => variants.setOverride('chat_list', 'B'))
+describe('chat list', () => {
+  it('has filter chips and filters by unread', () => {
     renderList()
     fireEvent.click(screen.getByRole('button', { name: /Unread/ }))
     expect(screen.getByText('Amelia')).toBeTruthy()

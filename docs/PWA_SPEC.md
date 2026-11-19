@@ -48,7 +48,7 @@ Where it appears: a dismissible card under the notice on the chat list (phones o
 
 ## Behave like an app, not a web page (touch screens)
 
-- **No text selection or magnifier** anywhere except text fields, the invite link and the transfer code. In the old motion style (variant A) a message can still be selected by hand; in variant B copying is in the long-press menu.
+- **No text selection or magnifier** anywhere except text fields, the invite link and the transfer code. Copying a message is in the long-press menu.
 - **No page zoom:** pinch and double tap do nothing to the page (viewport locked, `touch-action: manipulation`, and Safari's pinch gesture events are stopped). The picture viewer has its own pinch and double-tap zoom.
 - **No browser menus:** long press on a link or picture shows no callout or context menu (except in text fields), and pictures and links cannot be dragged out of the page.
 - **No pull-to-refresh or bounce chaining from the browser.** Our own pull to refresh is the only one.

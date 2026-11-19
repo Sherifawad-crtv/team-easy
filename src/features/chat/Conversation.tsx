@@ -5,8 +5,7 @@ import { haptic } from '../../design/haptics'
 import type { Conversation as Conv, Message, MessageDraft } from '../../data/types'
 import { Avatar, BackButton, Banner, BottomSheet, Button, Skeleton, toneFor } from '../../design/ui'
 import { IconAttach, IconClock, IconDoubleTick, IconMegaphone, IconRetry, IconSend, IconTrash } from '../../design/icons'
-import { track, trackExposure } from '../../experiments/analytics'
-import { useVariant } from '../../experiments/experiments'
+import { track } from '../../analytics'
 import { useAsync } from '../../state/useAsync'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { useMedia } from '../../state/useMedia'
@@ -24,19 +23,16 @@ let tmpSeq = 0
 
 type Item =
   | { kind: 'day'; key: string; label: string }
-  | { kind: 'msg'; m: Message; first: boolean; last: boolean; tail: boolean }
+  | { kind: 'msg'; m: Message; tail: boolean }
 
-function buildItems(messages: Message[], grouped: boolean): Item[] {
+function buildItems(messages: Message[]): Item[] {
   const items: Item[] = []
   messages.forEach((m, i) => {
     const prev = messages[i - 1]
-    const next = messages[i + 1]
     if (!prev || !sameDay(prev.at, m.at)) items.push({ kind: 'day', key: `d-${m.id}`, label: dayLabel(m.at) })
-    const joinsPrev = grouped && prev && sameDay(prev.at, m.at) && prev.senderId === m.senderId && m.at - prev.at < GROUP_GAP
-    const joinsNext = grouped && next && sameDay(next.at, m.at) && next.senderId === m.senderId && next.at - m.at < GROUP_GAP
-    // The bubble tail marks the start of a run from one person, in both variants.
-    const startsRun = !(prev && sameDay(prev.at, m.at) && prev.senderId === m.senderId && m.at - prev.at < GROUP_GAP)
-    items.push({ kind: 'msg', m, first: !joinsPrev, last: !joinsNext, tail: startsRun })
+    // The bubble tail marks the start of a run from one person.
+    const tail = !(prev && sameDay(prev.at, m.at) && prev.senderId === m.senderId && m.at - prev.at < GROUP_GAP)
+    items.push({ kind: 'msg', m, tail })
   })
   return items
 }
@@ -52,8 +48,6 @@ function subtitle(c: Conv): string {
 export function ConversationView({ conversation, onBack, highlightId }: { conversation: Conv; onBack: () => void; highlightId?: string }) {
   const id = conversation.id
   const navigate = useNavigate()
-  const variant = useVariant('conversation')
-  const grouped = variant === 'B'
   const isDirect = conversation.kind === 'direct'
 
   const history = useAsync(() => api.chat.listMessages(id), [id])
@@ -61,14 +55,13 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
   const [draft, setDraft] = useState('')
   const [actionFor, setActionFor] = useState<Message | null>(null)
   const [contactOpen, setContactOpen] = useState(false)
-  const [shownTimes, setShownTimes] = useState<Set<string>>(new Set())
   const [attaching, setAttaching] = useState(false)
   const drafts = useRef(new Map<string, MessageDraft>())
   const scrollRef = useRef<HTMLDivElement>(null)
   const composer = useRef<HTMLTextAreaElement>(null)
   const pressTimer = useRef<number>(0)
-  // Motion style B on phones: long press lifts the message into a menu, new messages glide in.
-  const ios = useVariant('motion_style') === 'B' && useMedia('(pointer: coarse)')
+  // On touch screens a long press lifts the message into a menu.
+  const ios = useMedia('(pointer: coarse)')
   const [menu, setMenu] = useState<{ m: Message; bubble: HTMLElement } | null>(null)
   const [popId, setPopId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
@@ -76,7 +69,6 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
 
   useEffect(() => {
     if (history.status === 'ready') {
-      trackExposure('conversation')
       void api.chat.markRead(id)
     }
   }, [history.status, id])
@@ -180,7 +172,7 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
     if (history.status === 'ready') for (const m of history.data) seen.current?.add(m.id)
   }, [history])
 
-  const items = useMemo(() => (history.status === 'ready' ? buildItems(history.data, grouped) : []), [history, grouped])
+  const items = useMemo(() => (history.status === 'ready' ? buildItems(history.data) : []), [history])
 
   const actionable = (m: Message) => m.status === 'failed' || (isDirect && m.senderId === ME && m.status === 'sent')
   // On phones in motion style B every message with text can be copied, so every one has a menu.
@@ -263,15 +255,10 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
               key={it.m.id}
               m={it.m}
               hit={it.m.id === highlightId}
-              first={it.first}
-              last={it.last}
               tail={it.tail}
-              grouped={grouped}
               showName={conversation.kind !== 'direct' && it.m.senderId !== ME && it.tail}
-              timeShown={!grouped || shownTimes.has(it.m.id)}
               onTap={() => {
                 if (it.m.status === 'failed') setActionFor(it.m)
-                else if (grouped) setShownTimes((s) => { const n = new Set(s); if (n.has(it.m.id)) n.delete(it.m.id); else n.add(it.m.id); return n })
               }}
               enter={Boolean(seen.current && !seen.current.has(it.m.id))}
               tickPop={popId === it.m.id}
@@ -341,12 +328,8 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
 interface RowProps {
   m: Message
   hit: boolean
-  first: boolean
-  last: boolean
   tail: boolean
-  grouped: boolean
   showName: boolean
-  timeShown: boolean
   onTap: () => void
   enter: boolean
   tickPop: boolean
@@ -355,15 +338,15 @@ interface RowProps {
   onMenu: (el: HTMLElement) => void
 }
 
-function MessageRow({ m, hit, first, last, tail, grouped, showName, timeShown, enter, tickPop, onTap, onPressStart, onPressEnd, onMenu }: RowProps) {
+function MessageRow({ m, hit, tail, showName, enter, tickPop, onTap, onPressStart, onPressEnd, onMenu }: RowProps) {
   const mine = m.senderId === ME
   const failed = m.status === 'failed'
   const time = messageTime(m.at)
   const a = m.attachment
   const bareImage = a?.kind === 'image' && !m.text
-  const showFoot = !failed && (timeShown || m.status === 'sending' || (bareImage && !a?.expired))
+  const showFoot = !failed
   const label = failed ? 'Not sent. Tap to retry' : m.status === 'sending' ? 'Sending' : time
-  const cls = ['msg', enter && 'msg--enter', hit && 'msg--hit', mine && 'msg--mine', tail && 'msg--tail', grouped && !first && 'msg--joined', grouped && !last && 'msg--open'].filter(Boolean).join(' ')
+  const cls = ['msg', enter && 'msg--enter', hit && 'msg--hit', mine && 'msg--mine', tail && 'msg--tail'].filter(Boolean).join(' ')
   return (
     <div className={cls} data-mid={m.id}>
       <div

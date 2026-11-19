@@ -1,10 +1,9 @@
-import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { roleStore } from '../data/mock/role'
 import { scenarioStore } from '../data/mock/scenario'
 import { GroupsScreen } from '../features/groups/GroupsScreen'
-import { resetExperiments, variants } from '../experiments/experiments'
 import { ConversationView } from '../features/chat/Conversation'
 import type { Conversation } from '../data/types'
 import { CallsProvider } from '../state/calls'
@@ -14,7 +13,6 @@ beforeEach(() => {
   sessionStorage.clear()
   scenarioStore.set('normal')
   roleStore.set('admin')
-  resetExperiments()
 })
 afterEach(cleanup)
 
@@ -25,9 +23,8 @@ const renderAt = (path = '/groups') =>
     </MemoryRouter>,
   )
 
-describe('groups navigation (A/B)', () => {
-  it('A shows a collapsed tree that opens level by level', async () => {
-    act(() => variants.setOverride('group_nav', 'A'))
+describe('groups navigation', () => {
+  it('shows a collapsed tree that opens level by level', async () => {
     renderAt()
     await screen.findByText('Product Team', {}, { timeout: 3000 })
     expect(screen.queryByText('Mobile design')).toBeNull()
@@ -36,15 +33,6 @@ describe('groups navigation (A/B)', () => {
     expect(screen.queryByText('Design systems')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Expand Mobile design' }))
     expect(screen.getByText('Design systems')).toBeTruthy()
-  })
-
-  it('B lists every group with its path and can filter', async () => {
-    act(() => variants.setOverride('group_nav', 'B'))
-    renderAt()
-    await screen.findByText('Design systems', {}, { timeout: 3000 })
-    expect(screen.getAllByText(/Product Team › Mobile design/).length).toBe(2)
-    fireEvent.change(screen.getByLabelText('Find a group'), { target: { value: 'zzz' } })
-    expect(screen.getByText(/No group matches/)).toBeTruthy()
   })
 
   it('shows an error with retry and an empty state', async () => {
@@ -81,7 +69,6 @@ describe('group detail', () => {
   })
 
   it('deletes with an undo that brings the group back', async () => {
-    act(() => variants.setOverride('group_nav', 'B'))
     renderAt('/groups/g-support')
     fireEvent.click(await screen.findByRole('button', { name: /Delete group/ }, { timeout: 3000 }))
     const sheet = await screen.findByRole('dialog')
@@ -100,7 +87,6 @@ function Where() {
 
 describe('opening a group', () => {
   it('goes straight to its chat, not to the group page', async () => {
-    act(() => variants.setOverride('group_nav', 'B'))
     render(
       <MemoryRouter initialEntries={['/groups']}>
         <Where />
@@ -116,7 +102,6 @@ describe('opening a group', () => {
   })
 
   it('opens the group page for an archived group, which has no chat in the list', async () => {
-    act(() => variants.setOverride('group_nav', 'A'))
     renderAt('/groups')
     fireEvent.click(await screen.findByRole('button', { name: /Archived \(1\)/ }, { timeout: 3000 }))
     fireEvent.click(await screen.findByText('2025 Offsite', { selector: '.grow__name' }))

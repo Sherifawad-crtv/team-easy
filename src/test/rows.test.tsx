@@ -1,10 +1,9 @@
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { mockApi } from '../data/mock/mockApi'
 import { scenarioStore } from '../data/mock/scenario'
 import { ChatList } from '../features/chat/ChatList'
-import { resetExperiments, variants } from '../experiments/experiments'
 import type { Conversation } from '../data/types'
 
 const conv = (over: Partial<Conversation>): Conversation => ({ id: 'c-priya', kind: 'direct', title: 'Priya Raman', lastMessage: 'hi', lastAt: Date.now(), unread: 0, ...over })
@@ -13,7 +12,6 @@ beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
   scenarioStore.set('normal')
-  resetExperiments()
 })
 afterEach(cleanup)
 
@@ -22,7 +20,6 @@ const renderList = (data: Conversation[]) =>
 
 describe('chat row actions', () => {
   it('opens a sheet with Mark as unread and Mute on a right click, and runs them', async () => {
-    act(() => variants.setOverride('chat_list', 'A'))
     const unread = vi.spyOn(mockApi.chat, 'markUnread')
     const mute = vi.spyOn(mockApi.chat, 'setMuted')
     renderList([conv({})])
@@ -43,7 +40,6 @@ describe('chat row actions', () => {
   })
 
   it('shows a dot for a chat marked unread, and the Unread filter counts it', () => {
-    act(() => variants.setOverride('chat_list', 'B'))
     renderList([conv({ flaggedUnread: true }), conv({ id: 'c-x', title: 'Someone Else' })])
     expect(screen.getByRole('img', { name: 'Marked as unread' })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: /Unread/ }))

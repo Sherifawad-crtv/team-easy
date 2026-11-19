@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { variants } from '../experiments/experiments'
 
 // Screen-to-screen motion for stacks of pages (docs/MOTION_PLAN.md, M2), using
 // the browser's View Transitions where it has them (Chrome, Safari 18 and
@@ -36,9 +35,9 @@ function settle(): Promise<void> {
   })
 }
 
-/** Runs a navigation inside a view transition when motion style B and the browser allow it. */
+/** Runs a navigation inside a view transition when the browser allows it. */
 export function animateNav(dir: NavDir, run: () => void): void {
-  if (variants.get('motion_style') !== 'B' || !supported()) {
+  if (!supported()) {
     run()
     return
   }

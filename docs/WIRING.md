@@ -87,6 +87,7 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `data.retention` | DAT-02, DAT-04 | server job + `RetentionConfig` | Delete unopened attachments after 6d (standard) / 15d (business); delete archived chats after configured period | All deletion (server job) | MOCKED |
 | `monetization.ads` | MON-01, MON-02 | `AdService` | Serve ads to free users per placement rules | Eligibility | MOCKED |
 | `monetization.purchases` | MON-03, MON-04 | `PurchaseService` | RevenueCat: subscriptions and purchases for members beyond 300, extra groups and sub-groups | Entitlements | MOCKED |
+| `analytics.events` | Product analytics | `track(event, props)` in `src/analytics.ts` | Send events to the analytics service with the account id (anonymous id before sign-in); batch and retry; never block the UI | No personal data in properties; consent and opt-out | MOCKED |
 | `config.limits` | Part B §16 | `AppConfigRepository` | Limits, quotas, undo window, retention values served from config/DB, not hardcoded | Source of truth | PLANNED |
 
 ## How an engineer (or their AI) wires a point

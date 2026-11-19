@@ -4,14 +4,13 @@ import { api } from '../../data'
 import { LIMITS } from '../../config/limits'
 import type { DeletedGroup, Group, LeaveMode } from '../../data/types'
 import { Avatar, Badge, Button, Skeleton, Snackbar } from '../../design/ui'
-import { IconChevronDown, IconChevronRight, IconPeople, IconPlus, IconSearch } from '../../design/icons'
+import { IconChevronDown, IconChevronRight, IconPeople, IconPlus } from '../../design/icons'
 import { PullToRefresh } from '../../design/PullToRefresh'
 import { useEdgeSwipeBack } from '../../design/swipe'
 import { useFlip } from '../../design/useFlip'
-import { track, trackExposure } from '../../experiments/analytics'
+import { track } from '../../analytics'
 import { useKept } from '../../state/useKept'
 import { useMedia } from '../../state/useMedia'
-import { useVariant } from '../../experiments/experiments'
 import { useAsync } from '../../state/useAsync'
 import { useReviewRole } from '../../state/useReviewRole'
 import { useSubmit } from '../../state/useSubmit'
@@ -21,7 +20,7 @@ import { daysLeftLabel } from '../data/retention'
 import { UpgradeSheet } from '../plan/UpgradeSheet'
 import { GroupDetail } from './GroupDetail'
 import { CreateGroupSheet } from './GroupSheets'
-import { LEVEL_NAME, buildTree, childSlots, memberLabel, pathOf, type TreeNode } from './tree'
+import { LEVEL_NAME, buildTree, childSlots, memberLabel, type TreeNode } from './tree'
 
 interface RowProps {
   group: Group
@@ -96,15 +95,12 @@ export function GroupsScreen() {
   const treeRef = useRef<HTMLDivElement>(null)
   const [openError, setOpenError] = useState<unknown>(null)
   const role = useReviewRole()
-  const variant = useVariant('group_nav')
-  const iosMotion = useVariant('motion_style') === 'B'
   const phone = useMedia('(max-width: 1023.98px)')
-  const slides = iosMotion && phone
+  const slides = phone
   const root = useRef<HTMLDivElement>(null)
   const shownId = useKept(id, slides ? 480 : 0)
   const list = useAsync(() => api.groups.list(), [role])
   const [creating, setCreating] = useState(false)
-  const [query, setQuery] = useState('')
   const [open, setOpen] = useState<Set<string>>(new Set())
   const [showArchived, setShowArchived] = useState(false)
   const [undo, setUndo] = useState<DeletedGroup | null>(null)
@@ -114,7 +110,6 @@ export function GroupsScreen() {
   useEffect(() => {
     if (list.status === 'ready') {
       groupTiming.shown()
-      trackExposure('group_nav')
     }
   }, [list.status])
 
@@ -161,9 +156,7 @@ export function GroupsScreen() {
   const activeGroups = groups.filter((g) => !g.archived)
   const archived = groups.filter((g) => g.archived)
   const tree = useMemo(() => buildTree(activeGroups), [activeGroups])
-  const q = query.trim().toLowerCase()
-  const flat = activeGroups.filter((g) => !q || g.name.toLowerCase().includes(q)).sort((a, b) => b.unread - a.unread || a.name.localeCompare(b.name))
-  useFlip(treeRef, `${variant}|${query}|${[...open].join()}|${groups.map((g) => g.id).join()}`)
+  useFlip(treeRef, `${[...open].join()}|${groups.map((g) => g.id).join()}`)
   const rootSlots = known ? childSlots(groups, null, known.limits) : { used: 0, max: 0, full: false, tooDeep: false }
   const [upgrading, setUpgrading] = useState(false)
 
@@ -172,7 +165,7 @@ export function GroupsScreen() {
     navigate('/groups')
     // The row folds away first, then the list updates.
     setLeavingId(d.undoToken.split('@')[0])
-    window.setTimeout(() => { reload(); setLeavingId(null) }, iosMotion ? 300 : 0)
+    window.setTimeout(() => { reload(); setLeavingId(null) }, 300)
   }
   const doUndo = async () => {
     if (!undo) return
@@ -206,13 +199,6 @@ export function GroupsScreen() {
 
           {openError != null && <div style={{ padding: '0 var(--s-5) var(--s-3)' }}><ErrorBanner error={openError} /></div>}
 
-          {variant === 'B' && settled && groups.length > 0 && (
-            <div className="search gsearch">
-              <IconSearch size={20} />
-              <input type="search" placeholder="Find a group" aria-label="Find a group" value={query} onChange={(e) => setQuery(e.target.value)} />
-            </div>
-          )}
-
           {list.status === 'loading' && !settled && (
             <div aria-busy="true" aria-label="Loading groups">
               {[0, 1, 2, 3, 4].map((i) => <div key={i} className="list-row"><Skeleton width={48} height={48} radius="50%" /><Skeleton width="60%" height={14} /></div>)}
@@ -232,16 +218,8 @@ export function GroupsScreen() {
           {settled && groups.length > 0 && (
             <PullToRefresh onRefresh={list.refresh} scroller={scroller}>
               <div role="tree" aria-label="Groups" ref={treeRef}>
-                {variant === 'A' ? (
-                  <TreeList nodes={tree} activeId={id} open={open} setOpen={setOpen} onOpen={openGroup} opening={opening} leaving={leavingId} />
-                ) : (
-                  flat.map((g) => {
-                    const path = pathOf(g, groups)
-                    return <GroupRow key={g.id} group={g} active={g.id === id} sub={path.length ? `${path.join(' › ')} · ${LEVEL_NAME[g.level]}` : `${LEVEL_NAME[g.level]} · ${memberLabel(g.memberCount)}`} busy={opening === g.id} leaving={leavingId === g.id} onOpen={openGroup} />
-                  })
-                )}
+                <TreeList nodes={tree} activeId={id} open={open} setOpen={setOpen} onOpen={openGroup} opening={opening} leaving={leavingId} />
               </div>
-              {variant === 'B' && flat.length === 0 && <p className="t-body-sm muted" style={{ padding: 'var(--s-5)', textAlign: 'center' }}>No group matches “{query}”</p>}
 
               {archived.length > 0 && (
                 <div className="garchived">

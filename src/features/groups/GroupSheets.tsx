@@ -5,7 +5,7 @@ import type { DeletedGroup, Group, GroupMember, LeaveMode } from '../../data/typ
 import { Avatar, Banner, BottomSheet, Button, Skeleton, TextField } from '../../design/ui'
 import { IconCheck, IconCopy, IconSearch } from '../../design/icons'
 import { haptic } from '../../design/haptics'
-import { track } from '../../experiments/analytics'
+import { track } from '../../analytics'
 import { useAsync } from '../../state/useAsync'
 import { useSubmit } from '../../state/useSubmit'
 import { ErrorBanner } from '../auth/AuthFrame'

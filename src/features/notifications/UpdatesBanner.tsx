@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../data'
 import { IconBell, IconClose } from '../../design/icons'
-import { track } from '../../experiments/analytics'
+import { track } from '../../analytics'
 import { useAsync } from '../../state/useAsync'
 
 const LABEL = { release: 'New version', update: "What's new", offer: 'Offer' } as const

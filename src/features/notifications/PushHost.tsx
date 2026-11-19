@@ -3,7 +3,7 @@ import { matchPath, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../../data'
 import type { PushNotification } from '../../data/types'
 import { IconBell } from '../../design/icons'
-import { track } from '../../experiments/analytics'
+import { track } from '../../analytics'
 
 const SHOW_MS = 5000
 

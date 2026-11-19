@@ -7,7 +7,7 @@ import './styles/tokens.css'
 import './styles/base.css'
 import './styles/components.css'
 import './styles/app.css'
-import './styles/motion-ios.css'
+import './styles/motion.css'
 
 installNativeFeel()
 applyStoredTuning()

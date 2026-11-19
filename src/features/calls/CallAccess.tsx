@@ -3,7 +3,7 @@ import { api } from '../../data'
 import type { CallMode } from '../../data/types'
 import { Banner, BottomSheet, Button } from '../../design/ui'
 import { IconMic } from '../../design/icons'
-import { track } from '../../experiments/analytics'
+import { track } from '../../analytics'
 
 /**
  * NFR-04: microphone (and camera for video) access with our own explanation

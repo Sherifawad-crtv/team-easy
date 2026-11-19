@@ -1,9 +1,6 @@
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import { useEffect } from 'react'
 import { Logo } from './design/ui'
-import { trackExposure } from './experiments/analytics'
-import { useVariant } from './experiments/experiments'
-import { DebugPanel } from './debug/ReviewPanel'
+import { ReviewTools } from './debug/ReviewTools'
 import { AccountScreen } from './features/account/AccountScreen'
 import { EditProfileScreen } from './features/account/EditProfileScreen'
 import { ForgotPasswordScreen } from './features/auth/ForgotPasswordScreen'
@@ -26,7 +23,6 @@ import { DataScreen } from './features/data/DataScreen'
 import { NotificationSettingsScreen } from './features/notifications/NotificationSettingsScreen'
 import { UpdatesScreen } from './features/notifications/UpdatesScreen'
 import { ChatsScreen } from './features/chat/ChatsScreen'
-import { ResultsScreen } from './features/results/ResultsScreen'
 import { AppShell } from './features/shell/AppShell'
 import { SessionProvider, useSession } from './state/session'
 
@@ -48,21 +44,10 @@ function Private() {
   return account ? <AppShell /> : <Navigate to="/welcome" replace />
 }
 
-/** Applies the motion style experiment to the whole page. */
-function MotionStyle() {
-  const style = useVariant('motion_style')
-  useEffect(() => {
-    document.documentElement.dataset.motion = style === 'B' ? 'ios' : 'current'
-    trackExposure('motion_style')
-  }, [style])
-  return null
-}
-
 export function App() {
   return (
     <BrowserRouter>
       <SessionProvider>
-        <MotionStyle />
         <Routes>
           <Route element={<PublicOnly />}>
             <Route path="/welcome" element={<WelcomeScreen />} />
@@ -92,11 +77,10 @@ export function App() {
             <Route path="/account/data" element={<DataScreen />} />
             <Route path="/account" element={<AccountScreen />} />
             <Route path="/account/edit" element={<EditProfileScreen />} />
-            <Route path="/results" element={<ResultsScreen />} />
           </Route>
           <Route path="*" element={<Navigate to="/chats" replace />} />
         </Routes>
-        <DebugPanel />
+        <ReviewTools />
       </SessionProvider>
     </BrowserRouter>
   )

@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { IconClose } from '../../design/icons'
 import { clamp, doubleTapZoom, maxPan, rubber, shouldDismiss } from '../../design/gestures'
-import { useVariant } from '../../experiments/experiments'
 import { useMedia } from '../../state/useMedia'
 import type { Message } from '../../data/types'
 import { messageTime } from '../chat/format'
@@ -17,9 +16,8 @@ const MAX_SCALE = 5
 export function ImageViewer({ message, onClose }: { message: Message; onClose: () => void }) {
   const root = useRef<HTMLDivElement>(null)
   const img = useRef<HTMLImageElement>(null)
-  const ios = useVariant('motion_style') === 'B'
   const phone = useMedia('(max-width: 1023.98px)')
-  const gestures = ios && phone
+  const gestures = phone
   const a = message.attachment
   // The parent hands over a new function on every render; gestures must not restart because of that.
   const closeRef = useRef(onClose)

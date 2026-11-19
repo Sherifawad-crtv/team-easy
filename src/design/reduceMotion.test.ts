@@ -37,7 +37,7 @@ function parse(css: string): Rule[] {
   return rules
 }
 
-const FILES = ['components.css', 'app.css', 'motion-ios.css', 'base.css', 'tokens.css']
+const FILES = ['components.css', 'app.css', 'motion.css', 'base.css', 'tokens.css']
 const rules = FILES.flatMap((f) => parse(readFileSync(`src/styles/${f}`, 'utf8')))
 
 /** Loading indicators and the call timers go on turning: they show waiting, not movement. */
