@@ -95,6 +95,8 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 
 ## Session log (latest first)
 
+- 2026-11-19: Fixed tab changes freezing for about 4 seconds, and the tab bar going flat white with a halo during screen changes (it no longer gets its own transition layer, so the glass blur stays).
+
 - 2026-11-19: A/B testing finished and removed. Final picks: chat list with filter chips and pinned announcements, conversation with the time in every message, nested group tree, Apple-style motion with haptics (now the only motion). Removed the experiments module, results page, A/B panel, quick switch and database migration. Kept the review tools (all data and permission states, calls, plan, role, spring lab) and event tracking as the `analytics.events` placeholder. Added `docs/HANDOVER.md`.
 
 - 2026-10-28: Brought back the iOS-style floating glass pill tab bar, removed the app name from the chat list, moved New chat to a round button beside search, review tools moved to a thin edge tab.

@@ -94,8 +94,6 @@
 }
 
 /* Other screens (Account and its pages, What's new, sign-in): the browser animates the whole page. */
-.dock { view-transition-name: dock; }
-::view-transition-group(dock) { animation: none; }
 :root[data-vt]::view-transition-old(root),
 :root[data-vt]::view-transition-new(root) {
   animation-duration: var(--motion-smooth-dur, 400ms);
