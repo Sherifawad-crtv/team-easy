@@ -127,12 +127,12 @@ One spring per job. Use these names, not new numbers. Values are the starting po
 
 | Spring | Response, damping | Settles in | Used for |
 |---|---|---|---|
-| Smooth | 0.32, 1.00 | about 410 ms | Screens, sheets, list and detail slides, rows that move, large moves of dragged things |
-| Smooth, slow | 0.42, 1.00 | about 540 ms | Large moves that need a little longer |
-| Snappy | 0.26, 0.85 | about 310 ms | Taps, toggles, tab changes, the sliding highlight, message and menu pops |
-| Bouncy | 0.50, 0.60 | about 760 ms | Rare delight only: answering a call, a purchase or install finished |
+| Smooth | 0.26, 1.00 | about 330 ms | Screens, sheets, list and detail slides, rows that move, large moves of dragged things |
+| Smooth, slow | 0.34, 1.00 | about 430 ms | Large moves that need a little longer |
+| Snappy | 0.20, 0.85 | about 240 ms | Taps, toggles, the sliding highlight, message and menu pops |
+| Bouncy | 0.42, 0.60 | about 640 ms | Rare delight only: answering a call, a purchase or install finished |
 | Fade, fast | 0.12, 1.00 | about 150 ms | Colour and opacity changes on press |
 | Fade | 0.18, 1.00 | about 230 ms | Banners, content fading in |
-| Fade, slow | 0.26, 1.00 | about 330 ms | Lists and tables replacing a skeleton |
+| Fade, slow | 0.26, 1.00 | about 330 ms | Large fades (lists and tables use the fast fade) |
 
 Rules: move only transform and opacity; every gesture follows the finger and hands its speed on; every animation can be interrupted; with Reduce Motion on, movement becomes a 140 ms fade (a test reads the stylesheets and fails if a new moving animation has no answer for it); every gesture has a visible alternative. See `docs/MOTION_PLAN.md`.
