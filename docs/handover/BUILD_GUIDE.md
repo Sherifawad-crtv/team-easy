@@ -2,9 +2,9 @@
 
 **Who this is for:** the three engineers building the production app. It describes what the finished app looks like and how it behaves, screen by screen, in plain language, and breaks every part into build phases. It contains no code.
 
-**What it is based on:** a working reference prototype (a phone-first web app running on fake data) that the designer finished and signed off. Every screenshot in this guide was taken from that prototype. The prototype is the visual and behavioural reference; the production app should look and behave the same way.
+**What it is based on:** a working reference prototype (a phone app, built as a web app, running on fake data) that the designer finished and signed off. Every screenshot in this guide was taken from that prototype. The prototype is the visual and behavioural reference; the production app should look and behave the same way.
 
-**Contents:** 1 The product in one page · 2 Design system · 3 How the app is laid out · 4 The parts, in phases (A Accounts, B Chat list and search, C Conversation, D Groups and teams, E Calendar, F Notifications, G Calls, H Account and data, I Plan and ads, J Admin console, K Platform) · 5 Motion · 6 States · 7 Overall build order · 8 Open questions · 9 Acceptance checklist
+**Contents:** 1 The product in one page · 2 Design system · 3 How the app is laid out · 4 The parts, in phases (A Accounts, B Chat list and search, C Conversation, D Groups and teams, E Calendar, F Notifications, G Calls, H Account and data, I Plan and ads, J Platform) · 5 Motion · 6 States · 7 Overall build order · 8 Open questions · 9 Acceptance checklist · Appendix: web admin console
 
 **Where the rest lives** (all in the `docs` folder of the repository):
 
@@ -16,7 +16,7 @@
 | `WIRING.md` | The list of every placeholder in the prototype that must become real, with what the real version must do. |
 | `HANDOVER.md` | Short technical handover: where things live in the prototype, how to run it. |
 
-**How to run the reference prototype:** it is a normal web project. `npm install`, `npm run dev`, then open the address it prints on a phone or in a browser narrowed to phone width. Sign in with `layla@acme.co` and the password `longpass1`. To see the fake-state switcher (empty, error, slow, offline and so on) open any page once with `?review` added to the address, for example `/chats?review`.
+**How to run the reference prototype:** it is a normal web project. `npm install`, `npm run dev`, then open the address it prints on a phone (or a browser window narrowed to phone width). Sign in with `layla@acme.co` and the password `longpass1`. To see the fake-state switcher (empty, error, slow, offline and so on) open any page once with `?review` added to the address, for example `/chats?review`.
 
 > **One open decision that gates everything:** which client framework the production app uses. The prototype is a web app (React). An earlier Flutter attempt exists on the `flutter-archive` branch, and the engineers' own repo may use Flutter. This guide does not depend on the choice: it describes behaviour, not implementation. Settle the framework before Phase 1.
 
@@ -45,8 +45,7 @@ TeamEasy is a team messaging app. People use it on their phones for chats, calls
 | G. Calls | Audio and video calls with a daily time cap |
 | H. Account, profile and data | Profile editing, media download setting, retention rules, backup and transfer |
 | I. Plan, ads and purchases | Free plan with ads, paid add-ons, restore purchases |
-| J. Admin console | The web console for organizations |
-| K. Platform | Install to home screen, permissions, native feel, offline, device integrations |
+| J. Platform | Install to home screen, permissions, native feel, offline, device integrations |
 
 ### The numbers that shape the product
 
@@ -135,7 +134,7 @@ A screen is not finished until it has: **loading** (skeleton rows, never a lone 
 
 ### Accessibility
 
-Contrast meets WCAG AA. Every control has an accessible name. Respect the system "Reduce motion" setting (Section 5). Text fields use 16 px so iPhone does not zoom. Dynamic type should not break layouts. Gestures always have a visible alternative (sheets close with a tap outside, the photo viewer has a Close button, chats have a Back button, messages open their menu from a right click).
+Contrast meets WCAG AA. Every control has an accessible name. Respect the system "Reduce motion" setting (Section 5). Text fields use 16 px so iPhone does not zoom. Dynamic type should not break layouts. Gestures always have a visible alternative (sheets close with a tap outside, the photo viewer has a Close button, chats have a Back button, swipe actions are also in the long-press sheet).
 
 ---
 
@@ -143,15 +142,12 @@ Contrast meets WCAG AA. Every control has an accessible name. Respect the system
 
 **On a phone** there are four tabs in a floating glass pill near the bottom: **Chats, Groups, Calendar, Account.** Tabs switch instantly. Opening a chat slides it in from the right over the list; the tab bar slides away while a chat is open. Account has sub-pages (edit profile, plan, calls, notifications, data, what's new) that slide in from the right.
 
-**On a desktop browser (1024 px and wider)** it works like WhatsApp Web: a narrow rail with the four tabs, the chat list in a column, and the open conversation filling the rest. The admin console is a separate desktop-first area.
+This guide covers the **mobile app only**. The web admin console, the only desktop surface in the PRD, is kept apart in the Appendix at the end.
 
 <table>
 <tr>
-<td align="center"><img src="screens/chats-list.jpg" width="230"><br><sub>Phone: chat list with the floating tab bar</sub></td>
-<td align="center"><img src="screens/chat-direct.jpg" width="230"><br><sub>Phone: a conversation (tab bar hidden)</sub></td>
-</tr>
-<tr>
-<td colspan="2" align="center"><img src="screens/desktop-chats-two-pane.jpg" width="640"><br><sub>Desktop: rail, list and conversation side by side</sub></td>
+<td align="center"><img src="screens/chats-list.jpg" width="230"><br><sub>Chat list with the floating tab bar</sub></td>
+<td align="center"><img src="screens/chat-direct.jpg" width="230"><br><sub>A conversation (tab bar hidden)</sub></td>
 </tr>
 </table>
 
@@ -234,7 +230,7 @@ Wire later: `auth.session`, `auth.account-switch`, `auth.delete-account`, `auth.
 <td align="center"><img src="screens/chats-new-chat-sheet.jpg" width="200"><br><sub>New chat sheet</sub></td>
 </tr>
 <tr>
-<td align="center"><img src="screens/chats-row-actions.jpg" width="200"><br><sub>Long press or right click: actions</sub></td>
+<td align="center"><img src="screens/chats-row-actions.jpg" width="200"><br><sub>Long press: actions</sub></td>
 <td align="center"><img src="screens/chats-row-swipe.jpg" width="200"><br><sub>Swipe a row to reveal an action</sub></td>
 <td align="center"><img src="screens/states-chat-list-empty.jpg" width="200"><br><sub>Empty</sub></td>
 <td align="center"><img src="screens/states-chat-list-error.jpg" width="200"><br><sub>Error with Try again</sub></td>
@@ -244,7 +240,7 @@ Wire later: `auth.session`, `auth.account-switch`, `auth.delete-account`, `auth.
 **What is on the screen, top to bottom**
 
 - **Top row:** a search pill and a round new-chat button. No app name.
-- **Notice cards** (dismissible): a "new version" notice that opens What's new, and the Add to home screen card on phones (Part K).
+- **Notice cards** (dismissible): a "new version" notice that opens What's new, and the Add to home screen card on phones (Part J).
 - **Filter chips:** All, Unread (with a count), Groups, Direct. The highlight slides to the chosen chip.
 - **Announcements chat** pinned at the top as a pale yellow card.
 - **Rows:** a round 56 px avatar (groups are circles too, with an online dot for people), the name, a one-line preview, the time on the right (brand blue when unread) and an unread count badge. When the last message is yours, delivery ticks come before the preview. Sub-group rows show "in <parent group>". A chat you muted shows a small bell-off mark and a grey badge. A chat marked unread shows a dot and a bold title.
@@ -255,7 +251,7 @@ Wire later: `auth.session`, `auth.account-switch`, `auth.delete-account`, `auth.
 1. **Open a chat:** tap a row.
 2. **Start a chat (CHT-01):** tap the round button, search members by name (SRC-01), tap a person. If a chat with them exists it opens.
 3. **Search (SRC-02 to SRC-04):** type in the search pill. Results are grouped into Chats, Messages and Documents, with matched words highlighted, and filters for date (any, today, week, month), chat, and type (all, images, documents). Tapping a message opens its chat and highlights that message.
-4. **Chat actions:** long press (phone) or right click (desktop) opens a sheet with Mark as unread / Mark as read and Mute / Unmute. On touch screens, swiping a row right reveals read/unread and swiping left reveals mute. A long swipe runs the action at once, a short one leaves the button showing, and only one row is open at a time.
+4. **Chat actions:** long press opens a sheet with Mark as unread / Mark as read and Mute / Unmute. Swiping a row right reveals read/unread and swiping left reveals mute. A long swipe runs the action at once, a short one leaves the button showing, and only one row is open at a time.
 5. **Pull to refresh** on phones. The list refreshes without showing the loading skeleton; a failure keeps what is on screen.
 
 **Rules**
@@ -271,10 +267,10 @@ Wire later: `auth.session`, `auth.account-switch`, `auth.delete-account`, `auth.
 
 | Phase | What gets built | Exit check |
 |---|---|---|
-| B1 | List with rows, avatars, previews, times, unread badges, pinned announcements; open a chat; all four states | Matches the screenshots on a 360 to 440 px phone and on desktop |
+| B1 | List with rows, avatars, previews, times, unread badges, pinned announcements; open a chat; all four states | Matches the screenshots on 360 to 440 px wide phones |
 | B2 | Filter chips, search pill, new-chat sheet with member search | Finding a person and starting a chat takes under 5 seconds |
 | B3 | Message and document search with grouped results, filters and highlighting | Tapping a result opens the chat scrolled to that message |
-| B4 | Row actions: mark unread/read, mute, long press, right click, swipe, pull to refresh | Each action also works without a gesture (sheet from long press or right click) |
+| B4 | Row actions: mark unread/read, mute, long press, swipe, pull to refresh | Every swipe action is also in the long-press sheet |
 | B5 | Realtime: new messages, presence, unread, rows that move; load tolerance (NFR-02) | List stays correct while 20 messages arrive in a second |
 
 Wire later: `chat.messages`, `search.members`, `search.query`.
@@ -313,7 +309,7 @@ Wire later: `chat.messages`, `search.members`, `search.query`.
 1. **Send:** type, tap send. The bubble rises from the composer showing a clock (sending), then ticks when delivered. Failure turns it red with "Not sent. Tap to retry".
 2. **Attach (MED-01 to MED-03):** attach button opens a sheet, the person chooses a photo or document, sees a preview with an optional caption, then sends. Photos show as a thumbnail (caption-less ones fill the bubble); documents show as a row with icon, name, size and Open. Files over 25 MB are refused with a plain message. A failed send keeps the file and offers retry.
 3. **Open a photo:** full-screen viewer with Close. Pinch to zoom up to 5 times, double tap to zoom in and out, drag a zoomed photo, pull a normal-size photo up or down to close.
-4. **Message menu:** long press a message (phone) or right click (desktop). The rest of the chat blurs, the message lifts and a card appears with **Copy** (any message with text), **Delete** (your own messages, **private chats only**, CHT-05) and **Try again / Discard** for a failed message.
+4. **Message menu:** long press a message. The rest of the chat blurs, the message lifts and a card appears with **Copy** (any message with text), **Delete** (your own messages, **private chats only**, CHT-05) and **Try again / Discard** for a failed message.
 5. **Contact or group info:** tap the name in the top bar. Contact info shows a large photo, name, job title, status and Audio, Video, Mute. Group info is Part D.
 6. **Download setting (MED-05):** received photos and files follow the account setting (always, Wi-Fi only, never). On mobile data with Wi-Fi only a tap-to-download tile shows the size. Opened files are kept on the device (DAT-03). Expired files show a short note.
 
@@ -333,7 +329,7 @@ Wire later: `chat.messages`, `search.members`, `search.query`.
 | C1 | Conversation shell: top bar, bubbles, day separators, composer, scroll behaviour (opens at the newest message) | A 500-message chat scrolls smoothly both ways |
 | C2 | Send with sending, delivered and failed states, retry, realtime incoming messages | Airplane mode produces a red failed bubble that retries successfully |
 | C3 | Group chat details: sender names and colors, title tags, sub-group chats, read-only left groups | Matches the group screenshot |
-| C4 | Message menu: copy, delete (private only), discard, plus right click and context key | Delete is absent in group chats |
+| C4 | Message menu: copy, delete (private only), discard | Delete is absent in group chats |
 | C5 | Attachments: attach sheet, preview with caption, thumbnails, document rows, size limit, retry | A 26 MB file is refused with the plain message |
 | C6 | Photo viewer and download setting, caching, expiry notes | Zoom, double tap and pull-to-close all work and Close always works |
 | C7 | Contact info sheet and header calls | Tapping the name always opens the right info |
@@ -443,7 +439,7 @@ Wire later: `groups.crud`, `groups.join-link`, `members.invite`, `roles.permissi
 |---|---|---|
 | E1 | Month grid, day agenda, event details, empty and error states | Navigating months is instant |
 | E2 | Calendar chips and per-person assignment, admin view and assign sheet | A person never sees a calendar that was not assigned to them |
-| E3 | Admin creation of calendars and one-off events (also in the admin console, Part J) | An event created in the console appears in the app within seconds |
+| E3 | Admin creation of calendars and one-off events (also in the web admin console, see the Appendix) | An event created in the console appears in the app within seconds |
 
 Wire later: `calendar.events`.
 
@@ -608,50 +604,7 @@ Wire later: `monetization.ads`, `monetization.purchases`, `config.limits`.
 
 ---
 
-### Part J. Admin console (web)  (ACC-05, ROL-01, GRP-05, GRP-08, GRP-09, CAL-02)
-
-**What admins do:** run the organization from a desktop browser at `/admin`.
-
-<table>
-<tr>
-<td align="center"><img src="screens/admin-overview.jpg" width="320"><br><sub>Overview</sub></td>
-<td align="center"><img src="screens/admin-members.jpg" width="320"><br><sub>Members</sub></td>
-</tr>
-<tr>
-<td align="center"><img src="screens/admin-invites.jpg" width="320"><br><sub>Invites</sub></td>
-<td align="center"><img src="screens/admin-teams.jpg" width="320"><br><sub>Teams</sub></td>
-</tr>
-<tr>
-<td align="center"><img src="screens/admin-calendars.jpg" width="320"><br><sub>Calendars</sub></td>
-<td align="center"><img src="screens/desktop-groups.jpg" width="320"><br><sub>The app on desktop: Groups</sub></td>
-</tr>
-</table>
-
-**Pages**
-
-- **Overview:** people, main groups against the limit, open invites, calendars, member cap, and what needs attention (groups nearly full, people who never signed in).
-- **Members:** add by email, set a title tag, remove (they leave all groups and calendars).
-- **Invites:** an open link or a one-person invite, valid 7 or 30 days, copy, revoke. The same codes work on the app's invite page.
-- **Teams:** every group, a member counter on main groups, add sub-group, archive, delete with undo.
-- **Calendars:** create, assign people, add one-off events.
-- Members who are not admins see an "admins only" message.
-
-**Rules:** a left sidebar with a Back to the app link. Pages are tables with search and one primary action top right. Creating, assigning and confirming use the same sheets as the app, centered on desktop. No roles beyond admin and member (open question).
-
-**Phases**
-
-| Phase | What gets built | Exit check |
-|---|---|---|
-| J1 | Console shell, admin check, Overview | A non-admin cannot open anything |
-| J2 | Members and Invites (ACC-05, ROL-01) | An invite issued here is accepted in the app |
-| J3 | Teams (counters, archive, delete with undo) | Matches the in-app group rules |
-| J4 | Calendars and assignment (CAL-02) | Assigning shows the calendar in that person's app |
-
-Wire later: `admin.members`, `admin.invites`.
-
----
-
-### Part K. Platform: install, permissions, offline and native feel  (NFR-04, DEV-01 to DEV-04)
+### Part J. Platform: install, permissions, offline and native feel  (NFR-04, DEV-01 to DEV-04)
 
 <table>
 <tr>
@@ -672,11 +625,11 @@ Wire later: `admin.members`, `admin.invites`.
 
 | Phase | What gets built | Exit check |
 |---|---|---|
-| K1 | Permission sheets and denied states for photos, microphone, camera, notifications | Each denial is recoverable from the same screen |
-| K2 | Offline handling and the offline banner everywhere | Airplane mode never shows a blank screen |
-| K3 | Native feel rules and haptics setting | Nothing on a phone feels like a web page |
-| K4 | Store distribution and join-link fallback | A join link works from a phone without the app |
-| K5 | Device integrations DEV-01 to DEV-04 | Each opens the right native screen |
+| J1 | Permission sheets and denied states for photos, microphone, camera, notifications | Each denial is recoverable from the same screen |
+| J2 | Offline handling and the offline banner everywhere | Airplane mode never shows a blank screen |
+| J3 | Native feel rules and haptics setting | Nothing on a phone feels like a web page |
+| J4 | Store distribution and join-link fallback | A join link works from a phone without the app |
+| J5 | Device integrations DEV-01 to DEV-04 | Each opens the right native screen |
 
 Wire later: `permissions.runtime`.
 
@@ -779,14 +732,16 @@ The parts above fit together in this order. Each phase ends with an exit check t
 | Phase | Goal | Parts and sub-phases | Exit check | Gate |
 |---|---|---|---|---|
 | **0. Foundations** | Decisions and plumbing | Client framework and backend choice; environments and CI; design tokens, icons, type and the shared components in Section 2; one place for business limits; the placeholder-to-real swap list (`WIRING.md`); analytics hook; Apple and Google developer accounts | A blank signed-out screen in the right fonts and colors runs on both a phone and desktop | Framework, backend, vendor names |
-| **1. Sign in and shell** | A person can get in | A1, A2, K1 (permission sheet pattern), K2 (offline banner), the four-tab shell, loading / empty / error pattern | Create account, close app, reopen: still signed in. Tabs switch instantly | Email verification (A5) |
+| **1. Sign in and shell** | A person can get in | A1, A2, J1 (permission sheet pattern), J2 (offline banner), the four-tab shell, loading / empty / error pattern | Create account, close app, reopen: still signed in. Tabs switch instantly | Email verification (A5) |
 | **2. Messaging core** | Chat works in realtime | B1, B2, B4, B5, C1 to C4, C7 | Two phones chat in realtime, a message retries after airplane mode, delete works only in private chats | None |
-| **3. Media, search, profile** | Rich chat | B3, C5, C6, H1, H2, K3 | Send a photo, find a message from last week, change the profile photo | Document types, file size |
-| **4. Groups and roles** | Teams | D1 to D5, A3, A4, J1, J2, J3 | A 5 / 5 / 5 tree, invite by link, leave in both ways, delete with 8-second undo, the cap enforced by the server | Flights, per-user group limit, member approval |
-| **5. Calendar, notifications, data** | Daily life | E1 to E3, F1 to F4, H3, H4, J4 | Admin assigns a calendar and it appears; a push opens the right chat; an unopened file disappears on its day | None |
+| **3. Media, search, profile** | Rich chat | B3, C5, C6, H1, H2, J3 | Send a photo, find a message from last week, change the profile photo | Document types, file size |
+| **4. Groups and roles** | Teams | D1 to D5, A3, A4 | A 5 / 5 / 5 tree, invite by link, leave in both ways, delete with 8-second undo, the cap enforced by the server | Flights, per-user group limit, member approval |
+| **5. Calendar, notifications, data** | Daily life | E1 to E3, F1 to F4, H3, H4 | Admin assigns a calendar and it appears; a push opens the right chat; an unopened file disappears on its day | None |
 | **6. Calls** | Voice and video | G1 to G5 | Group call of five, daily hour holds, incoming call rings with the app closed | Vendor SDK details |
-| **7. Money and distribution** | Paid plans and the stores | I1 to I4, K4, K5 | A purchase raises a limit and removes ads; a join link works from a phone without the app | Ad placement wording |
+| **7. Money and distribution** | Paid plans and the stores | I1 to I4, J4, J5 | A purchase raises a limit and removes ads; a join link works from a phone without the app | Ad placement wording |
 | **8. Hardening and launch** | Ready for real people | Load test (NFR-02), real-device motion and haptics tuning, accessibility pass, security review, store review (moderation and report-abuse is expected for user content), notifications live at launch (NFR-03) | The launch checklist below passes | Load numbers, moderation scope |
+
+The web admin console (Appendix) is a separate track: build its invites and members pages after Phase 4, and its calendars page after Phase 5.
 
 **Launch checklist:** every screen matches this guide in all its states; all limits are enforced by the server and read from configuration; Reduce Motion works; the app is usable offline-to-online; permissions are explained before the system asks; push works from a closed app; load numbers agreed in Phase 0 are met; store listings, privacy text and account deletion are in place.
 
@@ -821,7 +776,7 @@ None of these change the agreed scope. Each needs an answer before the phase tha
 
 For each screen in the phase, check against the screenshots:
 
-- [ ] Looks the same at 360, 390 and 440 px wide, and on desktop (two-pane at 1024 px and wider).
+- [ ] Looks the same at 360, 390 and 440 px wide, with and without the iPhone notch and home bar.
 - [ ] Has loading, empty, error, offline and success states, and for messaging sending and failed.
 - [ ] Uses only the colors, type sizes, spacing, radii and icons in Section 2.
 - [ ] Every control has an accessible name and a 48 px touch target. Contrast meets AA.
@@ -831,3 +786,49 @@ For each screen in the phase, check against the screenshots:
 - [ ] Copy is specific and calm (no "Welcome back!", no blame in errors).
 - [ ] Long names, long messages, emoji, 99+ badges and 300-person groups do not break layout.
 - [ ] The matching placeholder is replaced by the real service and its row in `WIRING.md` is marked done.
+
+---
+
+## Appendix. Web admin console  (ACC-05, ROL-01, GRP-05, GRP-08, GRP-09, CAL-02)
+
+> The admin console is the one **desktop web** surface in the PRD. It is not part of the mobile app, so it is not in the phases above. Build it as a separate track once the matching mobile features exist (invites after Phase 4, calendars after Phase 5), or drop this appendix if admin work is handled elsewhere.
+
+**What admins do:** run the organization from a desktop browser (the prototype has it at `/admin`).
+
+<table>
+<tr>
+<td align="center"><img src="screens/admin-overview.jpg" width="320"><br><sub>Overview</sub></td>
+<td align="center"><img src="screens/admin-members.jpg" width="320"><br><sub>Members</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="screens/admin-invites.jpg" width="320"><br><sub>Invites</sub></td>
+<td align="center"><img src="screens/admin-teams.jpg" width="320"><br><sub>Teams</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="screens/admin-calendars.jpg" width="320"><br><sub>Calendars</sub></td>
+</tr>
+</table>
+
+**Pages**
+
+- **Overview:** people, main groups against the limit, open invites, calendars, member cap, and what needs attention (groups nearly full, people who never signed in).
+- **Members:** add by email, set a title tag, remove (they leave all groups and calendars).
+- **Invites:** an open link or a one-person invite, valid 7 or 30 days, copy, revoke. The same codes work on the app's invite page.
+- **Teams:** every group, a member counter on main groups, add sub-group, archive, delete with undo.
+- **Calendars:** create, assign people, add one-off events.
+- Members who are not admins see an "admins only" message.
+
+**Rules:** a left sidebar with a Back to the app link. Pages are tables with search and one primary action top right. Creating, assigning and confirming use the same sheets as the app, centered on the page. No roles beyond admin and member (open question).
+
+**Phases**
+
+| Phase | What gets built | Exit check |
+|---|---|---|
+| W1 | Console shell, admin check, Overview | A non-admin cannot open anything |
+| W2 | Members and Invites (ACC-05, ROL-01) | An invite issued here is accepted in the app |
+| W3 | Teams (counters, archive, delete with undo) | Matches the in-app group rules |
+| W4 | Calendars and assignment (CAL-02) | Assigning shows the calendar in that person's app |
+
+Wire later: `admin.members`, `admin.invites`.
+
+---
