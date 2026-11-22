@@ -95,7 +95,7 @@ Claude Code updates this file at the end of every session. One row per PRD requi
 
 ## Session log (latest first)
 
-- 2026-11-22: Wrote the engineer build guide (`docs/handover/BUILD_GUIDE.md`) with about 70 screenshots and motion film strips (mobile only) with a full haptics map: flows, behavior, design system, motion, states, phases per part and one overall build order, open questions and an acceptance checklist.
+- 2026-11-22: Wrote the engineer build guide, one self-contained file (`docs/handover/BUILD_GUIDE.md`, screenshots embedded) with about 70 screenshots and motion film strips (mobile only) with a full haptics map: flows, behavior, design system, motion, states, phases per part and one overall build order, open questions and an acceptance checklist.
 
 - 2026-11-19: Speed and HIG pass. Review tools icon removed from the product (opens only with `?review`). First load 918 kB to under 300 kB (WOFF2 fonts, lazy screens). Motion: press feedback now dims like iOS instead of shrinking, removed the tab icon bounce and the badge pop on every load, removed the page-dimming filter from screen slides, page bar no longer blurs while scrolling.
 
