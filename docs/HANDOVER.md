@@ -1,5 +1,7 @@
 # Developer handover
 
+**Start with the build guide:** [`handover/BUILD_GUIDE.md`](handover/BUILD_GUIDE.md) describes every screen, flow, rule, motion and state in plain language with screenshots, broken into phases per part. This file is the short technical companion.
+
 The design is final. A/B testing is finished and removed, so the app in this repo is the shape engineers build against. Everything runs on a typed mock data layer; nothing talks to a real backend.
 
 ## Final design decisions

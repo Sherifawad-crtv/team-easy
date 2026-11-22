@@ -8,6 +8,7 @@ This repo is the **design-in-code test harness**. It runs the real flows on a ty
 - Build status: [`docs/PROGRESS.md`](docs/PROGRESS.md)
 - Build spec for Claude Code: [`docs/PWA_SPEC.md`](docs/PWA_SPEC.md)
 - Developer handover: [`docs/HANDOVER.md`](docs/HANDOVER.md)
+- Build guide for engineers (flows, behavior, motion, design, phases, with screenshots): [`docs/handover/BUILD_GUIDE.md`](docs/handover/BUILD_GUIDE.md)
 
 ## Run it
 
