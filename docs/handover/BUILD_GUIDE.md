@@ -4,7 +4,7 @@
 
 **What it is based on:** a working reference prototype (a phone app, built as a web app, running on fake data) that the designer finished and signed off. Every screenshot in this guide was taken from that prototype. The prototype is the visual and behavioural reference; the production app should look and behave the same way.
 
-**Contents:** 1 The product in one page · 2 Design system · 3 How the app is laid out · 4 The parts, in phases (A Accounts, B Chat list and search, C Conversation, D Groups and teams, E Calendar, F Notifications, G Calls, H Account and data, I Plan and ads, J Platform) · 5 Motion · 6 States · 7 Overall build order · 8 Open questions · 9 Acceptance checklist · Appendix: web admin console
+**Contents:** 1 The product in one page · 2 Design system · 3 How the app is laid out · 4 The parts, in phases (A Accounts, B Chat list and search, C Conversation, D Groups and teams, E Calendar, F Notifications, G Calls, H Account and data, I Plan and ads, J Platform) · 5 Motion · 6 States · 7 Overall build order · 8 Open questions · 9 Acceptance checklist
 
 **Where the rest lives** (all in the `docs` folder of the repository):
 
@@ -24,13 +24,13 @@
 
 ## 1. The product in one page
 
-TeamEasy is a team messaging app. People use it on their phones for chats, calls, media and a calendar. Organizations are run from a web admin console.
+TeamEasy is a team messaging app. People use it on their phones for chats, calls, media and a calendar. People can use it on their own or as part of an organization.
 
 | Who | What they do | Where |
 |---|---|---|
 | Individual | Signs up on their own, no organization needed | Phone app |
 | Organization member | Joins an organization through an admin's invite, and can still use the app on their own | Phone app |
-| Admin | Runs the organization: invites, people, teams, calendars, plan | Web admin console |
+| Admin | Runs their organization's groups, invites, calendars and plan, from the same app | Phone app |
 
 **What the app is made of** (the "parts" this guide builds in phases):
 
@@ -142,7 +142,7 @@ Contrast meets WCAG AA. Every control has an accessible name. Respect the system
 
 **On a phone** there are four tabs in a floating glass pill near the bottom: **Chats, Groups, Calendar, Account.** Tabs switch instantly. Opening a chat slides it in from the right over the list; the tab bar slides away while a chat is open. Account has sub-pages (edit profile, plan, calls, notifications, data, what's new) that slide in from the right.
 
-This guide covers the **mobile app only**. The web admin console, the only desktop surface in the PRD, is kept apart in the Appendix at the end.
+This guide covers the **mobile app only**.
 
 <table>
 <tr>
@@ -430,7 +430,7 @@ Wire later: `groups.crud`, `groups.join-link`, `members.invite`, `roles.permissi
 
 - A month grid with colored dots; the picked day's events are listed below; tapping one opens details. Weeks start on Monday (assumed).
 - Chips show or hide each calendar. People see only calendars assigned to them. Admins see all of them, with a "not yours" tag on the others and a pencil that opens a list where they choose who has each calendar (CAL-02).
-- Events are managed by admins (no personal events or reminders yet).
+- Events come from the organization and arrive from the server; there are no personal events or reminders yet.
 - Pull to refresh on phones.
 
 **Phases**
@@ -439,7 +439,7 @@ Wire later: `groups.crud`, `groups.join-link`, `members.invite`, `roles.permissi
 |---|---|---|
 | E1 | Month grid, day agenda, event details, empty and error states | Navigating months is instant |
 | E2 | Calendar chips and per-person assignment, admin view and assign sheet | A person never sees a calendar that was not assigned to them |
-| E3 | Admin creation of calendars and one-off events (also in the web admin console, see the Appendix) | An event created in the console appears in the app within seconds |
+| E3 | Live events: calendars and events arrive from the server and update in the app | An event added on the server appears in the app within seconds |
 
 Wire later: `calendar.events`.
 
@@ -542,7 +542,7 @@ Wire later: `calls.service`.
 </tr>
 </table>
 
-**What is on the Account screen:** name, email and title, "Chat as" (identity), Media downloads (Always, Wi-Fi only as default, Never), Haptics switch, Add to home screen (when not installed), Edit profile, Admin console (admins), Plan and add-ons, Calls, Notifications, Data and storage, What's new, Sign out, Delete account.
+**What is on the Account screen:** name, email and title, "Chat as" (identity), Media downloads (Always, Wi-Fi only as default, Never), Haptics switch, Add to home screen (when not installed), Edit profile, Plan and add-ons, Calls, Notifications, Data and storage, What's new, Sign out, Delete account.
 
 **Flows**
 
@@ -617,7 +617,7 @@ Wire later: `monetization.ads`, `monetization.purchases`, `config.limits`.
 - **Permissions (NFR-04):** for each (photos, microphone and camera, notifications) our own sheet explains why first. Allow continues to the system request; Not now returns. If denied, the same place shows how to turn it on in settings. Nothing ever asks without explaining.
 - **Offline:** an offline banner on every screen, cached content stays visible, sending waits or fails visibly with retry.
 - **Native feel on touch screens:** no text selection except in fields, no page zoom, no browser long-press menus, no image dragging, no scrollbars, no browser pull-to-refresh. Text fields are 16 px so iPhone does not zoom. Copying a message is in its long-press menu.
-- **Haptics:** small taps for tabs, switches and chips; light for send and hang up; success for purchases, backup and answering; warning for delete; error for failures. A Haptics switch in Account; off under Reduce Motion.
+- **Haptics:** five kinds of tap (selection, light, success, warning, error) with an Account switch that turns them all off; the full list of when each one fires is in Section 5.
 - **Device integrations (DEV-01 to DEV-04):** the app in the device's suggested contacts, seeing people from device contacts, an email icon opening the mail app, appearing in the share sheet. **Not built** in the prototype (native only).
 - **Store distribution (DEP-03, DEP-04):** Apple and Google developer accounts are new and required. The join link falls back to the app store (GRP-07).
 
@@ -627,7 +627,7 @@ Wire later: `monetization.ads`, `monetization.purchases`, `config.limits`.
 |---|---|---|
 | J1 | Permission sheets and denied states for photos, microphone, camera, notifications | Each denial is recoverable from the same screen |
 | J2 | Offline handling and the offline banner everywhere | Airplane mode never shows a blank screen |
-| J3 | Native feel rules and haptics setting | Nothing on a phone feels like a web page |
+| J3 | Native feel rules and haptics (all five kinds, the Account switch, off under Reduce Motion) | Every haptic in Section 5 fires once in the right place and nowhere else; the switch silences all of them |
 | J4 | Store distribution and join-link fallback | A join link works from a phone without the app |
 | J5 | Device integrations DEV-01 to DEV-04 | Each opens the right native screen |
 
@@ -656,7 +656,7 @@ Springs are described by how quick they are and how much they bounce. Build them
 | Moment | What happens |
 |---|---|
 | **Press feedback** | Immediate, in the same frame as the touch. Rows get a soft grey highlight. Buttons, chips and icons dim. Big buttons also shrink by 2%. Release springs back. No delay on taps. |
-| **Switching tabs** | Instant. No slide, no fade. A small tap of haptic feedback. |
+| **Switching tabs** | Instant. No slide, no fade. A selection haptic. |
 | **Opening a chat or group** (phone) | The new screen slides in from the right over the list (Smooth). The list underneath moves back 28% and dims. The tab bar slides down and away. Going back reverses it. The screen stays visible until it has finished leaving. |
 | **Swipe back** | Start within 28 px of the left edge and drag right. The screen follows the finger one to one and the list moves and brightens with it. Past a third of the width, or a quick flick, goes back; otherwise it springs open again. Touch only, never a mouse. Not available over the top bar or message field so their buttons stay tappable at the very edge. |
 | **Other pushed pages** (Account pages, What's new) | The new page slides in from the right and the old one moves back a little. Back reverses it. |
@@ -678,9 +678,32 @@ Springs are described by how quick they are and how much they bounce. Build them
 <tr><td><img src="screens/motion-swipe-back.jpg" width="900"><br><sub>Swipe back: the screen tracks the finger, the list underneath moves and brightens as it is revealed.</sub></td></tr>
 </table>
 
-### Haptics
+### Haptics (the tap you feel)
 
-Short tactile taps, only where the platform has them. Tabs, switches and filter chips: selection tap. Send and hang up: light. Purchase, backup, answering a call: success. Deleting a message or group: warning. Failed send or payment: error. They respect a Haptics switch in Account and are off under Reduce Motion.
+Haptic feedback is part of the product's feel: a small physical tap that matches something you can see, the same kind for the same event, and never on every touch. There are exactly five kinds.
+
+| Kind | Meaning | Feels like | When it fires |
+|---|---|---|---|
+| **Selection** | Moving between choices | The lightest tick | Switching a tab. Choosing a filter chip (All, Unread, Groups, Direct). Choosing an option in a segmented control. Flipping a switch. Pulling to refresh past the point where it will trigger. Swiping a chat row far enough that the action is ready to run |
+| **Light** | A small action landed | A single soft tap | Sending a message. Hanging up a call. A long press that opens a chat's actions. A long press that lifts a message into its menu. A swipe on a chat row that runs its action |
+| **Success** | Something finished | Two quick taps | Answering a call. A purchase completing. A backup finishing. A pull to refresh finishing |
+| **Warning** | A confirmed removal | Two firmer taps | Deleting a group. Deleting a message |
+| **Error** | Something failed | Three taps in a row | A message that failed to send. A payment that failed |
+
+**Rules**
+- A haptic fires in the same instant as the thing it matches, inside the person's own touch, never on its own and never later.
+- Never for scrolling, ordinary taps on buttons and rows, typing, or anything that repeats quickly. If it would fire many times a second, it does not fire.
+- One haptic per event. Never two at once, and never one on top of an animation that already has one.
+- **Account has a Haptics switch.** It is on by default. When it is off, nothing fires.
+- Nothing fires when the system's Reduce Motion is on.
+- If the device cannot do haptics, nothing happens and nothing breaks. There is no sound or visual stand-in.
+
+**How to build it on each platform**
+- **Native iPhone app:** use the system's selection, light impact and notification (success, warning, error) feedback. Map the five kinds one to one.
+- **Native Android app:** use the system's tick, light and confirm / reject feedback constants, or short vibrations. Map the five kinds one to one.
+- **The web version (the prototype):** Android browsers accept short vibrations (selection about 6 ms, light about 10 ms, success two 12 ms taps, warning two 18 ms taps, error three 26 ms taps). Safari on iPhone does not allow vibration, so the prototype uses an unofficial trick: Safari 17.4 and later answers a hidden switch control being toggled, but only inside a real touch. It works today and may stop working, so the guide's behavior above is the product requirement and the trick is only the way the prototype reaches it.
+
+**Check on real phones:** whether each kind feels distinct from the next, whether any event fires twice, and that turning the Haptics switch off silences everything.
 
 ### Reduce Motion
 
@@ -731,17 +754,15 @@ The parts above fit together in this order. Each phase ends with an exit check t
 
 | Phase | Goal | Parts and sub-phases | Exit check | Gate |
 |---|---|---|---|---|
-| **0. Foundations** | Decisions and plumbing | Client framework and backend choice; environments and CI; design tokens, icons, type and the shared components in Section 2; one place for business limits; the placeholder-to-real swap list (`WIRING.md`); analytics hook; Apple and Google developer accounts | A blank signed-out screen in the right fonts and colors runs on both a phone and desktop | Framework, backend, vendor names |
+| **0. Foundations** | Decisions and plumbing | Client framework and backend choice; environments and CI; design tokens, icons, type and the shared components in Section 2; one place for business limits; the placeholder-to-real swap list (`WIRING.md`); analytics hook; Apple and Google developer accounts | A blank signed-out screen in the right fonts and colors runs on an iPhone and an Android phone | Framework, backend, vendor names |
 | **1. Sign in and shell** | A person can get in | A1, A2, J1 (permission sheet pattern), J2 (offline banner), the four-tab shell, loading / empty / error pattern | Create account, close app, reopen: still signed in. Tabs switch instantly | Email verification (A5) |
 | **2. Messaging core** | Chat works in realtime | B1, B2, B4, B5, C1 to C4, C7 | Two phones chat in realtime, a message retries after airplane mode, delete works only in private chats | None |
 | **3. Media, search, profile** | Rich chat | B3, C5, C6, H1, H2, J3 | Send a photo, find a message from last week, change the profile photo | Document types, file size |
 | **4. Groups and roles** | Teams | D1 to D5, A3, A4 | A 5 / 5 / 5 tree, invite by link, leave in both ways, delete with 8-second undo, the cap enforced by the server | Flights, per-user group limit, member approval |
-| **5. Calendar, notifications, data** | Daily life | E1 to E3, F1 to F4, H3, H4 | Admin assigns a calendar and it appears; a push opens the right chat; an unopened file disappears on its day | None |
+| **5. Calendar, notifications, data** | Daily life | E1 to E3, F1 to F4, H3, H4 | A calendar assigned to a person appears; a push opens the right chat; an unopened file disappears on its day | None |
 | **6. Calls** | Voice and video | G1 to G5 | Group call of five, daily hour holds, incoming call rings with the app closed | Vendor SDK details |
 | **7. Money and distribution** | Paid plans and the stores | I1 to I4, J4, J5 | A purchase raises a limit and removes ads; a join link works from a phone without the app | Ad placement wording |
 | **8. Hardening and launch** | Ready for real people | Load test (NFR-02), real-device motion and haptics tuning, accessibility pass, security review, store review (moderation and report-abuse is expected for user content), notifications live at launch (NFR-03) | The launch checklist below passes | Load numbers, moderation scope |
-
-The web admin console (Appendix) is a separate track: build its invites and members pages after Phase 4, and its calendars page after Phase 5.
 
 **Launch checklist:** every screen matches this guide in all its states; all limits are enforced by the server and read from configuration; Reduce Motion works; the app is usable offline-to-online; permissions are explained before the system asks; push works from a closed app; load numbers agreed in Phase 0 are met; store listings, privacy text and account deletion are in place.
 
@@ -781,54 +802,9 @@ For each screen in the phase, check against the screenshots:
 - [ ] Uses only the colors, type sizes, spacing, radii and icons in Section 2.
 - [ ] Every control has an accessible name and a 48 px touch target. Contrast meets AA.
 - [ ] Every gesture has a visible alternative.
+- [ ] Haptics fire only where Section 5 lists them, once each, and the Account switch and Reduce Motion silence them.
 - [ ] Motion uses only the springs in Section 5, and Reduce Motion replaces slides with a quick fade.
 - [ ] Every business limit is enforced by the server and read from configuration, never typed into a screen.
 - [ ] Copy is specific and calm (no "Welcome back!", no blame in errors).
 - [ ] Long names, long messages, emoji, 99+ badges and 300-person groups do not break layout.
 - [ ] The matching placeholder is replaced by the real service and its row in `WIRING.md` is marked done.
-
----
-
-## Appendix. Web admin console  (ACC-05, ROL-01, GRP-05, GRP-08, GRP-09, CAL-02)
-
-> The admin console is the one **desktop web** surface in the PRD. It is not part of the mobile app, so it is not in the phases above. Build it as a separate track once the matching mobile features exist (invites after Phase 4, calendars after Phase 5), or drop this appendix if admin work is handled elsewhere.
-
-**What admins do:** run the organization from a desktop browser (the prototype has it at `/admin`).
-
-<table>
-<tr>
-<td align="center"><img src="screens/admin-overview.jpg" width="320"><br><sub>Overview</sub></td>
-<td align="center"><img src="screens/admin-members.jpg" width="320"><br><sub>Members</sub></td>
-</tr>
-<tr>
-<td align="center"><img src="screens/admin-invites.jpg" width="320"><br><sub>Invites</sub></td>
-<td align="center"><img src="screens/admin-teams.jpg" width="320"><br><sub>Teams</sub></td>
-</tr>
-<tr>
-<td align="center"><img src="screens/admin-calendars.jpg" width="320"><br><sub>Calendars</sub></td>
-</tr>
-</table>
-
-**Pages**
-
-- **Overview:** people, main groups against the limit, open invites, calendars, member cap, and what needs attention (groups nearly full, people who never signed in).
-- **Members:** add by email, set a title tag, remove (they leave all groups and calendars).
-- **Invites:** an open link or a one-person invite, valid 7 or 30 days, copy, revoke. The same codes work on the app's invite page.
-- **Teams:** every group, a member counter on main groups, add sub-group, archive, delete with undo.
-- **Calendars:** create, assign people, add one-off events.
-- Members who are not admins see an "admins only" message.
-
-**Rules:** a left sidebar with a Back to the app link. Pages are tables with search and one primary action top right. Creating, assigning and confirming use the same sheets as the app, centered on the page. No roles beyond admin and member (open question).
-
-**Phases**
-
-| Phase | What gets built | Exit check |
-|---|---|---|
-| W1 | Console shell, admin check, Overview | A non-admin cannot open anything |
-| W2 | Members and Invites (ACC-05, ROL-01) | An invite issued here is accepted in the app |
-| W3 | Teams (counters, archive, delete with undo) | Matches the in-app group rules |
-| W4 | Calendars and assignment (CAL-02) | Assigning shows the calendar in that person's app |
-
-Wire later: `admin.members`, `admin.invites`.
-
----
