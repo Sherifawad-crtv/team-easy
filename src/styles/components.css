@@ -65,6 +65,7 @@
 /* ---------- Banner: a tonal container, no outline ---------- */
 .banner { display: flex; gap: var(--s-4); padding: var(--s-4) var(--s-5); border-radius: var(--shape-lg); background: var(--banner-bg); color: var(--banner-fg); }
 .banner--error { --banner-bg: var(--error-container); --banner-fg: var(--on-error-container); --banner-icon: var(--error); }
+.banner--warning { --banner-bg: var(--warning-container); --banner-fg: var(--on-warning-container); --banner-icon: var(--warning); }
 .banner--offline { --banner-bg: var(--warning-container); --banner-fg: var(--on-warning-container); --banner-icon: var(--warning); }
 .banner--info { --banner-bg: var(--tertiary-container); --banner-fg: var(--on-tertiary-container); --banner-icon: var(--on-tertiary-container); }
 .banner--success { --banner-bg: var(--success-container); --banner-fg: var(--on-success-container); --banner-icon: var(--success); }
@@ -180,3 +181,40 @@
 .viewer__sub { font-size: 12px; line-height: 16px; opacity: 0.75; }
 .viewer__img { max-width: 100vw; max-height: 78dvh; object-fit: contain; border-radius: 4px; animation: pop var(--spring-spatial-dur) var(--spring-spatial); }
 .viewer__caption { max-width: min(560px, 92vw); margin-top: var(--s-4); color: #fff; font-size: 15px; line-height: 21px; text-align: center; }
+
+/* ---------- Settings lists ---------- */
+.sgroup { display: flex; flex-direction: column; gap: var(--s-3); }
+.sgroup__title { padding: 0 var(--s-5); font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.1px; color: var(--on-surface-variant); }
+.sgroup__footer { padding: 0 var(--s-5); font-size: 12px; line-height: 16px; color: var(--on-surface-variant); }
+.sgroup__card { display: flex; flex-direction: column; }
+.srow { display: flex; align-items: center; gap: var(--s-4); width: 100%; min-height: 56px; padding: var(--s-3) var(--s-5); border: 0; background: none; color: var(--on-surface); font: inherit; text-align: left; }
+.srow + .srow { border-top: 1px solid var(--outline-variant); }
+.srow:disabled { color: var(--on-surface-disabled); }
+.srow__icon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--primary-container); color: var(--on-primary-container); }
+.srow__text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.srow__title { font-size: 16px; line-height: 24px; font-weight: 500; overflow-wrap: anywhere; }
+.srow__sub { font-size: 14px; line-height: 20px; color: var(--on-surface-variant); overflow-wrap: anywhere; }
+.srow__value { max-width: 45%; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); text-align: right; overflow-wrap: anywhere; }
+.srow > svg { flex: none; color: var(--on-surface-variant); }
+.srow--danger .srow__title { color: var(--error); }
+.srow--danger .srow__icon { background: var(--error-container); color: var(--on-error-container); }
+.sprofile { display: flex; align-items: center; gap: var(--s-5); width: 100%; padding: var(--s-5); border: 0; color: var(--on-surface); font: inherit; text-align: left; }
+.sprofile__text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.sprofile > svg { flex: none; color: var(--on-surface-variant); }
+
+/* A short plain list of consequences or rules. */
+.list { display: flex; flex-direction: column; gap: var(--s-3); padding-left: var(--s-6); list-style: disc; font-size: 14px; line-height: 20px; color: var(--on-surface); }
+
+/* Live preview of message text size. */
+.size-preview { display: flex; flex-direction: column; gap: var(--s-3); padding: var(--s-4); border-radius: var(--shape-lg); background: var(--wallpaper); }
+.size-preview .msg { display: flex; }
+.size-preview .msg--mine { justify-content: flex-end; }
+
+/* Long reading: terms, privacy policy, guidelines. */
+.legal { display: flex; flex-direction: column; gap: var(--s-5); max-width: 640px; }
+.legal__section { display: flex; flex-direction: column; gap: var(--s-3); }
+
+.contact__safety { width: 100%; margin-top: var(--s-5); text-align: left; }
+
+.legal-note { text-align: center; margin-top: var(--s-5); }
+.legal-note a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }

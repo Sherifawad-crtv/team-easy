@@ -2,13 +2,14 @@ import { useEffect, useRef } from 'react'
 import type { Message } from '../../data/types'
 import { haptic } from '../../design/haptics'
 import { Overlay } from '../../design/ui'
-import { IconCopy, IconRetry, IconTrash } from '../../design/icons'
+import { IconCopy, IconFlag, IconRetry, IconTrash } from '../../design/icons'
 
 export interface MenuActions {
   copy?: () => void
   remove?: () => void
   retry?: () => void
   discard?: () => void
+  report?: () => void
 }
 
 /**
@@ -53,6 +54,7 @@ export function MessageMenu({ message, bubble, actions, onClose }: { message: Me
     actions.retry && { label: 'Try sending again', icon: <IconRetry size={20} />, run: actions.retry },
     actions.copy && { label: 'Copy', icon: <IconCopy size={20} />, run: actions.copy },
     actions.discard && { label: 'Discard message', icon: <IconTrash size={20} />, run: actions.discard, danger: true },
+    actions.report && { label: 'Report', icon: <IconFlag size={20} />, run: actions.report, danger: true },
     actions.remove && { label: 'Delete message', icon: <IconTrash size={20} />, run: actions.remove, danger: true },
   ].filter(Boolean) as { label: string; icon: React.ReactNode; run: () => void; danger?: boolean }[]
 

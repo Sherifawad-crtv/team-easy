@@ -15,7 +15,7 @@ import { daysLeftLabel } from './retention'
 
 const when = (ms: number) => new Date(ms).toLocaleString([], { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
 
-/** Data and storage: what gets deleted and when (DAT-02, DAT-04), and backing up or moving chats (DAT-01). */
+/** Backup and deletion: what gets deleted and when (DAT-02, DAT-04), and backing up or moving chats (DAT-01). */
 export function DataScreen() {
   const navigate = useNavigate()
   const retention = useAsync(() => api.data.retention(), [])
@@ -27,8 +27,8 @@ export function DataScreen() {
   return (
     <main className="page surface fade-in">
       <header className="bar bar--back">
-        <BackButton onClick={() => navigate('/account')} />
-        <h1 className="bar__title">Data and storage</h1>
+        <BackButton onClick={() => navigate('/account/data')} />
+        <h1 className="bar__title">Backup and deletion</h1>
       </header>
       <div className="page__body stack-lg">
         <section aria-label="Automatic deletion">

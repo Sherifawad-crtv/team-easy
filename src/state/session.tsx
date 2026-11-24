@@ -11,7 +11,7 @@ interface SessionValue {
   signUp(data: SignUpData): Promise<void>
   signOut(): Promise<void>
   switchIdentity(kind: IdentityKind): Promise<void>
-  deleteAccount(): Promise<void>
+  deleteAccount(password: string): Promise<void>
   updateProfile(patch: ProfilePatch): Promise<void>
 }
 
@@ -53,9 +53,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     clearAsyncCache()
     setAccount(next)
   }, [])
-  const deleteAccount = useCallback(async () => {
-    await api.auth.deleteAccount()
+  const deleteAccount = useCallback(async (password: string) => {
+    await api.auth.deleteAccount(password)
     clearAsyncCache()
+    // The welcome screen tells the person it worked.
+    try { sessionStorage.setItem('te.accountDeleted', '1') } catch { /* fine */ }
     setAccount(null)
   }, [])
 

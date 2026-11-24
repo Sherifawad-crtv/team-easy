@@ -2,7 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../data'
 import type { Product } from '../../data/types'
-import { Banner, BackButton, BottomSheet, Button, Skeleton } from '../../design/ui'
+import { STORE_SUBSCRIPTIONS } from '../../config/legal'
+import { Banner, BackButton, BottomSheet, Button, SettingsGroup, SettingsRow, Skeleton } from '../../design/ui'
+import { IconDocument, IconLink, IconShield } from '../../design/icons'
+import { useAnimatedNavigate } from '../../design/nav'
+import { storeName, storePlatform } from '../../state/platform'
 import { track } from '../../analytics'
 import { useAsync } from '../../state/useAsync'
 import { useReviewRole } from '../../state/useReviewRole'
@@ -15,6 +19,9 @@ const date = (ms: number) => new Date(ms).toLocaleDateString([], { day: 'numeric
 /** Plan and add-ons (MON-03, 04): what you have, the limits that follow, buy, cancel and restore. */
 export function PlanScreen() {
   const navigate = useNavigate()
+  const go = useAnimatedNavigate()
+  const platform = storePlatform()
+  const store = storeName(platform)
   const role = useReviewRole()
   const ent = useAsync(() => api.purchases.entitlements(), [])
   const offers = useAsync(() => api.purchases.offerings(), [])
@@ -77,8 +84,15 @@ export function PlanScreen() {
             <div className="stack">
               <Button onClick={() => setBuying(true)}>{owned.length ? 'Add another add-on' : 'See add-ons'}</Button>
               <Button variant="secondary" loading={restore.busy} onClick={async () => { if (await restore.run(() => api.purchases.restore())) { setRestored(true); track('purchases_restored'); refresh() } }}>Restore purchases</Button>
-              <p className="t-caption muted">Add-ons are billed by your app store account and renew monthly. Prices shown are examples until the store is connected.</p>
+              <p className="t-caption muted">Prices shown are examples until the store is connected.</p>
             </div>
+
+            <SettingsGroup title="Subscriptions" footer={`Add-ons are billed by your ${store} account and renew every month until you cancel. Cancel at least 24 hours before the renewal date to avoid the next charge. Deleting the app or your account does not cancel them.`}>
+              <SettingsRow icon={<IconLink size={20} />} title={`Manage in ${store}`} subtitle="Change or cancel any add-on" external
+                onClick={() => (platform === 'other' ? window.open(STORE_SUBSCRIPTIONS.ios, '_blank', 'noopener') : window.open(STORE_SUBSCRIPTIONS[platform], '_blank', 'noopener'))} />
+              <SettingsRow icon={<IconDocument size={20} />} title="Terms of Service" onClick={() => go('/legal/terms')} />
+              <SettingsRow icon={<IconShield size={20} />} title="Privacy Policy" onClick={() => go('/legal/privacy')} />
+            </SettingsGroup>
           </>
         )}
       </div>

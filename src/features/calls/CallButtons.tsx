@@ -7,7 +7,8 @@ import { useCalls } from '../../state/calls'
 export function CallButtons({ conversation }: { conversation: Conversation }) {
   const c = useCalls()
   if (conversation.kind === 'general' || conversation.left) return null
-  const busy = Boolean(c.call)
+  // Nobody can call someone they blocked.
+  const busy = Boolean(c.call) || Boolean(conversation.blocked)
   const what = conversation.kind === 'direct' ? conversation.title : `${conversation.title} group`
   return (
     <span className="convo__calls">

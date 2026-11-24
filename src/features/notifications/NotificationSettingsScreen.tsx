@@ -9,6 +9,7 @@ import { useAsync } from '../../state/useAsync'
 import { useSubmit } from '../../state/useSubmit'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { usePermission } from '../media/usePermission'
+import { settings as deviceSettings, usePreviews } from '../../state/settings'
 
 const ROWS: { key: keyof NotificationSettings; title: string; sub: string }[] = [
   { key: 'messages', title: 'Direct messages', sub: 'A banner when someone writes to you' },
@@ -29,6 +30,7 @@ export function NotificationSettingsScreen() {
   const [asking, setAsking] = useState(false)
   const [denied, setDenied] = useState(false)
   const save = useSubmit()
+  const previews = usePreviews()
   const [local, setLocal] = useState<NotificationSettings | null>(null)
   const current = local ?? (settings.status === 'ready' ? settings.data : null)
 
@@ -78,6 +80,17 @@ export function NotificationSettingsScreen() {
               ))}
             </div>
 
+            <div className="card">
+              <div className="setting-row">
+                <span>
+                  <span className="t-title-sm" style={{ display: 'block' }}>Show previews</span>
+                  <span className="t-body-sm muted">Show the sender and the start of a message in a banner. Off shows only "New message"</span>
+                </span>
+                <Switch checked={previews} label="Show previews" onChange={(v) => deviceSettings.setPreviews(v)} />
+              </div>
+            </div>
+            <p className="t-caption muted">Offers are optional and stay off unless you turn them on. The app works fully without any notifications.</p>
+
             <section>
               <h2 className="t-title-sm" style={{ marginBottom: 'var(--s-1)' }}>Muted groups</h2>
               <p className="t-body-sm muted" style={{ marginBottom: 'var(--s-3)' }}>Mute a group from its page. You still see its messages, just no banners.</p>
@@ -95,6 +108,10 @@ export function NotificationSettingsScreen() {
                 </div>
               )}
             </section>
+            <Button variant="secondary" loading={save.busy} onClick={async () => {
+              const defaults: NotificationSettings = { messages: true, groups: true, updates: true, offers: false }
+              if (await save.run(() => api.notifications.saveSettings(defaults))) { setLocal(defaults); deviceSettings.setPreviews(true); track('notification_settings_reset') }
+            }}>Reset notification settings</Button>
           </>
         )}
       </div>

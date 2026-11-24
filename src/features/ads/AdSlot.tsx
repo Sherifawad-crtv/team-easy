@@ -5,6 +5,7 @@ import type { Ad, AdSlot as Slot } from '../../data/types'
 import { Avatar, BottomSheet, Button } from '../../design/ui'
 import { IconInfo } from '../../design/icons'
 import { track } from '../../analytics'
+import { usePersonalizedAds } from '../../state/settings'
 import { useAsync } from '../../state/useAsync'
 
 /** MON-01, 02: asks for an ad for this place, and shows it only when the server returns one. Failing to load never shows an error. */
@@ -23,12 +24,15 @@ export function useAd(slot: Slot) {
 
 function Why({ ad, onClose, onHide }: { ad: Ad; onClose: () => void; onHide: () => void }) {
   const navigate = useNavigate()
+  const personalized = usePersonalizedAds()
   return (
     <BottomSheet title="Why you see this ad" onClose={onClose}>
       <div className="stack">
         <p className="t-body-sm muted">You see ads on the free plan in your personal chats. Chats in your organization never show ads, and any paid add-on removes them everywhere.</p>
         <p className="t-body-sm">Ad from <strong>{ad.advertiser}</strong>. They don't see your messages.</p>
+        <p className="t-body-sm muted">{personalized ? 'This ad can fit you better because you allowed personalized ads.' : 'This ad is not based on your activity. You have not turned on personalized ads.'}</p>
         <Button variant="secondary" onClick={() => { onClose(); navigate('/account/plan') }}>See add-ons</Button>
+        <Button variant="secondary" onClick={() => { onClose(); navigate('/account/privacy') }}>Ad choices</Button>
         <Button variant="tertiary" onClick={() => { onHide(); onClose() }}>Hide this ad</Button>
       </div>
     </BottomSheet>

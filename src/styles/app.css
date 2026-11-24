@@ -151,7 +151,9 @@
 .bubble--sending { opacity: 0.7; }
 .bubble--failed { box-shadow: inset 0 0 0 2px var(--error); }
 .bubble__name { font-size: 13px; line-height: 18px; font-weight: 600; }
-.bubble__text { font-size: 15px; line-height: 21px; white-space: pre-wrap; }
+.bubble__text { font-size: calc(15px * var(--msg-scale, 1)); line-height: calc(21px * var(--msg-scale, 1)); white-space: pre-wrap; }
+:root[data-textsize='small'] { --msg-scale: 0.9; }
+:root[data-textsize='large'] { --msg-scale: 1.2; }
 /* Time and ticks sit inside the bubble, bottom right, beside the last line */
 .bubble--timed .bubble__text::after { content: ''; display: inline-block; width: 54px; }
 .bubble--timed.bubble--mine .bubble__text::after { width: 76px; }
@@ -290,6 +292,7 @@ mark { background: color-mix(in srgb, var(--accent) 28%, transparent); color: in
 .convo__who--link { display: flex; align-items: center; gap: var(--s-4); align-self: stretch; border: 0; background: transparent; text-align: left; padding: 0; font: inherit; color: inherit; min-width: 0; flex: 1; }
 .convo__text { display: flex; flex-direction: column; min-width: 0; }
 .convo__text .convo__title, .convo__text .convo__sub { display: block; }
+.composer--blocked { flex-direction: column; align-items: center; gap: var(--s-3); }
 .composer--left { justify-content: center; padding: var(--s-5); text-align: center; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); background: var(--surface-container-low); }
 .check { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--shape-sm); box-shadow: inset 0 0 0 2px var(--outline); color: var(--on-primary); }
 .check.is-on { background: var(--primary); box-shadow: none; }

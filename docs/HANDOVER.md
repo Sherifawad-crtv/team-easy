@@ -1,6 +1,6 @@
 # Developer handover
 
-**Start with the build guide:** [`handover/BUILD_GUIDE.md`](handover/BUILD_GUIDE.md) describes every screen, flow, rule, motion and state in plain language with screenshots, broken into phases per part. This file is the short technical companion.
+**Start with the build guide:** [`handover/BUILD_GUIDE.md`](handover/BUILD_GUIDE.md) describes every screen, flow, rule, motion and state in plain language with screenshots, broken into phases per part. This file is the short technical companion. For App Store and Google Play review, read [`COMPLIANCE.md`](COMPLIANCE.md): what each store requires, where it is in the app, and what is still to do.
 
 The design is final. A/B testing is finished and removed, so the app in this repo is the shape engineers build against. Everything runs on a typed mock data layer; nothing talks to a real backend.
 

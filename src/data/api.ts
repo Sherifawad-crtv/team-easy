@@ -47,6 +47,13 @@ import type {
   SearchFilters,
   SearchResults,
   SignUpData,
+  BlockedPerson,
+  DataExport,
+  LegalDocument,
+  LegalKind,
+  PrivacySettings,
+  ReportInput,
+  StorageUsage,
 } from './types'
 
 // The contract every backend must satisfy. Screens only ever talk to this.
@@ -60,7 +67,8 @@ export interface AuthApi {
   requestPasswordReset(email: string): Promise<void>
   resolveInvite(linkOrCode: string): Promise<OrgInvite>
   switchIdentity(kind: IdentityKind): Promise<Account>
-  deleteAccount(): Promise<void>
+  /** ACC-08: deletes the account and its data for good. Needs the password again. */
+  deleteAccount(password: string): Promise<void>
 }
 
 export interface ChatApi {
@@ -178,6 +186,10 @@ export interface DataApi {
   startBackup(): Promise<BackupStatus>
   /** DAT-01 (assumed meaning): a short code that moves chats to a new phone. */
   transferCode(): Promise<TransferCode>
+  /** What this device holds, by chat. */
+  storage(): Promise<StorageUsage>
+  /** Frees the photos and documents of one chat on this device. */
+  clearChatMedia(conversationId: string): Promise<StorageUsage>
 }
 
 export interface CallsApi {
@@ -213,6 +225,28 @@ export interface AdsApi {
   report(adId: string, event: 'impression' | 'click' | 'hide'): Promise<void>
 }
 
+export interface SettingsApi {
+  privacy(): Promise<PrivacySettings>
+  savePrivacy(patch: Partial<PrivacySettings>): Promise<PrivacySettings>
+  /** Rejects with `invalid_credentials` when the current password is wrong. */
+  changePassword(current: string, next: string): Promise<void>
+  /** Your open request for a copy of your data, if any. */
+  exportStatus(): Promise<DataExport | null>
+  requestExport(): Promise<DataExport>
+}
+
+/** Reporting and blocking, required for apps with user-generated content. */
+export interface SafetyApi {
+  report(input: ReportInput): Promise<void>
+  block(userId: string): Promise<void>
+  unblock(userId: string): Promise<void>
+  blocked(): Promise<BlockedPerson[]>
+}
+
+export interface LegalApi {
+  document(kind: LegalKind): Promise<LegalDocument>
+}
+
 export interface Api {
   auth: AuthApi
   chat: ChatApi
@@ -226,4 +260,7 @@ export interface Api {
   ads: AdsApi
   admin: AdminApi
   permissions: PermissionsApi
+  settings: SettingsApi
+  safety: SafetyApi
+  legal: LegalApi
 }

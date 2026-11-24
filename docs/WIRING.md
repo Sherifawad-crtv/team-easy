@@ -88,6 +88,14 @@ Claude Code keeps this table up to date whenever it adds or changes a placeholde
 | `monetization.ads` | MON-01, MON-02 | `AdService` | Serve ads to free users per placement rules | Eligibility | MOCKED |
 | `monetization.purchases` | MON-03, MON-04 | `PurchaseService` | RevenueCat: subscriptions and purchases for members beyond 300, extra groups and sub-groups | Entitlements | MOCKED |
 | `analytics.events` | Product analytics | `track(event, props)` in `src/analytics.ts` | Send events to the analytics service with the account id (anonymous id before sign-in); batch and retry; never block the UI | No personal data in properties; consent and opt-out | MOCKED |
+| `settings.privacy` | Store compliance | `SettingsApi.privacy`, `savePrivacy` | Store who can see online status, photo and job title and who can add you to groups; apply it to every other person's view | Visibility rules, server side only | MOCKED |
+| `settings.password` | ACC-01 (assumed) | `SettingsApi.changePassword` | Verify the current password, set the new one, end other sessions | Password rules, rate limiting | MOCKED |
+| `settings.data-export` | GDPR access and portability | `SettingsApi.requestExport`, `exportStatus` | Queue a job that builds a copy of the person's data and emails a link within the promised days | Identity check, link expiry | MOCKED |
+| `safety.report-block` | App Store 1.2, Play User Generated Content | `SafetyApi` | Store reports for moderators and act within the promised hours; block messages and calls between two people; never tell the blocked person | Blocking enforced on the server | MOCKED |
+| `legal.documents` | Store compliance | `LegalApi.document` | Serve the terms, privacy policy, community guidelines and licenses approved by counsel, with their version date | n/a | MOCKED |
+| `legal.links` | Store compliance | `src/config/legal.ts` | Replace the `.example` addresses with the real support email, help center, deletion web page and share link; the same ones go into App Store Connect and Play Console | The web deletion page must work without the app (Play) | PLANNED |
+| `privacy.consent` | GDPR, Apple ATT, Play ads policy | `settings.analytics`, `settings.personalizedAds` | Keep consent with the account, drive the analytics and ads SDKs from it, record the system tracking answer on iPhone | Nothing collected or personalized without consent | MOCKED |
+| `data.storage` | DAT-03 | `DataApi.storage`, `clearChatMedia` | Report what the device holds per chat and free it (device-side in a native app) | n/a | MOCKED |
 | `config.limits` | Part B §16 | `AppConfigRepository` | Limits, quotas, undo window, retention values served from config/DB, not hardcoded | Source of truth | PLANNED |
 
 ## How an engineer (or their AI) wires a point

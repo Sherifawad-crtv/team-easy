@@ -43,7 +43,7 @@
   transform: scale(0.98);
   transition-duration: 0ms;
 }
-:is(.chat-row, .list-row, .hit, .grow__main, .agenda__item, .stat, .offer, .ulog, .ubanner__main, .ad-row__main, .ad-banner__main, .radio-row, .garchived__head, .cal-day):not(:disabled):active {
+:is(.chat-row, .list-row, .srow, .sprofile, .hit, .grow__main, .agenda__item, .stat, .offer, .ulog, .ubanner__main, .ad-row__main, .ad-banner__main, .radio-row, .garchived__head, .cal-day):not(:disabled):active {
   background-color: color-mix(in srgb, var(--on-surface) 9%, transparent);
   transition-duration: 0ms;
 }

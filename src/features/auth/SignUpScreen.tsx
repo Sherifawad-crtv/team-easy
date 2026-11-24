@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { api } from '../../data'
 import { Avatar, Banner, Button, TextField } from '../../design/ui'
 import { IconCamera, IconClose } from '../../design/icons'
@@ -10,6 +10,7 @@ import { useAsync } from '../../state/useAsync'
 import { useSession } from '../../state/session'
 import { useSubmit } from '../../state/useSubmit'
 import { ApiError } from '../../data/errors'
+import { LEGAL } from '../../config/legal'
 import { AuthFrame, ErrorBanner } from './AuthFrame'
 import { validate } from './validators'
 import { useEffect } from 'react'
@@ -113,6 +114,9 @@ export function SignUpScreen() {
             <Button variant="tertiary" block={false} onClick={() => setShowInvite(true)} disabled={busy}>I have an organization invite</Button>
           ))}
 
+        <p className="t-caption muted legal-note">
+          By creating an account you agree to the <Link to="/legal/terms">Terms of Service</Link> and the <Link to="/legal/privacy">Privacy Policy</Link>, and you confirm that you are at least {LEGAL.minAge} years old.
+        </p>
         <Button type="submit" loading={busy}>Create account</Button>
         <Button variant="tertiary" onClick={() => navigate('/sign-in', { replace: true })}>Already have an account? Sign in</Button>
       </form>

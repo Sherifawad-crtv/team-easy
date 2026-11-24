@@ -54,6 +54,10 @@ export interface Conversation {
   presence?: Presence
   /** Direct chats: the other person's job title. */
   jobTitle?: string
+  /** Direct chats: who the other person is, for blocking and reporting. */
+  memberId?: string
+  /** You blocked this person: no messages or calls either way. */
+  blocked?: boolean
   /** ROL-05: the user left but kept the group in the list. Read only. */
   left?: boolean
   /** The group this chat belongs to, for group chats. */
@@ -135,7 +139,7 @@ export interface SearchResults {
   documents: MessageHit[]
 }
 
-export type PermissionKind = 'photos' | 'notifications' | 'microphone' | 'camera'
+export type PermissionKind = 'photos' | 'notifications' | 'microphone' | 'camera' | 'tracking'
 export type PermissionStatus = 'unknown' | 'granted' | 'denied'
 
 export interface ProfilePatch {
@@ -466,4 +470,67 @@ export interface NewEvent {
   allDay: boolean
   location?: string
   description?: string
+}
+
+// ---------- Settings, safety and legal (store compliance) ----------
+
+/** Who can see a piece of your profile. */
+export type Audience = 'everyone' | 'contacts' | 'nobody'
+
+export interface PrivacySettings {
+  /** Whether people see you as online or away. */
+  onlineStatus: Audience
+  profilePhoto: Audience
+  jobTitle: Audience
+  /** Who can put you in a group. */
+  addToGroups: 'everyone' | 'contacts'
+}
+
+/** A request for a copy of your data (GDPR access and portability). */
+export interface DataExport {
+  requestedAt: number
+  /** When the copy will have been emailed, at the latest. */
+  readyBy: number
+  email: string
+}
+
+export type ReportReason = 'spam' | 'harassment' | 'hate' | 'violence' | 'sexual' | 'scam' | 'other'
+
+export type ReportTarget =
+  | { kind: 'message'; conversationId: string; messageId: string; userId: string }
+  | { kind: 'person'; userId: string }
+  | { kind: 'group'; groupId: string }
+
+export interface ReportInput {
+  target: ReportTarget
+  reason: ReportReason
+  details?: string
+  /** Also block the person the report is about. */
+  block?: boolean
+}
+
+export interface BlockedPerson {
+  id: string
+  name: string
+  jobTitle?: string
+  blockedAt: number
+}
+
+export type LegalKind = 'terms' | 'privacy' | 'guidelines' | 'licenses'
+
+export interface LegalDocument {
+  kind: LegalKind
+  title: string
+  updatedAt: number
+  /** Shown above the sections. */
+  intro?: string
+  sections: { heading: string; body: string[] }[]
+}
+
+/** DAT-03: what this device holds, by chat. */
+export interface StorageUsage {
+  total: number
+  photos: number
+  documents: number
+  chats: { conversationId: string; title: string; bytes: number }[]
 }

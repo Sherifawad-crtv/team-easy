@@ -4,6 +4,7 @@ import { Banner, BottomSheet, Button, TextField } from '../../design/ui'
 import { IconCamera, IconDocument } from '../../design/icons'
 import { formatBytes, LIMITS } from '../../config/limits'
 import { PhotoAccessBody } from './PhotoAccess'
+import { useUploadQuality } from '../../state/settings'
 import { usePermission } from './usePermission'
 import { DocIcon } from './MessageAttachment'
 
@@ -21,6 +22,7 @@ const ACCEPT: Record<Pick, string> = {
  */
 export function AttachSheet({ onClose, onSend }: { onClose: () => void; onSend: (draft: MessageDraft) => void }) {
   const photos = usePermission('photos')
+  const quality = useUploadQuality()
   const [step, setStep] = useState<Step>('choose')
   const [file, setFile] = useState<File | null>(null)
   const [caption, setCaption] = useState('')
@@ -87,6 +89,7 @@ export function AttachSheet({ onClose, onSend }: { onClose: () => void; onSend: 
               <span className="doc-row__text"><span className="doc-row__name">{file.name}</span><span className="doc-row__meta">{formatBytes(file.size)}</span></span>
             </div>
           )}
+          {previewUrl && <p className="t-caption muted">{quality === 'standard' ? 'Sending at standard quality, so it arrives faster and uses less data.' : 'Sending the original photo. It uses more data.'} Change this in Account, Chats.</p>}
           <TextField label="Add a caption (optional)" value={caption} onChange={setCaption} />
           <div className="stack">
             <Button onClick={() => { onSend({ text: caption.trim(), file }); onClose() }}>Send</Button>

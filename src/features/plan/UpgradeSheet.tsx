@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../../data'
 import type { Entitlements, Product, ProductId } from '../../data/types'
 import { Banner, BottomSheet, Button, Skeleton } from '../../design/ui'
 import { IconCheck } from '../../design/icons'
 import { haptic } from '../../design/haptics'
 import { track } from '../../analytics'
+import { storeName } from '../../state/platform'
 import { useAsync } from '../../state/useAsync'
 import { useReviewRole } from '../../state/useReviewRole'
 import { useSubmit } from '../../state/useSubmit'
@@ -56,9 +58,10 @@ export function UpgradeSheet({ focus, onClose, onChanged }: { focus?: ProductId;
           <p className="t-body-sm">{picked.description}.</p>
           <div className="card" style={{ padding: 'var(--s-5)' }}>
             <p className="t-title">{picked.priceLabel}</p>
-            <p className="t-body-sm muted" style={{ marginTop: 'var(--s-2)' }}>Renews every month until cancelled. You can cancel any time, and the add-on then runs until the end of the month you paid for. Nothing is deleted if it ends.</p>
+            <p className="t-body-sm muted" style={{ marginTop: 'var(--s-2)' }}>Billed every month until you cancel. Payment is charged to your {storeName()} account when you confirm. It renews automatically unless you turn off auto-renew at least 24 hours before the end of the period. Manage or cancel any time in your {storeName()} account settings. After you cancel it runs until the end of the month you paid for, and nothing is deleted if it ends.</p>
           </div>
           {!canBuy && <Banner kind="info">Only an admin can buy add-ons. Ask an admin to do this.</Banner>}
+          <p className="t-caption muted legal-note" style={{ marginTop: 0 }}>By subscribing you agree to the <Link to="/legal/terms">Terms of Service</Link> and the <Link to="/legal/privacy">Privacy Policy</Link>.</p>
           <Button loading={buy.busy} disabled={!canBuy} onClick={async () => {
             let result: Entitlements | undefined
             if (await buy.run(async () => { result = await api.purchases.purchase(picked.id) }) && result) {

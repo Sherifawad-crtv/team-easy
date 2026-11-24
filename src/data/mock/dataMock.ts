@@ -2,11 +2,12 @@
 
 import type { DataApi } from '../api'
 import { LIMITS } from '../../config/limits'
-import type { ExpiringFile, IdentityKind, Message, Conversation } from '../types'
+import type { ExpiringFile, IdentityKind, Message, Conversation, StorageUsage } from '../types'
 import { scenarioStore } from './scenario'
 import { ME } from './seed'
 
 const BACKUP_KEY = 'te.backup'
+const CLEARED_KEY = 'te.storage.cleared'
 
 interface Deps {
   gate: (base?: number) => Promise<void>
@@ -22,6 +23,30 @@ export function createData(deps: Deps) {
     } catch {
       return { at: null, size: null }
     }
+  }
+
+  const cleared = (): string[] => {
+    try { return JSON.parse(localStorage.getItem(CLEARED_KEY) ?? '[]') as string[] } catch { return [] }
+  }
+  const usage = (): StorageUsage => {
+    const gone = new Set(cleared())
+    let photos = 0
+    let documents = 0
+    const chats: StorageUsage['chats'] = []
+    for (const c of deps.conversations) {
+      if (gone.has(c.id)) continue
+      let bytes = 0
+      for (const m of deps.messagesFor(c.id)) {
+        const a = m.attachment
+        if (!a || a.expired) continue
+        bytes += a.size
+        if (a.kind === 'image') photos += a.size
+        else documents += a.size
+      }
+      if (bytes > 0) chats.push({ conversationId: c.id, title: c.title, bytes })
+    }
+    chats.sort((a, b) => b.bytes - a.bytes)
+    return { total: photos + documents, photos, documents, chats }
   }
 
   const api: DataApi = {
@@ -62,6 +87,16 @@ export function createData(deps: Deps) {
         // lasts for this page only
       }
       return { lastBackupAt: at, sizeBytes: size }
+    },
+    async storage() {
+      await deps.gate(350)
+      if (scenarioStore.get() === 'empty') return { total: 0, photos: 0, documents: 0, chats: [] }
+      return usage()
+    },
+    async clearChatMedia(conversationId) {
+      await deps.gate(400)
+      try { localStorage.setItem(CLEARED_KEY, JSON.stringify([...new Set([...cleared(), conversationId])])) } catch { /* lasts for this page */ }
+      return usage()
     },
     async transferCode() {
       await deps.gate(600)

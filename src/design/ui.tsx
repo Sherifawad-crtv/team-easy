@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { IconAlert, IconBack, IconCheckCircle, IconEye, IconEyeOff, IconInfo, IconUser, IconWifiOff } from './icons'
+import { IconAlert, IconBack, IconChevronRight, IconLink, IconCheckCircle, IconEye, IconEyeOff, IconInfo, IconUser, IconWifiOff } from './icons'
 
 /* ---------- Overlay ---------- */
 
@@ -108,12 +108,12 @@ export function TextField({ label, value, onChange, error, hint, password = fals
 
 /* ---------- Banner ---------- */
 
-export type BannerKind = 'error' | 'offline' | 'info' | 'success'
+export type BannerKind = 'error' | 'offline' | 'warning' | 'info' | 'success'
 
 export function Banner({ kind = 'info', title, children, actionLabel, onAction }: { kind?: BannerKind; title?: string; children?: ReactNode; actionLabel?: string; onAction?: () => void }) {
-  const Icon = { error: IconAlert, offline: IconWifiOff, info: IconInfo, success: IconCheckCircle }[kind]
+  const Icon = { error: IconAlert, offline: IconWifiOff, warning: IconAlert, info: IconInfo, success: IconCheckCircle }[kind]
   return (
-    <div className={`banner banner--${kind}`} role={kind === 'error' || kind === 'offline' ? 'alert' : 'status'}>
+    <div className={`banner banner--${kind}`} role={kind === 'error' || kind === 'offline' || kind === 'warning' ? 'alert' : 'status'}>
       <span className="banner__icon"><Icon size={22} /></span>
       <div className="banner__body">
         {title && <p className="banner__title">{title}</p>}
@@ -265,4 +265,54 @@ export function Switch({ checked, onChange, label, disabled }: { checked: boolea
       <span className="switch__thumb" />
     </button>
   )
+}
+
+/* ---------- Settings lists ---------- */
+
+/** A titled group of settings rows on one rounded card, like the lists in iPhone and WhatsApp settings. */
+export function SettingsGroup({ title, footer, children }: { title?: string; footer?: ReactNode; children: ReactNode }) {
+  return (
+    <section className="sgroup">
+      {title && <h2 className="sgroup__title">{title}</h2>}
+      <div className="card sgroup__card">{children}</div>
+      {footer && <p className="sgroup__footer">{footer}</p>}
+    </section>
+  )
+}
+
+interface SettingsRowProps {
+  title: string
+  subtitle?: ReactNode
+  /** A Solar icon, shown in a round tinted badge. */
+  icon?: ReactNode
+  /** The current choice, shown on the right in grey. */
+  value?: string
+  /** A control on the right (a Switch). The row is then not a button. */
+  trailing?: ReactNode
+  onClick?: () => void
+  /** Opens outside the app: shows the link icon instead of a chevron. */
+  external?: boolean
+  danger?: boolean
+  disabled?: boolean
+}
+
+/** One row of a settings list: icon, title, optional second line, then a value, a chevron or a control. */
+export function SettingsRow({ title, subtitle, icon, value, trailing, onClick, external, danger, disabled }: SettingsRowProps) {
+  const body = (
+    <>
+      {icon && <span className="srow__icon" aria-hidden="true">{icon}</span>}
+      <span className="srow__text">
+        <span className="srow__title">{title}</span>
+        {subtitle && <span className="srow__sub">{subtitle}</span>}
+      </span>
+      {value && <span className="srow__value">{value}</span>}
+      {trailing}
+      {!trailing && onClick && (external ? <IconLink size={20} /> : <IconChevronRight size={20} />)}
+    </>
+  )
+  const cls = `srow${danger ? ' srow--danger' : ''}`
+  if (onClick && !trailing) {
+    return <button type="button" className={cls} onClick={() => { haptic('selection'); onClick() }} disabled={disabled}>{body}</button>
+  }
+  return <div className={cls}>{body}</div>
 }

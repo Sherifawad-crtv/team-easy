@@ -1,3 +1,33 @@
+// WIRE: settings.privacy
+// Req: store compliance (privacy controls) | Contract: SettingsApi.privacy, savePrivacy | Mock: settingsMock
+// Real: store who can see online status, photo and job title and who can add you to groups; apply them to every other person's view
+// Server must enforce: visibility rules, never only in the client
+//
+// WIRE: settings.password
+// Req: ACC-01 (assumed) | Contract: SettingsApi.changePassword | Mock: settingsMock
+// Real: verify the current password, set the new one, end other sessions
+// Server must enforce: password rules, rate limiting
+//
+// WIRE: settings.data-export
+// Req: GDPR access and portability, Play and App Store privacy | Contract: SettingsApi.requestExport, exportStatus | Mock: settingsMock
+// Real: queue a job that builds a copy of the person's data and emails a download link within the promised days
+// Server must enforce: identity check, link expiry
+//
+// WIRE: safety.report-block
+// Req: App Store 1.2 and Play User Generated Content policy | Contract: SafetyApi | Mock: safetyMock
+// Real: store reports for moderators, act within the promised hours, block messages and calls between the two people
+// Server must enforce: blocking is enforced on the server, the blocked person is never told
+//
+// WIRE: legal.documents
+// Req: privacy policy, terms and community guidelines inside the app | Contract: LegalApi.document | Mock: legalMock
+// Real: serve the text approved by counsel, with its version date
+// Server must enforce: n/a
+//
+// WIRE: data.storage
+// Req: DAT-03 | Contract: DataApi.storage, clearChatMedia | Mock: dataMock
+// Real: report what the device holds per chat and free it; this is device-side in a native app
+// Server must enforce: n/a
+//
 // WIRE: auth.session
 // Req: ACC-01..04, ACC-06 | Contract: AuthApi | Mock: mockApi.auth
 // Real: email + password sign up and sign in, optional org attach via invite, persisted session
@@ -10,7 +40,7 @@
 //
 // WIRE: auth.delete-account
 // Req: ACC-08 | Contract: AuthApi.deleteAccount | Mock: mockApi.auth
-// Real: delete account and associated data, end the session
+// Real: ask for the password again, delete the account and all associated data (not just deactivate), end the session; also reachable on the web without the app
 // Server must enforce: full deletion
 //
 // WIRE: auth.org-invite
@@ -45,7 +75,7 @@
 //
 // WIRE: media.upload
 // Req: MED-01..03 | Contract: ChatApi.sendMessage (draft.file) | Mock: mockApi.chat
-// Real: upload the image or document, return the stored attachment (url, size, type); enforce size and type limits
+// Real: upload the image or document, return the stored attachment (url, size, type); enforce size and type limits; apply the photo upload quality setting (standard resizes the photo before it is sent)
 // Server must enforce: size and type limits, membership, retention (DAT-02)
 //
 // WIRE: search.query
@@ -167,6 +197,9 @@ import { createData } from './dataMock'
 import { createGroups } from './groupsMock'
 import { createNotifications } from './notificationsMock'
 import { scenarioStore } from './scenario'
+import { createSettings } from './settingsMock'
+import { createSafety } from './safetyMock'
+import { createLegal } from './legalMock'
 import { CONVERSATIONS, MEMBERS, ME, seedMessages, withFiles } from './seed'
 
 const ACME = { id: 'org-acme', name: 'Acme Studio' }
@@ -250,6 +283,9 @@ const callsMock = createCalls({
     return { id: m?.id ?? `u-${conv.id}`, name: conv.title, presence: conv.presence ?? m?.presence ?? 'online' }
   },
 })
+const settingsMock = createSettings({ gate, email: () => current?.email ?? '' })
+const safetyMock = createSafety({ gate, conversations, members: MEMBERS, emit })
+const legalMock = createLegal({ gate })
 const dataApi = createData({ gate, identity: () => current?.activeIdentity ?? 'individual', conversations, messagesFor })
 
 function receive(conv: Conversation, text: string, senderName: string, senderId: string) {
@@ -399,8 +435,11 @@ export const mockApi: Api = {
       saveSession(current)
       return current
     },
-    async deleteAccount() {
-      await gate()
+    async deleteAccount(password) {
+      await gate(600)
+      if (!password || password === 'wrongpass1') throw new ApiError('invalid_credentials')
+      settingsMock.forget()
+      safetyMock.forget()
       current = null
       saveSession(null)
     },
@@ -491,7 +530,7 @@ export const mockApi: Api = {
       let conv = conversations.find((c) => c.kind === 'direct' && c.title === member.name)
       if (!conv) {
         conv = {
-          id: `c-${member.id}`, kind: 'direct', title: member.name, presence: member.presence, jobTitle: member.jobTitle,
+          id: `c-${member.id}`, kind: 'direct', memberId: member.id, title: member.name, presence: member.presence, jobTitle: member.jobTitle,
           lastMessage: '', lastAt: Date.now(), unread: 0,
         }
         conversations.push(conv)
@@ -537,6 +576,10 @@ export const mockApi: Api = {
   purchases: shop.purchases,
   ads: shop.ads,
   admin: adminMock.api,
+
+  settings: settingsMock.api,
+  safety: safetyMock.api,
+  legal: legalMock.api,
 
   permissions: {
     async status(kind: PermissionKind): Promise<PermissionStatus> {

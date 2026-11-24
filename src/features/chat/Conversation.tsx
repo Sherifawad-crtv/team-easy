@@ -7,10 +7,12 @@ import { Avatar, BackButton, Banner, BottomSheet, Button, Overlay, Skeleton, ton
 import { IconAttach, IconClock, IconDoubleTick, IconMegaphone, IconRetry, IconSend, IconTrash } from '../../design/icons'
 import { track } from '../../analytics'
 import { useAsync } from '../../state/useAsync'
+import { useSubmit } from '../../state/useSubmit'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { useMedia } from '../../state/useMedia'
 import { MessageMenu } from './MessageMenu'
 import { ContactSheet } from './ContactSheet'
+import { ReportSheet } from '../safety/ReportSheet'
 import { AdBanner } from '../ads/AdSlot'
 import { CallButtons } from '../calls/CallButtons'
 import { AttachSheet } from '../media/AttachSheet'
@@ -55,6 +57,8 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
   const [draft, setDraft] = useState('')
   const [actionFor, setActionFor] = useState<Message | null>(null)
   const [contactOpen, setContactOpen] = useState(false)
+  const [reporting, setReporting] = useState<Message | null>(null)
+  const unblock = useSubmit()
   const [attaching, setAttaching] = useState(false)
   const drafts = useRef(new Map<string, MessageDraft>())
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -176,7 +180,8 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
 
   const actionable = (m: Message) => m.status === 'failed' || (isDirect && m.senderId === ME && m.status === 'sent')
   // On phones in motion style B every message with text can be copied, so every one has a menu.
-  const hasMenu = (m: Message) => actionable(m) || (ios && Boolean(m.text))
+  // Every message from someone else can be reported, so it always has a menu.
+  const hasMenu = (m: Message) => actionable(m) || (ios && (Boolean(m.text) || m.senderId !== ME))
   const openMenu = (m: Message, el: HTMLElement) => (ios ? setMenu({ m, bubble: el }) : setActionFor(m))
   const startPress = (m: Message, el: HTMLElement) => {
     if (!hasMenu(m)) return
@@ -270,7 +275,12 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
         )}
       </div>
 
-      {conversation.left ? (
+      {conversation.blocked ? (
+        <div className="composer composer--left composer--blocked" role="status">
+          <span>You blocked {conversation.title}. Unblock to send messages or call.</span>
+          <Button variant="secondary" block={false} loading={unblock.busy} onClick={() => void unblock.run(async () => { if (conversation.memberId) await api.safety.unblock(conversation.memberId) })}>Unblock</Button>
+        </div>
+      ) : conversation.left ? (
         <p className="composer composer--left" role="status">You left this group. You can read the chat, but you can't send or get new messages.</p>
       ) : (
       <form className="composer" onSubmit={(e) => { e.preventDefault(); submit() }}>
@@ -298,10 +308,12 @@ export function ConversationView({ conversation, onBack, highlightId }: { conver
             remove: menu.m.status === 'sent' && isDirect && menu.m.senderId === ME ? () => void remove(menu.m) : undefined,
             retry: menu.m.status === 'failed' ? () => { track('message_retried', { conversation_id: id }); void send(drafts.current.get(menu.m.id) ?? { text: menu.m.text }, menu.m.id) } : undefined,
             discard: menu.m.status === 'failed' ? () => void remove(menu.m) : undefined,
+            report: menu.m.senderId !== ME ? () => setReporting(menu.m) : undefined,
           }}
         />
       )}
       {toast && <Overlay><div className="toast" role="status">{toast}</div></Overlay>}
+      {reporting && <ReportSheet target={{ kind: 'message', conversationId: id, messageId: reporting.id, userId: reporting.senderId }} subject={reporting.senderName} canBlock onClose={() => setReporting(null)} />}
       {attaching && <AttachSheet onClose={() => setAttaching(false)} onSend={(d) => void send(d)} />}
 
       {actionFor && (

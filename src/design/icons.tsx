@@ -3,6 +3,17 @@
 // swapping a glyph happens here and nowhere else.
 
 import {
+  LockKeyholeIcon,
+  ShieldCheckIcon,
+  QuestionCircleIcon,
+  ShareIcon,
+  FlagIcon,
+  KeyIcon,
+  DatabaseIcon,
+  LetterIcon,
+  AccessibilityIcon,
+  UserPlusIcon,
+  CardIcon,
   AddIcon,
   AltArrowDownIcon,
   AltArrowLeftIcon,
@@ -115,3 +126,14 @@ export const IconCallMissed = make(CallDroppedRoundedIcon)
 export const IconUpload = make(UploadSquareIcon)
 export const IconMute = make(BellOffIcon)
 export const IconUnread = make(ChatUnreadIcon)
+export const IconLock = make(LockKeyholeIcon)
+export const IconShield = make(ShieldCheckIcon)
+export const IconHelp = make(QuestionCircleIcon)
+export const IconShare = make(ShareIcon)
+export const IconFlag = make(FlagIcon)
+export const IconKey = make(KeyIcon)
+export const IconDatabase = make(DatabaseIcon)
+export const IconMail = make(LetterIcon)
+export const IconAccessibility = make(AccessibilityIcon)
+export const IconInvite = make(UserPlusIcon)
+export const IconCard = make(CardIcon)

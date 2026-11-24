@@ -35,7 +35,7 @@ export const CONVERSATIONS: Conversation[] = [
     lastSender: 'Omar', lastAt: ago(14), unread: 214,
   },
   {
-    id: 'c-omar', kind: 'direct', jobTitle: 'Engineering lead', title: 'Omar Al-Fayed', presence: 'online',
+    id: 'c-omar', kind: 'direct', memberId: 'u-omar', jobTitle: 'Engineering lead', title: 'Omar Al-Fayed', presence: 'online',
     lastMessage: 'Can you send the latest build?', lastAt: ago(3), unread: 2,
   },
   {
@@ -47,7 +47,7 @@ export const CONVERSATIONS: Conversation[] = [
     lastMessage: 'Jonas: Uploaded the onboarding motion test', lastSender: 'Jonas', lastAt: ago(75), unread: 0,
   },
   {
-    id: 'c-amelia', kind: 'direct', jobTitle: 'Head of customer success', title: 'Amelia Kowalczyk-Fernandez', presence: 'away',
+    id: 'c-amelia', kind: 'direct', memberId: 'u-amelia', jobTitle: 'Head of customer success', title: 'Amelia Kowalczyk-Fernandez', presence: 'away',
     lastMessage: 'Thanks! I will share the customer interview notes tomorrow morning before the sync.',
     lastAt: ago(190), unread: 0,
   },
@@ -58,7 +58,7 @@ export const CONVERSATIONS: Conversation[] = [
     lastSender: 'Sam', lastAt: ago(260), unread: 128,
   },
   {
-    id: 'c-priya', kind: 'direct', jobTitle: 'Product manager', title: 'Priya Raman', presence: 'online',
+    id: 'c-priya', kind: 'direct', memberId: 'u-priya', jobTitle: 'Product manager', title: 'Priya Raman', presence: 'online',
     lastMessage: 'https://acme.example/specs/groups-v2', lastAt: ago(420), unread: 0,
   },
   {
@@ -66,7 +66,7 @@ export const CONVERSATIONS: Conversation[] = [
     lastMessage: 'Fatima: I can take the Saturday shift', lastSender: 'Fatima', lastAt: ago(60 * 26), unread: 0,
   },
   {
-    id: 'c-yuki', kind: 'direct', title: 'Yuki Tanaka', presence: 'away',
+    id: 'c-yuki', kind: 'direct', memberId: 'u-yuki', title: 'Yuki Tanaka', presence: 'away',
     lastMessage: 'Build 214 is on TestFlight', lastAt: ago(60 * 30), unread: 1,
   },
   {
@@ -74,11 +74,11 @@ export const CONVERSATIONS: Conversation[] = [
     lastMessage: 'Tomás: Reconciliation done for September', lastSender: 'Tomás', lastAt: ago(60 * 50), unread: 0,
   },
   {
-    id: 'c-noor', kind: 'direct', title: 'Noor', presence: 'online',
+    id: 'c-noor', kind: 'direct', memberId: 'u-noor', title: 'Noor', presence: 'online',
     lastMessage: '🎉', lastAt: ago(60 * 52), unread: 0,
   },
   {
-    id: 'c-sam', kind: 'direct', title: 'Sam Okafor', presence: 'online',
+    id: 'c-sam', kind: 'direct', memberId: 'u-sam', title: 'Sam Okafor', presence: 'online',
     lastMessage: 'Thanks Sam, sending the invite flow notes now', lastSender: 'You', lastAt: ago(60 * 80), unread: 0,
   },
 ]
@@ -118,7 +118,7 @@ export function seedMessages(c: Conversation): Message[] {
   const rand = rng([...c.id].reduce((n, ch) => n + ch.charCodeAt(0), 0))
   const others =
     c.kind === 'direct'
-      ? [{ id: `u-${c.id}`, name: c.title }]
+      ? [{ id: c.memberId ?? `u-${c.id}`, name: c.title }]
       : MEMBERS.slice(0, 5).map((m) => ({ id: m.id, name: m.name }))
   const count = 26
   const out: Message[] = []

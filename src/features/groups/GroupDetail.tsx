@@ -2,16 +2,17 @@ import { useState } from 'react'
 import { api } from '../../data'
 import type { DeletedGroup, Group, GroupLimits, GroupMember, LeaveMode, ProductId } from '../../data/types'
 import { Avatar, Banner, BackButton, Button, Skeleton, Switch } from '../../design/ui'
-import { IconArchive, IconChat, IconChevronRight, IconLeave, IconLink, IconMore, IconPeople, IconPlus, IconTrash } from '../../design/icons'
+import { IconArchive, IconChat, IconFlag, IconChevronRight, IconLeave, IconLink, IconMore, IconPeople, IconPlus, IconTrash } from '../../design/icons'
 import { useAsync } from '../../state/useAsync'
 import { useSubmit } from '../../state/useSubmit'
 import { daysLeftLabel } from '../data/retention'
 import { ErrorBanner } from '../auth/AuthFrame'
 import { UpgradeSheet } from '../plan/UpgradeSheet'
+import { ReportSheet } from '../safety/ReportSheet'
 import { AddMembersSheet, ArchiveSheet, CreateGroupSheet, DeleteSheet, InviteSheet, LeaveSheet, MemberSheet } from './GroupSheets'
 import { LEVEL_NAME, childSlots, memberLabel, pathOf } from './tree'
 
-type Sheet = 'create' | 'add' | 'invite' | 'leave' | 'archive' | 'delete' | 'upgrade' | null
+type Sheet = 'create' | 'add' | 'invite' | 'leave' | 'archive' | 'delete' | 'upgrade' | 'report' | null
 
 interface Props {
   group: Group
@@ -190,6 +191,7 @@ export function GroupDetail({ group, all, limits, onBack, onOpenGroup, onOpenCha
           {admin && (
             <Button variant="outlined" onClick={() => setSheet('archive')}><IconArchive size={18} /> {group.archived ? 'Bring back from archive' : 'Archive group'}</Button>
           )}
+          <Button variant="outlined" onClick={() => setSheet('report')}><IconFlag size={18} /> Report group</Button>
           {admin && <Button variant="destructive" onClick={() => setSheet('delete')}><IconTrash size={18} /> Delete group</Button>}
           {!admin && <p className="t-body-sm muted">Only an admin can archive or delete a group.</p>}
         </section>
@@ -201,6 +203,7 @@ export function GroupDetail({ group, all, limits, onBack, onOpenGroup, onOpenCha
       {sheet === 'leave' && <LeaveSheet group={group} onClose={close} onDone={(mode) => { close(); onLeft(mode) }} />}
       {sheet === 'archive' && <ArchiveSheet group={group} onClose={close} onDone={() => { close(); onChanged() }} />}
       {sheet === 'delete' && <DeleteSheet group={group} hasSubgroups={all.some((g) => g.parentId === group.id)} onClose={close} onDeleted={(d) => { close(); onDeleted(d) }} />}
+      {sheet === 'report' && <ReportSheet target={{ kind: 'group', groupId: group.id }} subject={group.name} canBlock={false} onClose={close} />}
       {sheet === 'upgrade' && <UpgradeSheet focus={focus} onClose={close} onChanged={onChanged} />}
       {memberFor && <MemberSheet group={group} member={memberFor} onClose={() => setMemberFor(null)} onChanged={() => { setMemberFor(null); members.reload() }} />}
     </main>

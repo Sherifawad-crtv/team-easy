@@ -22,7 +22,11 @@ describe('upgrade flow', () => {
     let changed = 0
     at(<UpgradeSheet focus="subgroups_5" onClose={() => {}} onChanged={() => { changed++ }} />)
     fireEvent.click(await screen.findByRole('button', { name: /More sub-groups/ }, { timeout: 3000 }))
-    expect(screen.getByText(/Renews every month until cancelled/)).toBeTruthy()
+    // Store rules: price and period, auto-renew and how to cancel, and the terms and privacy links.
+    expect(screen.getByText(/renews automatically unless you turn off auto-renew at least 24 hours before/)).toBeTruthy()
+    expect(screen.getByText(/Manage or cancel any time in your/)).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Terms of Service' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Subscribe' }))
     await screen.findByText('More sub-groups added', {}, { timeout: 5000 })
     expect(screen.getByText(/can now hold 10 sub-groups/)).toBeTruthy()
