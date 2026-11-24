@@ -4,7 +4,7 @@
 
 **What it is based on:** a working reference prototype (a phone app, built as a web app, running on fake data) that the designer finished and signed off. Every screenshot in this guide was taken from that prototype. The prototype is the visual and behavioural reference; the production app should look and behave the same way.
 
-**Contents:** 1 The product in one page · 2 Design system · 3 How the app is laid out · 4 The parts, in phases (A Accounts, B Chat list and search, C Conversation, D Groups and teams, E Calendar, F Notifications, G Calls, H Account and data, I Plan and ads, J Platform) · 5 Motion · 6 States · 7 Overall build order · 8 Open questions · 9 Acceptance checklist
+**Contents:** 1 The product in one page · 2 Design system · 3 How the app is laid out · 4 The parts, in phases (A Accounts, B Chat list and search, C Conversation, D Groups and teams, E Calendar, F Notifications, G Calls, H Account and data, I Plan and ads, J Platform, K Settings, safety and store compliance) · 5 Motion · 6 States · 7 Overall build order · 8 Open questions · 9 Acceptance checklist
 
 **Where the rest lives** (all in the `docs` folder of the repository):
 
@@ -46,6 +46,7 @@ TeamEasy is a team messaging app. People use it on their phones for chats, calls
 | H. Account, profile and data | Profile editing, media download setting, retention rules, backup and transfer |
 | I. Plan, ads and purchases | Free plan with ads, paid add-ons, restore purchases |
 | J. Platform | Install to home screen, permissions, native feel, offline, device integrations |
+| K. Settings, safety and store compliance | The settings pages, deleting your account, privacy and consent, report and block, legal pages, subscription terms |
 
 ### The numbers that shape the product
 
@@ -140,11 +141,11 @@ Contrast meets WCAG AA. Every control has an accessible name. Respect the system
 
 ## 3. How the app is laid out
 
-**On a phone** there are four tabs in a floating glass pill near the bottom: **Chats, Groups, Calendar, Account.** Tabs switch instantly. Opening a chat slides it in from the right over the list; the tab bar slides away while a chat is open. Account has sub-pages (edit profile, plan, calls, notifications, data, what's new) that slide in from the right.
+**On a phone** there are four tabs in a floating glass pill near the bottom: **Chats, Groups, Calendar, Account.** Tabs switch instantly. Opening a chat slides it in from the right over the list; the tab bar slides away while a chat is open. Account is the settings home; its pages (Your account, Privacy, Chats, Notifications, Storage and data, Calls, Accessibility, Plan, Help and the rest) slide in from the right.
 
 This guide covers the **mobile app only**.
 
-![Chat list with the floating tab bar | A conversation (tab bar hidden)](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/01-chats-list.jpg)
+![Chat list with the floating tab bar | A conversation (tab bar hidden)](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/01-chats-list.jpg)
 
 **Navigation rules**
 
@@ -167,9 +168,9 @@ Each part below has: what the person sees and does, the rules, the screens, and 
 
 **What people do:** open the app, create an account in one of three ways, sign in, reset a password, accept an organization invite, switch between their personal and organization identity, or delete their account.
 
-![Welcome: three paths | Sign up | Sign in | Sign in, wrong password](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/02-auth-welcome.jpg)
+![Welcome: three paths | Sign up | Sign in | Sign in, wrong password](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/02-auth-welcome.jpg)
 
-![Forgot password | Invite: enter a code | Invite link: valid | Invite link: expired](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/03-auth-forgot-password.jpg)
+![Forgot password | Invite: enter a code | Invite link: valid | Invite link: expired](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/03-auth-forgot-password.jpg)
 
 **Flows**
 
@@ -178,7 +179,7 @@ Each part below has: what the person sees and does, the rules, the screens, and 
 3. **Get invited (ACC-04):** an invite link opens a page that shows the organization and who invited the person, then continues to sign up with the organization already attached. An invalid, expired or offline invite each shows its own message with a way forward.
 4. **Sign in:** email and password. A wrong password shows an inline error on the field and the form shakes once. Forgot password sends a reset email and says the same thing whether or not the address exists.
 5. **Identity switch (ACC-07):** a "Chat as" choice on the Account screen: Myself or the organization. It separates the two identities' data. Joining an organization never stops someone using the app on their own (ACC-06).
-6. **Delete account (ACC-08):** Account, Delete account. A confirmation sheet says what is lost. Confirming signs out and removes the data.
+6. **Delete account (ACC-08):** Account, Your account, Delete account. A full page says what happens, warns if add-ons are active (deleting does not cancel them), asks for the password again and offers a web address for people without the app. Confirming removes the account and its data, signs out, and the welcome screen says it worked. Both stores require this (Part K).
 
 **Rules**
 
@@ -206,9 +207,9 @@ Wire later: `auth.session`, `auth.account-switch`, `auth.delete-account`, `auth.
 
 **What people do:** see all their chats, filter them, find a person or a message, start a new chat, and act on a chat without opening it.
 
-![List: notice banners, filter chips, pinned announcements, ad row | Unread filter | Search results | New chat sheet](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/04-chats-list.jpg)
+![List: notice banners, filter chips, pinned announcements, ad row | Unread filter | Search results | New chat sheet](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/04-chats-list.jpg)
 
-![Long press: actions | Swipe a row to reveal an action | Empty | Error with Try again](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/05-chats-row-actions.jpg)
+![Long press: actions | Swipe a row to reveal an action | Empty | Error with Try again](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/05-chats-row-actions.jpg)
 
 **What is on the screen, top to bottom**
 
@@ -254,9 +255,9 @@ Wire later: `chat.messages`, `search.members`, `search.query`.
 
 **What people do:** read and write messages, send photos and documents, copy or delete a message, open someone's info, call from the top bar.
 
-![Direct chat | Group chat: sender names, title chips, photo | Typing: field grows, send button | Attach sheet](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/06-chat-direct.jpg)
+![Direct chat | Group chat: sender names, title chips, photo | Typing: field grows, send button | Attach sheet](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/06-chat-direct.jpg)
 
-![Photo viewer | Long press a message | Contact info (tap the name) | Send while offline: failed](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/07-chat-photo-viewer.jpg)
+![Photo viewer | Long press a message | Contact info (tap the name) | Send while offline: failed](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/07-chat-photo-viewer.jpg)
 
 **What is on the screen**
 
@@ -304,9 +305,9 @@ Wire later: `chat.send-message`, `chat.delete-message`, `media.upload`.
 
 **What people do:** browse a tree of groups and sub-groups, join by link, leave, and (admins) create, invite, block, archive and delete groups.
 
-![Groups tab | Tree opened level by level | Group info | Create a group](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/08-groups-tree.jpg)
+![Groups tab | Tree opened level by level | Group info | Create a group](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/08-groups-tree.jpg)
 
-![Join link page | Leave: two choices | Delete confirmation | Deleted, with Undo](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/09-groups-join-link.jpg)
+![Join link page | Leave: two choices | Delete confirmation | Deleted, with Undo](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/09-groups-join-link.jpg)
 
 **What is on the screen**
 
@@ -334,11 +335,11 @@ Wire later: `chat.send-message`, `chat.delete-message`, `media.upload`.
 
 The whole group info page, top to bottom, and the join link as a signed-out person sees it:
 
-![Group info, full length (admin view) | Join link opened while signed out](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/10-groups-group-info-full.jpg)
+![Group info, full length (admin view) | Join link opened while signed out](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/10-groups-group-info-full.jpg)
 
 **States:** loading, empty ("You're not in a group yet", or "No groups yet" with Create for admins), error with retry, offline.
 
-![Empty | Error](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/11-states-groups-empty.jpg)
+![Empty | Error](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/11-states-groups-empty.jpg)
 
 **Phases**
 
@@ -359,7 +360,7 @@ Wire later: `groups.crud`, `groups.join-link`, `members.invite`, `roles.permissi
 
 **What people do:** see a month, pick a day, read its events, and choose which calendars to show. Admins also choose who has each calendar.
 
-![Month with colored dots and the day's agenda | Event details | Empty](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/12-calendar-month.jpg)
+![Month with colored dots and the day's agenda | Event details | Empty](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/12-calendar-month.jpg)
 
 **Rules**
 
@@ -384,7 +385,7 @@ Wire later: `calendar.events`.
 
 **What people do:** see app news inside the app, get pushed when something arrives, and choose what they are notified about.
 
-![A push shown as a banner at the top, above the in-app notice | What's new | Notification settings](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/13-notifications-push-banner.jpg)
+![A push shown as a banner at the top, above the in-app notice | What's new | Notification settings](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/13-notifications-push-banner.jpg)
 
 **Flows**
 
@@ -412,9 +413,9 @@ Wire later: `notifications.in-app-banner`, `notifications.push`.
 
 **What people do:** call one person or a group, with or without video, within a daily time allowance.
 
-![First call: our own permission sheet | On a call | Minimized: green bar | Incoming call](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/14-calls-permission-sheet.jpg)
+![First call: our own permission sheet | On a call | Minimized: green bar | Incoming call](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/14-calls-permission-sheet.jpg)
 
-![Call ended | Account, Calls: today's time and recent calls](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/15-calls-ended-sheet.jpg)
+![Call ended | Account, Calls: today's time and recent calls](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/15-calls-ended-sheet.jpg)
 
 **Flows**
 
@@ -446,24 +447,24 @@ Wire later: `calls.service`.
 
 **What people do:** edit their profile, choose how media downloads, see what will be deleted, back up and move chats to a new phone.
 
-![Account | Edit profile | Data and storage | Delete account](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/16-account-main.jpg)
+![Settings home | Edit profile | Storage and data | Backup and deletion rules](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/H1-account-profile-data.jpg)
 
-![Account, full length | Data and storage, full length](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/17-account-main-full.jpg)
+![Settings home, full length](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K0-settings-home-full.jpg)
 
-**What is on the Account screen:** name, email and title, "Chat as" (identity), Media downloads (Always, Wi-Fi only as default, Never), Haptics switch, Add to home screen (when not installed), Edit profile, Plan and add-ons, Calls, Notifications, Data and storage, What's new, Sign out, Delete account.
+**What is on the Account tab (the settings home):** your profile card (tap to edit), "Chat as" for organization members, then grouped rows with a round icon, a title and one line, like WhatsApp and iPhone settings: **Your account, Privacy, Chats, Notifications, Storage and data, Calls, Accessibility**; then **Plan and add-ons, Invite a friend, Add to home screen** (until installed); then **Help** and **What's new**; **Sign out** and the version at the bottom. Part K describes the settings pages in detail.
 
 **Flows**
 
 1. **Edit profile (PRF-01):** name, email, job title, photo (choose or remove). Save stays disabled until something changes. A success banner confirms; an email already in use shows an inline error.
-2. **Media download (MED-05, DAT-03):** the three choices above; opened photos and videos stay on the device.
-3. **Retention (DAT-02, DAT-04):** Account, Data and storage explains in plain words that unopened files are deleted after 6 days (15 for business), archived groups after 90, and lists files about to be deleted; tapping one jumps to it. Inside chats an unopened file reads "Deleted in N days unless you open it" once 3 days or fewer are left.
+2. **Media download (MED-05, DAT-03):** Storage and data, Media auto-download: Always, Wi-Fi only (the default) or Never; opened photos and videos stay on the device.
+3. **Retention (DAT-02, DAT-04):** Storage and data, Backup and deletion rules explains in plain words that unopened files are deleted after 6 days (15 for business), archived groups after 90, and lists files about to be deleted; tapping one jumps to it. Inside chats an unopened file reads "Deleted in N days unless you open it" once 3 days or fewer are left.
 4. **Backup and transfer (DAT-01):** Back up now, and a 6-digit code (valid for 10 minutes, single use) to move chats to a new phone.
 
 **Phases**
 
 | Phase | What gets built | Exit check |
 |---|---|---|
-| H1 | Account screen, edit profile with photo, sign out, delete account | Changes show everywhere the name or photo appears |
+| H1 | Settings home, edit profile with photo, sign out | Changes show everywhere the name or photo appears |
 | H2 | Media download setting and on-device cache | Wi-Fi only really holds back downloads on mobile data |
 | H3 | Retention rules, list of files about to expire, in-chat expiry notes (server deletes) | A file really disappears on the day it says |
 | H4 | Backup and the 10-minute transfer code | A new phone restores chats with the code |
@@ -476,9 +477,9 @@ Wire later: `profile.edit`, `data.retention`, `data.backup`.
 
 **What people do:** use the free plan with ads, or buy add-ons that raise limits and remove ads.
 
-![Plan and add-ons | Add more room | Ad row after the third chat | Ad banner under the chat header](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/18-account-plan.jpg)
+![Plan and add-ons | Add more room | Ad row after the third chat | Ad banner under the chat header](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/18-account-plan.jpg)
 
-![Plan and add-ons, full length](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/19-account-plan-full.jpg)
+![Plan and add-ons, full length](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/19-account-plan-full.jpg)
 
 **Rules**
 
@@ -503,13 +504,13 @@ Wire later: `monetization.ads`, `monetization.purchases`, `config.limits`.
 
 ### Part J. Platform: install, permissions, offline and native feel  (NFR-04, DEV-01 to DEV-04)
 
-![Add to Home Screen, iPhone | Offline banner, cached list stays](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/20-install-iphone-guide.jpg)
+![Add to Home Screen, iPhone | Offline banner, cached list stays](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/20-install-iphone-guide.jpg)
 
 - **Add to home screen (web version):** a card under the notice on the chat list on phones, and Account, Add to home screen. Android gets one button; iPhone gets one line ("Share, then Add to Home Screen"); people inside another app get a link to copy and open in their browser. Closing the card hides it for a week. Nothing shows once installed.
 - **Permissions (NFR-04):** for each (photos, microphone and camera, notifications) our own sheet explains why first. Allow continues to the system request; Not now returns. If denied, the same place shows how to turn it on in settings. Nothing ever asks without explaining.
 - **Offline:** an offline banner on every screen, cached content stays visible, sending waits or fails visibly with retry.
 - **Native feel on touch screens:** no text selection except in fields, no page zoom, no browser long-press menus, no image dragging, no scrollbars, no browser pull-to-refresh. Text fields are 16 px so iPhone does not zoom. Copying a message is in its long-press menu.
-- **Haptics:** five kinds of tap (selection, light, success, warning, error) with an Account switch that turns them all off; the full list of when each one fires is in Section 5.
+- **Haptics:** five kinds of tap (selection, light, success, warning, error) with an Accessibility switch that turns them all off; the full list of when each one fires is in Section 5.
 - **Device integrations (DEV-01 to DEV-04):** the app in the device's suggested contacts, seeing people from device contacts, an email icon opening the mail app, appearing in the share sheet. **Not built** in the prototype (native only).
 - **Store distribution (DEP-03, DEP-04):** Apple and Google developer accounts are new and required. The join link falls back to the app store (GRP-07).
 
@@ -519,11 +520,81 @@ Wire later: `monetization.ads`, `monetization.purchases`, `config.limits`.
 |---|---|---|
 | J1 | Permission sheets and denied states for photos, microphone, camera, notifications | Each denial is recoverable from the same screen |
 | J2 | Offline handling and the offline banner everywhere | Airplane mode never shows a blank screen |
-| J3 | Native feel rules and haptics (all five kinds, the Account switch, off under Reduce Motion) | Every haptic in Section 5 fires once in the right place and nowhere else; the switch silences all of them |
+| J3 | Native feel rules and haptics (all five kinds, the Accessibility switch, off under Reduce Motion) | Every haptic in Section 5 fires once in the right place and nowhere else; the switch silences all of them |
 | J4 | Store distribution and join-link fallback | A join link works from a phone without the app |
 | J5 | Device integrations DEV-01 to DEV-04 | Each opens the right native screen |
 
 Wire later: `permissions.runtime`.
+
+### Part K. Settings, safety and store compliance  (ACC-08, NFR-04, MED-05, DAT-01 to DAT-04, plus App Store and Google Play rules)
+
+The PRD does not list settings pages, but neither store approves a messaging app without several of them. They are built like WhatsApp and iPhone settings. `COMPLIANCE.md` in the docs folder maps every store rule to the screen that meets it and lists what is still to do outside the app.
+
+**The settings home, your account, and what you can change**
+
+![Settings home | Your account | Change password: wrong current password | Request your data: received](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K1-settings-account.jpg)
+
+**What people do:** change their password, ask for a copy of their data, delete their account, choose who sees them, block and report people, read the terms and privacy policy, and set text size, haptics, downloads and notifications.
+
+**Your account.** Email (tap to edit), Change password (the current one is asked again; a wrong one shows an error on that field), Request your data (a copy of what we hold, emailed within 7 days; the row then shows the date it will arrive), and Delete account.
+
+**Delete account (required by both stores).**
+
+![Delete account | Wrong password is refused | Privacy | Choosing who can see you](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K2-delete-privacy.jpg)
+
+A full page, not a pop-up: what happens (profile, photo and settings deleted; chats you started and files you sent deleted for you; your messages in group chats stay for the group but lose your name and photo; you leave every group and organization; the law-required records are kept only as long as the law requires), a warning if add-ons are active because deleting the account does not cancel them (with a link to manage them in the store), the password again, a red Delete button, and a web address for people who no longer have the app. After deleting, the welcome screen says the account was deleted. The deletion must really remove the account and its data on the server, not only switch it off.
+
+**Privacy.** Who can see your online status, profile photo and job title (Everyone, My contacts, Nobody); who can add you to groups (Everyone, My contacts); Blocked contacts; App permissions. Under **Ads and data** are two switches, **Personalized ads** and **Share usage data**, both **off until the person turns them on**. Turning on personalized ads first shows our own explanation (what tracking means), and on iPhone the system's tracking question follows; a refusal leaves ads generic and says how to change it in the phone's settings. Nothing is collected or personalized without the stored consent.
+
+![Our explanation before the tracking question | App permissions | One permission: why, status, where to change | Blocked contacts](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K3-consent-permissions.jpg)
+
+**App permissions** lists photos, microphone, camera and notifications with their status (Allowed, Not allowed, Not asked yet). Each opens a short page: why we ask, the status, and where to change it on that phone, or a button to allow it if it has never been asked.
+
+**Report and block (required for any app with user-generated content).**
+
+![Long press a message: Report | Reason, details, optional block | Report sent: private, within 24 hours | Block asks first](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K4-report.jpg)
+
+![Contact info: Block and Report | A blocked chat: no composer, Unblock | Report a group | No blocked contacts](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K5-block-states.jpg)
+
+- **Report** is on every message from someone else (long press), on a person (contact info) and on a group (group info). The sheet asks for a reason (spam, harassment or bullying, hate speech, violence or threats, sexual content, scam or fraud, something else), optional details, and offers to block the person in the same step. It says the report is private, the person is not told who reported, and that it is looked at within 24 hours.
+- **Block** is in contact info and asks first: they cannot message or call you and they are not told. In a blocked chat the message field is replaced by "You blocked X. Unblock to send messages or call." with an Unblock button, and the call buttons stop working. Blocked contacts lists everyone blocked, with Unblock. The server must enforce blocking.
+- **Not built:** automatic filtering of objectionable content before it is posted (Apple requires it) and the moderation team that answers reports. Both are engineering and operations work (`COMPLIANCE.md`).
+
+**Legal pages and consent at sign-up.**
+
+![Sign up: terms, privacy, minimum age | Privacy Policy | Help | Open-source licenses and credits](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K6-legal-help.jpg)
+
+Terms of Service, Privacy Policy, Community guidelines and Open-source licenses open **without an account**, because people agree to them before they have one. Sign-up says "By creating an account you agree to the Terms of Service and the Privacy Policy, and you confirm that you are at least 16 years old", and the welcome screen links the terms and privacy policy. Help also has Help center, Contact us (opens the mail app with the app version filled in) and the app version. The licenses page must credit the Solar icons (480 Design, CC BY 4.0) and Poppins. The in-app text is a draft: counsel must replace it, and the real support, help and deletion web addresses must replace the placeholders.
+
+**Storage and data, Chats, Accessibility, Notifications.**
+
+![Manage storage | Chats | Accessibility: message text size | Large text in a chat](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K7-storage-chats-accessibility.jpg)
+
+- **Storage and data:** Media auto-download (Always, Wi-Fi only, Never), Use less data for calls, Manage storage (what the device holds per chat, with Free up) and the backup, transfer and deletion rules page.
+- **Chats:** photo upload quality (Standard sends smaller photos; Original sends full size) and a link to chat backup and transfer.
+- **Accessibility:** message text size (Small, Default, Large) with a live preview that changes every message in the app, the haptics switch, and a line saying Reduce Motion follows the phone.
+- **Notifications:** the existing switches plus Show previews, a note that Offers are optional and off by default, and Reset notification settings.
+
+**Subscription terms (with Part I).**
+
+![Notifications | Add-on terms before subscribing | After deleting: welcome says it worked | Terms and privacy on the welcome screen](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K8-notifications-plan-delete.jpg)
+
+Before a person subscribes the screen states the price and period, that payment is charged to their store account, that it renews automatically unless auto-renew is turned off at least 24 hours before the end of the period, where to manage or cancel it, and links to the Terms and Privacy Policy. The Plan screen has Restore purchases and a Manage in App Store / Google Play row, and says that deleting the app or the account does not cancel a subscription.
+
+![Settings home, full length](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/K0-settings-home-full.jpg)
+
+**Phases**
+
+| Phase | What gets built | Exit check |
+|---|---|---|
+| K1 | Settings home, Your account (email, change password), Help, the four legal pages readable signed out, terms, privacy and minimum age at sign-up | Every legal page opens signed out; sign-up states terms, privacy and age |
+| K2 | Delete account page (password again, what happens, subscription warning, web address), the web deletion page, Request your data | A deletion really removes the account from every system; the web page works without the app |
+| K3 | Report and block: report a message, a person and a group; block and unblock; Blocked contacts; blocked chat state; calls stop; server-enforced blocking and a moderation queue | A blocked person cannot reach you; a report arrives in a queue someone answers within the promised time |
+| K4 | Privacy: audiences, who can add me to groups, App permissions; consent for usage data and personalized ads, off by default; the tracking explanation | Nothing is collected or personalized before consent; the system tracking question only appears after our explanation |
+| K5 | Storage and data, Chats, Accessibility (text size, haptics), notification extras | Text size changes every message; choices survive restarts |
+| K6 | Subscription terms and manage links on the Plan screen and the confirm step; restore | The wording matches the store's subscription text; Manage opens the store |
+
+Wire later: `settings.privacy`, `settings.password`, `settings.data-export`, `safety.report-block`, `legal.documents`, `legal.links`, `privacy.consent`, `data.storage`.
 
 ---
 
@@ -564,11 +635,11 @@ Springs are described by how quick they are and how much they bounce. Build them
 
 ### The same moments as film strips
 
-![Opening a chat: the conversation slides in from the right while the list moves back and dims, finished in about 330 ms.](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/21-motion-open-chat.jpg)
+![Opening a chat: the conversation slides in from the right while the list moves back and dims, finished in about 330 ms.](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/21-motion-open-chat.jpg)
 
-![A sheet rising over a dimmed screen.](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/22-motion-sheet.jpg)
+![A sheet rising over a dimmed screen.](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/22-motion-sheet.jpg)
 
-![Swipe back: the screen tracks the finger, the list underneath moves and brightens as it is revealed.](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/23-motion-swipe-back.jpg)
+![Swipe back: the screen tracks the finger, the list underneath moves and brightens as it is revealed.](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/23-motion-swipe-back.jpg)
 
 ### Haptics (the tap you feel)
 
@@ -587,7 +658,7 @@ Haptic feedback is part of the product's feel: a small physical tap that matches
 - A haptic fires in the same instant as the thing it matches, inside the person's own touch, never on its own and never later.
 - Never for scrolling, ordinary taps on buttons and rows, typing, or anything that repeats quickly. If it would fire many times a second, it does not fire.
 - One haptic per event. Never two at once, and never one on top of an animation that already has one.
-- **Account has a Haptics switch.** It is on by default. When it is off, nothing fires.
+- **Accessibility settings have a Haptics switch.** It is on by default. When it is off, nothing fires.
 - Nothing fires when the system's Reduce Motion is on.
 - If the device cannot do haptics, nothing happens and nothing breaks. There is no sound or visual stand-in.
 
@@ -617,9 +688,9 @@ The prototype is tested in an emulator. On real devices check: haptic feel, Safa
 
 A screen is not done until all of these exist. These are the shared patterns.
 
-![Loading: skeleton rows, never a lone spinner | Empty: says what is missing, offers the next step | Error: what happened, Try again | Offline: banner, cached content stays](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/24-states-chat-list-slow.jpg)
+![Loading: skeleton rows, never a lone spinner | Empty: says what is missing, offers the next step | Error: what happened, Try again | Offline: banner, cached content stays](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/24-states-chat-list-slow.jpg)
 
-![Message sending: faded with a clock | Message failed: red outline, "Not sent. Tap to retry" | Groups, empty | Calendar, empty](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/e991a81497e189cbe58fac861921440b4c7d1a7d/docs/handover/images/25-states-message-sending.jpg)
+![Message sending: faded with a clock | Message failed: red outline, "Not sent. Tap to retry" | Groups, empty | Calendar, empty](https://raw.githubusercontent.com/sherifawad-crtv/team-easy/d68bd1144ed8ae16c3de8e645d449aff40c7149c/docs/handover/images/25-states-message-sending.jpg)
 
 **Rules that apply everywhere**
 
@@ -638,14 +709,14 @@ The parts above fit together in this order. Each phase ends with an exit check t
 | Phase | Goal | Parts and sub-phases | Exit check | Gate |
 |---|---|---|---|---|
 | **0. Foundations** | Decisions and plumbing | Client framework and backend choice; environments and CI; design tokens, icons, type and the shared components in Section 2; one place for business limits; the placeholder-to-real swap list (`WIRING.md`); analytics hook; Apple and Google developer accounts | A blank signed-out screen in the right fonts and colors runs on an iPhone and an Android phone | Framework, backend, vendor names |
-| **1. Sign in and shell** | A person can get in | A1, A2, J1 (permission sheet pattern), J2 (offline banner), the four-tab shell, loading / empty / error pattern | Create account, close app, reopen: still signed in. Tabs switch instantly | Email verification (A5) |
-| **2. Messaging core** | Chat works in realtime | B1, B2, B4, B5, C1 to C4, C7 | Two phones chat in realtime, a message retries after airplane mode, delete works only in private chats | None |
-| **3. Media, search, profile** | Rich chat | B3, C5, C6, H1, H2, J3 | Send a photo, find a message from last week, change the profile photo | Document types, file size |
+| **1. Sign in and shell** | A person can get in | A1, A2, J1 (permission sheet pattern), J2 (offline banner), K1, K2, the four-tab shell, loading / empty / error pattern | Create account, close app, reopen: still signed in. Tabs switch instantly | Email verification (A5) |
+| **2. Messaging core** | Chat works in realtime | B1, B2, B4, B5, C1 to C4, C7, K3 | Two phones chat in realtime, a message retries after airplane mode, delete works only in private chats | None |
+| **3. Media, search, profile** | Rich chat | B3, C5, C6, H1, H2, J3, K4, K5 | Send a photo, find a message from last week, change the profile photo | Document types, file size |
 | **4. Groups and roles** | Teams | D1 to D5, A3, A4 | A 5 / 5 / 5 tree, invite by link, leave in both ways, delete with 8-second undo, the cap enforced by the server | Flights, per-user group limit, member approval |
 | **5. Calendar, notifications, data** | Daily life | E1 to E3, F1 to F4, H3, H4 | A calendar assigned to a person appears; a push opens the right chat; an unopened file disappears on its day | None |
 | **6. Calls** | Voice and video | G1 to G5 | Group call of five, daily hour holds, incoming call rings with the app closed | Vendor SDK details |
-| **7. Money and distribution** | Paid plans and the stores | I1 to I4, J4, J5 | A purchase raises a limit and removes ads; a join link works from a phone without the app | Ad placement wording |
-| **8. Hardening and launch** | Ready for real people | Load test (NFR-02), real-device motion and haptics tuning, accessibility pass, security review, store review (moderation and report-abuse is expected for user content), notifications live at launch (NFR-03) | The launch checklist below passes | Load numbers, moderation scope |
+| **7. Money and distribution** | Paid plans and the stores | I1 to I4, J4, J5, K6 | A purchase raises a limit and removes ads; a join link works from a phone without the app | Ad placement wording |
+| **8. Hardening and launch** | Ready for real people | Content filtering and the moderation team (store rule), load test (NFR-02), real-device motion and haptics tuning, accessibility pass, security review, store review (moderation and report-abuse is expected for user content), notifications live at launch (NFR-03) | The launch checklist below passes | Load numbers, moderation scope |
 
 **Launch checklist:** every screen matches this guide in all its states; all limits are enforced by the server and read from configuration; Reduce Motion works; the app is usable offline-to-online; permissions are explained before the system asks; push works from a closed app; load numbers agreed in Phase 0 are met; store listings, privacy text and account deletion are in place.
 
@@ -673,6 +744,12 @@ None of these change the agreed scope. Each needs an answer before the phase tha
 | 14 | Retention of archived groups (assumed 90 days) and the undo window (assumed 8 seconds) | D5, H3 | Phase 4 |
 | 15 | Which "other essential details" the profile holds besides the job title | H1 | Phase 3 |
 | 16 | Existing users accepting an organization invite | A3 | Phase 4 |
+| 17 | Content filtering before posting (Apple requires it): what is screened, with which tools, and who answers reports within 24 hours | K3, store review | Phase 2 |
+| 18 | Minimum age (built as 16) and the answers to the store age-rating questions | K1 | Phase 1 |
+| 19 | When an account is deleted: what happens to messages in groups and to an organization's groups, and which records the law makes us keep | K2 | Phase 1 |
+| 20 | Counsel-approved terms, privacy policy and community guidelines to replace the draft text | K1 | Phase 1 |
+| 21 | The real support email, help center and web deletion page addresses, and who owns the deletion page | K1, K2 | Phase 1 |
+| 22 | Whether personalized ads and tracking are used at all (if not, the tracking explanation and iPhone prompt can be dropped) | K4, I2 | Phase 3 |
 
 ---
 
@@ -685,7 +762,7 @@ For each screen in the phase, check against the screenshots:
 - [ ] Uses only the colors, type sizes, spacing, radii and icons in Section 2.
 - [ ] Every control has an accessible name and a 48 px touch target. Contrast meets AA.
 - [ ] Every gesture has a visible alternative.
-- [ ] Haptics fire only where Section 5 lists them, once each, and the Account switch and Reduce Motion silence them.
+- [ ] Haptics fire only where Section 5 lists them, once each, and the Accessibility switch and Reduce Motion silence them.
 - [ ] Motion uses only the springs in Section 5, and Reduce Motion replaces slides with a quick fade.
 - [ ] Every business limit is enforced by the server and read from configuration, never typed into a screen.
 - [ ] Copy is specific and calm (no "Welcome back!", no blame in errors).
